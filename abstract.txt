@@ -1,0 +1,15 @@
+The goal of this work will be to use GPS as a correction input to the
+Monte Carlo localization and 
+
+The simple use of GPS for localization uses the position estimations provided by
+the GPS receiver in a WGS84 format. However, this estimation has problems with
+hard to use error estimations, low output frequency and mostly undocumented
+filtering of the values.
+
+The approach taken in this work will use pseudorange measurements to modify
+sample probabilities in the Monte Carlo localization. When combined with
+odometry and eventually other sensors this method could improve the precision
+of the GPS fix, when compared to using only precomputed WGS84 coordinates.
+
+There are several consumer grade receivers that allow access to raw pseudorange
+data, this work will be using mainly the SIRFstarIII chip.

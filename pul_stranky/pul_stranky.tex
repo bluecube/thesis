@@ -1,0 +1,44 @@
+\documentclass[12pt,notitlepage,pdftex,a4paper]{article}
+\usepackage{coolstyle}
+
+\begin{document}
+
+\section*{O čem to bude}
+
+Budu se zabývat využitím GPS jako korekčního vstupu do Monte Carlo
+lokalizace a její co nejdůkladnější využití.
+
+Při jednoduchém použití GPS pro lokalizaci se využívá
+odhad pozice, který poskytují GPS přijímače ve formátu WGS84.
+U tohoto odhadu je ale problém s obtížně použitelnou chybou odhadu
+(HDOP, VDOP a PDOP), malou frekvencí výstupů (cca 1 Hz) a také
+není úplně zřejmé jestli jsou tyto výstupy z přijímače už nějak
+filtrované a podobně.
+
+Přístup, kterému bych se chtěl důkladněji věnovat je využití měření
+pseudorange (změřené vzdálenosti od satelitů) úprava váhy vzorků v MCL
+na základě těchto měření.
+To sice zvýší výpočetní náročnost lokalizace, protože bude nutné pro
+každý vzorek a každé měření pseudorange znovu upravovat váhu vzorku
+pomocí většího množství floating-point operací, ale v kombinaci s
+odometrií a případně i dalšími senzory to může přinést zlepšení
+odhadu pozice oproti základnímu použití GPS.
+
+Přístup k naměřeným hodnotám na nižší úrovni než WGS84 umožňuje
+několik běžně dostupných GPS čipů, ve své práci se chci zaměřit
+pouze na Sirf III.
+
+Další možbostí rozšíření jsou differential GPS a carrier phase tracking.
+
+\section*{Zdroje}
+
+\begin{itemize}
+\item \url{http://www.gdgps.net}
+
+\item \url{http://home.tiscali.nl/~samsvl/}
+
+\item Kinematic: \url{http://www.precision-gps.org/}
+
+\end{itemize}
+
+\end{document}

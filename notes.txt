@@ -1,0 +1,15 @@
+http://www.gdgps.net
+
+http://home.tiscali.nl/~samsvl/
+
+Kinematic:
+	http://www.precision-gps.org/
+	Kinematic is loosely based on work by Xiao-Wen Chang 
+
+
+The Sirf III provides raw pseudoranges and has excellent tracking,
+but it is missing carrier phase information. It may be useful for
+static positions in poor conditions where other receivers are unable
+to track at all.
+
+

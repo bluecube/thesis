@@ -1,0 +1,30 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2010-11-04T14:42:07.129395
+
+====== Links ======
+
+http://www.gdgps.net
+
+http://home.tiscali.nl/~samsvl/
+
+Kinematic:
+        http://www.precision-gps.org/
+        Kinematic is loosely based on work by Xiao-Wen Chang 
+
+F. Dellaert, D. Fox, W. Burgard, and S. Thrun, “Monte carlo
+localization for mobile robots,” in IEEE International Conference
+on Robotics and Automation (ICRA99), May 1999.
+
+S. Thrun, D. Fox, W. Burgard, and F. Dellaert, “Robust Monte Carlo
+localization for mobile robots,” Artificial Intelligence Journal, vol.
+128, no. 1–2, pp. 99–141, 2001.
+
+D. Fox, “KLD-sampling: Adaptive particle filters,” in Advances in
+Neural Information Processing Systems 14. MIT Press, 2001
+
+Pfaff, Burgard, Fox - Robust Monte Carlo Localization Using Adaptive Likehood Models
+
+[*] sehnat Understanding GPS: Principles and Applications !!
+	(Elliott Kaplan and Christopher Hegarty)
+

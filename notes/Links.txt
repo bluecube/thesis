@@ -28,3 +28,4 @@ Pfaff, Burgard, Fox - Robust Monte Carlo Localization Using Adaptive Likehood Mo
 [*] sehnat Understanding GPS: Principles and Applications !!
 	(Elliott Kaplan and Christopher Hegarty)
 
+http://aprs.gids.nl/nmea/

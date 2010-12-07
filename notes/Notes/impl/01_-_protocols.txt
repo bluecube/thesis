@@ -1,0 +1,9 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2010-11-26T17:38:38.307840
+
+====== 01 - protocols ======
+Created Friday 26 November 2010
+
+Detecting and talking NMEA and SIRF protocols.
+NMEA only used to switch to harder better faster stronger SIRF binary protocol, no navigation related messages are implemented.

@@ -18,16 +18,20 @@ SIRFGPS::SIRFGPS(const char *device, unsigned speed){
 		}
 	}
 
-	permanent_mode();
+	oldMode = mode;
+	oldSpeed = port.getSpeed();
+	switchBackOnExit = true;
 
-	while(!switch_mode(GPS_MODE_SIRF, 4800));
+	switch_mode(GPS_MODE_SIRF, 19200);
 }
 
 /**
  * Restore the old gps mode.
  */
 SIRFGPS::~SIRFGPS(){
-	restore_mode();
+	if(switchBackOnExit){
+		switch_mode(oldMode, oldSpeed);
+	}
 }
 
 /**
@@ -111,13 +115,12 @@ bool SIRFGPS::switch_mode(SIRFGPS::GPSMode desiredMode, unsigned speed){
 				0x00, 0x00,             /* suppress VTG */
 				0x00, 0x01,             /* suppress MSS */
 				0x00, 0x01,             /* suppress EPE */
-				0x00, 0x01,             /* suppress EPE */
 				0x00, 0x01,             /* suppress ZDA */
 				0x00, 0x00,             /* unused */
 				0x00, 0x00,             /* speed */
 			};
-			buffer[24] = hi8(speed);
-			buffer[25] = lo8(speed);
+			buffer[22] = hi8(speed);
+			buffer[23] = lo8(speed);
 			
 			sirf.send(&port, buffer, sizeof(buffer));
 		}
@@ -125,7 +128,7 @@ bool SIRFGPS::switch_mode(SIRFGPS::GPSMode desiredMode, unsigned speed){
 
 	sleep(2);
 
-	if(speed != oldSpeed){
+	if(speed != port.getSpeed()){
 		port.close();
 		port.open(port.getPort(), speed);
 	}
@@ -133,18 +136,11 @@ bool SIRFGPS::switch_mode(SIRFGPS::GPSMode desiredMode, unsigned speed){
 	return check_mode() == desiredMode;
 }
 
-/**
- * Make the current mode permanent.
- * This means that the original mode will not be restored
- * in the restore_mode() method or destructor.
- */
 void SIRFGPS::permanent_mode(){
 	if(mode == GPS_MODE_UNKNOWN){
 		return;
 	}
 
-	oldMode = mode;
-	oldSpeed = port.getSpeed();
 }
 
 /**
@@ -167,5 +163,5 @@ unsigned SIRFGPS::lo8(unsigned n){
  * Upper byte of a 16bit number.
  */
 unsigned SIRFGPS::hi8(unsigned n){
-	return (n << 8)	&& 0xFF;
+	return (n >> 8) & 0xFF;
 }

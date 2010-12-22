@@ -26,11 +26,15 @@ public:
 	void permanent_mode();
 	void restore_mode();
 
+	void get_one();
+
+	void switch_back_on_exit(bool state){
+		switchBackOnExit = state;
+	}
+private:
 	unsigned lo8(unsigned n);
 	unsigned hi8(unsigned n);
 
-	void get_one();
-private:
 	Serial port;
 	NMEAMessage nmea;
 	SIRFMessage sirf;
@@ -39,6 +43,7 @@ private:
 
 	GPSMode oldMode;
 	unsigned oldSpeed;
+	bool switchBackOnExit;
 };
 
 #endif

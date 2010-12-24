@@ -26,6 +26,8 @@ bool SIRFMessage::parse(Serial *s){
 		return false;
 	}
 
+	payloadLength = status;
+
 	unsigned checksum = 0;
 	for(int i = 0; i < status; ++i){
 		int c = s->readc();
@@ -58,8 +60,9 @@ bool SIRFMessage::parse(Serial *s){
  * \return length of the payload if the message beginning has been found.
  * -1 if too many characters passed and nothing that looks like message
  * has appeaared.
- * \bug The message header might alias with some data within the message.
- * This could theoretically mean that we will never find out that the 
+ * \bug The message header might alias with some data within the message
+ * (if the message contains for example 0xA0 0xA2 0x00 0x10).
+ * This means that theoretically we could never find out that the 
  * protocol is SIRF, or even worse read invalid data and not notice.
  * I don't know how to fix this.
  */

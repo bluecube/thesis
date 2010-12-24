@@ -6,6 +6,8 @@
 #include <termios.h>
 #include <unistd.h>
 
+//#define SERIAL_DUMP_DATA
+
 /**
  * Serial command line, fixed to 8N1, on unix mashines.
  */
@@ -27,6 +29,12 @@ public:
 
 	void drop_unread();
 	void drop_unsent();
+
+#ifdef SERIAL_DUMP_DATA
+	void dump_log_read_buffer();
+#else
+	void dump_log_read_buffer(){}
+#endif
 private:
 	const char *currentPort;
 	unsigned currentSpeed;
@@ -34,16 +42,17 @@ private:
 	int fd;
 	termios oldTermios;
 
-	FILE *log;
+#ifdef SERIAL_DUMP_DATA
+	FILE *logFile;
 
 	static const unsigned LOG_LINE_WIDTH = 16;
 	static const char *LOG_FILE;
 	unsigned char logReadBuffer[LOG_LINE_WIDTH];
 	unsigned logReadBufferFill;
 
-	void dump_log_read_buffer();
 	void write_log_lines(char direction, const unsigned char *line, size_t count);
 	void write_log_line(char direction, const unsigned char *line, size_t count);
+#endif
 };
 
 #endif

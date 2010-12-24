@@ -7,8 +7,7 @@
 
 class SIRFGPS{
 public:
-	SIRFGPS(const char *device, unsigned speed);
-	~SIRFGPS();
+	SIRFGPS(const char *device);
 
 	enum GPSMode{
 		GPS_MODE_UNKNOWN,
@@ -27,11 +26,10 @@ public:
 	void restore_mode();
 
 	void get_one();
-
-	void switch_back_on_exit(bool state){
-		switchBackOnExit = state;
-	}
 private:
+	static const unsigned possibleSpeeds[];
+
+
 	unsigned lo8(unsigned n);
 	unsigned hi8(unsigned n);
 
@@ -40,10 +38,6 @@ private:
 	SIRFMessage sirf;
 
 	GPSMode mode;
-
-	GPSMode oldMode;
-	unsigned oldSpeed;
-	bool switchBackOnExit;
 };
 
 #endif

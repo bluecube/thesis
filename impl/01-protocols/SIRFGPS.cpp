@@ -7,31 +7,27 @@
 #include <string.h>
 
 /**
- * Open the serial port, find out GPS mode.
+ * Baud rates that we're working with.
+ * These are tried at startup, 
  */
-SIRFGPS::SIRFGPS(const char *device, unsigned speed){
-	port.open(device, speed);
-	
-	while(true){
-		if(check_mode() != GPS_MODE_UNKNOWN){
-			break;
-		}
-	}
-
-	oldMode = mode;
-	oldSpeed = port.getSpeed();
-	switchBackOnExit = true;
-
-	switch_mode(GPS_MODE_SIRF, 19200);
-}
+const unsigned SIRFGPS::possibleSpeeds[] = {4800, 9600, 19200, 38400};
 
 /**
- * Restore the old gps mode.
+ * Open the serial port, autodetect port speed and GPS mode.
  */
-SIRFGPS::~SIRFGPS(){
-	if(switchBackOnExit){
-		switch_mode(oldMode, oldSpeed);
+SIRFGPS::SIRFGPS(const char *device){
+	
+	for(unsigned i = 0; i < (sizeof(possibleSpeeds) / sizeof(possibleSpeeds[0])); ++i){
+		printf("Trying port speed %i.\n", possibleSpeeds[i]);
+		port.open(device, possibleSpeeds[i]);
+		if(check_mode() != GPS_MODE_UNKNOWN){
+			printf("Valid setting found.\n");
+			break;
+		}
+		port.close();
 	}
+
+	switch_mode(GPS_MODE_SIRF, 38400);
 }
 
 /**
@@ -78,7 +74,7 @@ void SIRFGPS::get_one(){
 
 
 bool SIRFGPS::switch_mode(SIRFGPS::GPSMode desiredMode, unsigned speed){
-	if(mode == desiredMode && speed == oldSpeed){
+	if(mode == desiredMode && speed == port.get_speed()){
 		return true;
 	}
 	
@@ -92,13 +88,15 @@ bool SIRFGPS::switch_mode(SIRFGPS::GPSMode desiredMode, unsigned speed){
 		return false;
 	}
 
-	if(
-		speed != 4800 &&
-		speed != 9600 &&
-		speed != 19200 &&
-		speed != 38400)
-	{
-		
+	bool found = false;
+	for(unsigned i = 0; i < (sizeof(possibleSpeeds) / sizeof(possibleSpeeds[0])); ++i){
+		if(possibleSpeeds[i] == speed){
+			found = true;
+			break;
+		}
+	}
+
+	if(!found){
 		warnx("Only speeds 4800, 9600, 19200 and 38400 are supported.");
 		return false;
 	}
@@ -138,9 +136,9 @@ bool SIRFGPS::switch_mode(SIRFGPS::GPSMode desiredMode, unsigned speed){
 	// settle time
 	sleep(2);
 
-	if(speed != port.getSpeed()){
+	if(speed != port.get_speed()){
 		port.close();
-		port.open(port.getPort(), speed);
+		port.open(port.get_port(), speed);
 	}
 	
 	return check_mode() == desiredMode;
@@ -151,15 +149,6 @@ void SIRFGPS::permanent_mode(){
 		return;
 	}
 
-}
-
-/**
- * Restore the mode saved with permanent_mode() or constructor.
- */
-void SIRFGPS::restore_mode(){
-	if(mode != oldMode || port.getSpeed() != oldSpeed){
-		switch_mode(oldMode, oldSpeed);
-	}
 }
 
 /**

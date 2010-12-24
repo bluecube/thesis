@@ -21,7 +21,7 @@ public:
 private:
 	ssize_t findMessageBeginning(Serial *s);
 
-	static const size_t MAX_PAYLOAD_LENGTH = 0x7FFF;
+	static const size_t MAX_PAYLOAD_LENGTH = 1024;
 	static const size_t MAX_MESSAGE_LENGTH = MAX_PAYLOAD_LENGTH + 8;
 	unsigned char *buffer;
 	size_t payloadLength;

@@ -19,11 +19,11 @@ public:
 	int readc();
 	void write(const void *data, size_t length);
 
-	const char *getPort(){
+	const char *get_port(){
 		return currentPort;
 	}
 
-	unsigned getSpeed(){
+	unsigned get_speed(){
 		return currentSpeed;
 	}
 

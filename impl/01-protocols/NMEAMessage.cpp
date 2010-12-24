@@ -58,8 +58,7 @@ bool NMEAMessage::parse(Serial *s){
 	do{
 		c = s->readc();
 		++counter;
-		if(counter > 2 * MAX_MSG_LEN){
-			//warnx("Maybe MAX_MSG_LEN is too short?");
+		if(counter > MAX_MSG_LEN){
 			return false;
 		}
 

@@ -10,7 +10,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#ifdef SERIAL_DUMP_DATA
 const char *Serial::LOG_FILE = "/tmp/serial.log";
+#endif
 
 /**
  * Read a single character from the port.
@@ -24,11 +26,13 @@ int Serial::readc(){
 		errx(EXIT_FAILURE, "Read didn't return a character, now tell me what to do :-(");
 	}
 
+#ifdef SERIAL_DUMP_DATA
 	logReadBuffer[logReadBufferFill] = c;
 	++logReadBufferFill;
 	if(logReadBufferFill >= LOG_LINE_WIDTH){
 		dump_log_read_buffer();
 	}
+#endif
 
 	return c;
 }
@@ -45,8 +49,10 @@ void Serial::write(const void *data, size_t length){
 		errx(EXIT_FAILURE, "Write didn't finish writing all the data.");
 	}
 
+#ifdef SERIAL_DUMP_DATA
 	dump_log_read_buffer();
 	write_log_lines('>', (const unsigned char *)data, length);
+#endif
 
 	tcdrain(fd);
 }
@@ -95,8 +101,6 @@ void Serial::open(const char *port, unsigned speed){
 		|INLCR | IGNCR | ICRNL | IXON);
 	newTermios.c_oflag &= ~OPOST;
 	
-	
-	
 	// blocking read, inter-character timer 2s
 	newTermios.c_cc[VTIME] = 20;
 	newTermios.c_cc[VMIN] = 0;
@@ -110,16 +114,20 @@ void Serial::open(const char *port, unsigned speed){
 	currentPort = port;
 	currentSpeed = speed;
 
-	log = stdout;//fopen(LOG_FILE, "w");
+#ifdef SERIAL_DUMP_DATA
+	logFile = stdout;//fopen(LOG_FILE, "w");
 	logReadBufferFill = 0;
+#endif
 }
 
 /**
  * Close a serial port.
  */
 void Serial::close(){
+#ifdef SERIAL_DUMP_DATA
 	dump_log_read_buffer();
 	//fclose(log);
+#endif
 	
 	tcdrain(fd);
 
@@ -127,6 +135,7 @@ void Serial::close(){
 	::close(fd);
 }
 
+#ifdef SERIAL_DUMP_DATA
 /**
  * Dump the whole log read buffer into the log file.
  */
@@ -158,39 +167,42 @@ void Serial::write_log_lines(char direction, const unsigned char *line, size_t c
  */
 void Serial::write_log_line(char direction, const unsigned char *line, size_t count){
 	if(direction == '<'){
-		fprintf(log, "<  |");
+		fprintf(logFile, "<  |");
 	}else{
-		fprintf(log, " > |");
+		fprintf(logFile, " > |");
 	}
 
 	for(unsigned i = 0; i < count; ++i){
-		fprintf(log, " %02x", (int)(line[i]));
+		fprintf(logFile, " %02x", (int)(line[i]));
 	}
 
 	
 	for(unsigned i = count; i < LOG_LINE_WIDTH; ++i){
-		fprintf(log, "   ");
+		fprintf(logFile, "   ");
 	}
 
-	fprintf(log, " | ");
+	fprintf(logFile, " | ");
 
 	for(unsigned i = 0; i < count; ++i){
 		if(isgraph(line[i])){
-			fputc(line[i], log);
+			fputc(line[i], logFile);
 		}else{
-			fputc('.', log);
+			fputc('.', logFile);
 		}
 	}
 
-	fputc('\n', log);
+	fputc('\n', logFile);
 }
+#endif
 
 /**
  * Remove all the characters that were received but not read from the buffer.
  */
 void Serial::drop_unread(){
+#ifdef SERIAL_DUMP_DATA
 	dump_log_read_buffer();
-	fprintf(log, "<  | Read buffer flushed.\n");
+	fprintf(logFile, "<  | Read buffer flushed.\n");
+#endif
 	tcflush(fd, TCIFLUSH);
 }
 
@@ -198,6 +210,8 @@ void Serial::drop_unread(){
  * Remove all the characters that were received but not read from the buffer.
  */
 void Serial::drop_unsent(){
-	fprintf(log, " > | Write buffer flushed.\n");
+#ifdef SERIAL_DUMP_DATA
+	fprintf(logFile, " > | Write buffer flushed.\n");
+#endif
 	tcflush(fd, TCOFLUSH);
 }

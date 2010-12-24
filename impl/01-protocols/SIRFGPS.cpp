@@ -44,11 +44,14 @@ enum SIRFGPS::GPSMode SIRFGPS::check_mode(){
 
 	if(nmea.parse(&port)){
 		mode = GPS_MODE_NMEA;
+		port.dump_log_read_buffer();
 		printf("GPS receiver is in NMEA 0183 mode.\n");
 	}else if(sirf.parse(&port)){
+		port.dump_log_read_buffer();
 		printf("GPS receiver is in SIRF mode.\n");
 		mode = GPS_MODE_SIRF;
 	}else{
+		port.dump_log_read_buffer();
 		printf("GPS receiver is in unknown mode.\n");
 		mode = GPS_MODE_UNKNOWN;
 	}
@@ -58,9 +61,15 @@ enum SIRFGPS::GPSMode SIRFGPS::check_mode(){
 
 void SIRFGPS::get_one(){
 	if(mode == GPS_MODE_NMEA){
-		nmea.parse(&port);
+		warnx("We don't read NMEA messages.");
 	}else if(mode == GPS_MODE_SIRF){
-		sirf.parse(&port);
+		if(!sirf.parse(&port)){
+			warnx("Parsing of message failed.");
+			return;
+		}
+		const char *payload = (const char *)sirf.payload();
+		port.dump_log_read_buffer();
+		printf("Received message %i (length: %i)\n", (int)(payload[0]), sirf.payload_length());
 	}else{
 		warnx("Cant read messages in unknown mode.");
 		return;
@@ -126,6 +135,7 @@ bool SIRFGPS::switch_mode(SIRFGPS::GPSMode desiredMode, unsigned speed){
 		}
 	}
 
+	// settle time
 	sleep(2);
 
 	if(speed != port.getSpeed()){

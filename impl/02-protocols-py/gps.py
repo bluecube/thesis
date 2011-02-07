@@ -20,8 +20,8 @@ class Gps:
 
     EXPECTED_SPEEDS = (4800, 19200, 9600)
     
-    def __init__(self, port, speed):
-        self._ser = serial_wrapper.SerialWrapper(port, speed, timeout=2)
+    def __init__(self, port):
+        self._ser = serial_wrapper.SerialWrapper(port, timeout=2)
 
         self._logger = logging.getLogger('localization.gps')
 
@@ -85,9 +85,7 @@ class Gps:
         time.sleep(0.5) # settle time for the gps chip
         
         if speed != self._ser.baudrate:
-            self._ser.close()
             self._ser.baudrate = speed
-            self._ser.open()
 
         self._detect_mode()
 

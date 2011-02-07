@@ -14,4 +14,4 @@ def setup_logging():
 
 setup_logging()
 
-x = gps.Gps('/dev/ttyUSB0', 4800)
+x = gps.Gps('/dev/ttyUSB0')

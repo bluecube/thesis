@@ -1,18 +1,45 @@
 import operator
 import functools
+import time
+import serial_wrapper
 
-class NmeaException(Exception):
-    def __init__(self, desc):
-        self.desc = desc
-    def __str__(self):
-        return self.desc
+class NmeaMessageError(Exception):
+    pass
 
 def read_sentence(serial):
     """
-    Read a sentence from the gps one 
-    fields[0] should be something like 'GPGGA'.
+    Read a NMEA sentence from the gps.
+    Returns list of fields.
     """
-    return _parse_sentence(serial.readline())
+    old_timeout = serial.timeout
+
+    try:
+        end_time = time.time() + serial.timeout
+
+        serial.read_until(b'\\$', end_time)
+
+        line = serial.read_until(b'\\n', end_time)
+
+        if len(line) < 5:
+            raise NmeaMessageError("Message too short.")
+        
+        if line[-5] != b'*'[0]:
+            raise NmeaMessageError("Missing '*'.")
+
+        if line[-2:] != b'\r\n':
+            raise NmeaMessageError("Wrong line ending.")
+
+        checksum = functools.reduce(operator.__xor__, line[0:-5])
+        expected_checksum = int(line[-4:-2].decode('ascii'), 16)
+
+        if checksum != expected_checksum:
+            raise NmeaMessageError("Checksum error")
+
+        return line[1:-5].decode('ascii').split(',')
+    except serial_wrapper.SerialWrapperTimeout:
+        raise NmeaMessageError("Timed out.")
+    finally:
+        serial.timeout = old_timeout
 
 def send_sentence(serial, fields):
     """
@@ -21,31 +48,6 @@ def send_sentence(serial, fields):
     """
     serial.write(_build_sentence(fields))
     serial.flush()
-
-def _parse_sentence(line):
-    """
-    Parse a NMEA sentence from a bytearray and return
-    a list of fields.
-    """
-
-    if line[0] != b'$'[0]:
-        raise NmeaException("Missing '$'.")
-
-    if line[-5] != b'*'[0]:
-        raise NmeaException("Missing '*'.")
-
-    if line[-2:] != b'\r\n':
-        raise NmeaException("Wrong line ending.")
-
-
-    checksum = functools.reduce(operator.__xor__, line[1:-5])
-    expected_checksum = int(line[-4:-2].decode('ascii'), 16)
-
-    if checksum != expected_checksum:
-        raise NmeaException("Checksums don't match (computed: " +
-            str(checksum) + ", expected: " + str(expected_checksum) + ")")
-
-    return line[1:-5].decode('ascii').split(',')
 
 def _build_sentence(fields):
     """

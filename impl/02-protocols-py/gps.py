@@ -1,9 +1,13 @@
-import serial
 import time
 import logging
 
+import serial_wrapper
+
 import nmea
 import sirf
+
+class DetectModeException(Exception):
+    pass
 
 class Gps:
     """
@@ -17,26 +21,35 @@ class Gps:
     EXPECTED_SPEEDS = (4800, 19200, 9600)
     
     def __init__(self, port, speed):
-        self._ser = serial.Serial(port, speed, timeout=1)
+        self._ser = serial_wrapper.SerialWrapper(port, speed, timeout=2)
 
         self._logger = logging.getLogger('localization.gps')
 
-        self._mode = ''
+        self._mode = 'unknown'
 
         for speed in self.EXPECTED_SPEEDS:
             try:
-                self._logger.debug("Trying speed " + str(speed) + ".")
+                self._logger.debug("Trying " + str(speed) + " baud.")
                 self._ser.baudrate = speed
                 self._detect_mode()
                 break
-            except Exception:
+            except DetectModeException:
                 pass
 
-        if self._mode == '':
-            raise Exception("Mode not recognized")
+        if self._mode == 'unknown':
+            raise DetectModeException("Mode not recognized at any speed.")
 
         if self._mode == 'NMEA':
             self.nmea_to_sirf(self.SIRF_SPEED)
+
+        self._log_status()
+
+    def _log_status(self):
+        """
+        Put a nice message about the gps status to logs.
+        """
+        self._logger.info("GPS in " + self._mode +
+            " mode, at " + str(self._ser.baudrate) + " baud.")
     
     def __del__(self):
         if self._mode == 'SIRF':
@@ -76,32 +89,31 @@ class Gps:
             self._ser.baudrate = speed
             self._ser.open()
 
-        try:
-            self._detect_mode()
-        finally:
-            if self._mode != mode:
-                print(self._mode)
-                raise Exception("Mode switch failed")
+        self._detect_mode()
+
+        if self._mode != mode:
+            raise Exception("Mode switch failed (detected mode '" + self._mode + "')")
 
 
     def _detect_mode(self):
         self._ser.flushInput()
-        self._mode = ''
+        self._mode = 'unknown'
         for i in range(self.RETRY_COUNT):
             try:
                 nmea.read_sentence(self._ser)
                 self._mode = 'NMEA'
                 self._logger.debug(self._mode + " mode detected.")
                 return
-            except nmea.NmeaException:
+            except nmea.NmeaMessageError as e:
                 pass
 
+            self._logger.debug("Trying SIRF mode")
             try:
                 sirf.read_message(self._ser)
                 self._mode = 'SIRF'
                 self._logger.debug(self._mode + " mode detected.")
                 return
-            except Exception:
+            except sirf.SirfMessageError as e:
                 pass
 
-        raise Exception("Mode not recognized")
+        raise DetectModeException("Mode not recognized")

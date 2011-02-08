@@ -54,6 +54,7 @@ class Gps:
     def __del__(self):
         if self._mode == 'SIRF':
             self.sirf_to_nmea(self.NMEA_SPEED)
+        self._log_status()
 
     def nmea_to_sirf(self, speed):
         nmea.send_sentence(self._ser, ("PSRF100", 0, speed, 8, 1, 0))
@@ -92,11 +93,11 @@ class Gps:
         if self._mode != mode:
             raise Exception("Mode switch failed (detected mode '" + self._mode + "')")
 
-
     def _detect_mode(self):
         self._ser.flushInput()
         self._mode = 'unknown'
         for i in range(self.RETRY_COUNT):
+            self._logger.debug("Trying NMEA mode")
             try:
                 nmea.read_sentence(self._ser)
                 self._mode = 'NMEA'

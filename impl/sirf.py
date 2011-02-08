@@ -1,5 +1,6 @@
 import time
 import struct
+import serial_wrapper
 
 class SirfMessageError(Exception):
     pass
@@ -30,7 +31,7 @@ def read_message(serial):
             raise SirfMessageError('Invalid message end sequence')
 
         return data
-    except SerialWrapperTimeout:
+    except serial_wrapper.SerialWrapperTimeout:
         raise SirfMessageError("Malformed message (timeout).")
     finally:
         serial.timeout = old_timeout

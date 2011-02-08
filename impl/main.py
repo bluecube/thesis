@@ -3,6 +3,8 @@
 import gps
 import logging
 
+import sirf
+
 def setup_logging():
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
@@ -15,3 +17,9 @@ def setup_logging():
 setup_logging()
 
 x = gps.Gps('/dev/ttyUSB0')
+
+for i in range(20):
+    try:
+        print(x.get_one())
+    except sirf.UnrecognizedMessageException:
+        pass

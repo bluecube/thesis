@@ -6,6 +6,8 @@ import serial_wrapper
 import nmea
 import sirf
 
+import sirf_messages
+
 class DetectModeException(Exception):
     pass
 
@@ -116,3 +118,9 @@ class Gps:
                 pass
 
         raise DetectModeException("Mode not recognized")
+
+    def get_one(self):
+        if self._mode != 'SIRF':
+            raise Exception("Sorry, I can only handle SIRF messages.")
+        
+        return sirf.from_bytes(sirf.read_message(self._ser))

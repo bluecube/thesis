@@ -1,9 +1,8 @@
 import struct
 
-class _SirfMessage:
+class _SirfMessageBase:
     """
     Base class for SIRF messages.
-    This is only here to be able to iterate through all known message types.
     """
 
     @classmethod
@@ -14,9 +13,22 @@ class _SirfMessage:
     def from_bytes(cls, data):
         raise NotImplementedError()
 
-class MeasureNavigationDataOut(_SirfMessage):
+    def __init__(self, fields):
+        """
+        Initialize the message with given fields.
+        """
 
-    unpacker = struct.Struct('>BiiihhhBBBHIBBBBBBBBBBBBB')
+        assert fields['message_id'] == self.get_message_id()
+
+        self.__dict__.update(fields)
+
+    def __str__(self):
+        return self.__class__.__name__ + str(self.__dict__)
+
+
+class MeasureNavigationDataOut(_SirfMessageBase):
+
+    packer = struct.Struct('>BiiihhhBBBHIBBBBBBBBBBBBB')
     
     @classmethod
     def get_message_id(cls):
@@ -24,9 +36,14 @@ class MeasureNavigationDataOut(_SirfMessage):
 
     @classmethod
     def from_bytes(cls, data):
+        unpacked = cls.packer.unpack(data)
+
         (message_id, x, y, z, vx, vy, vz, mode1, hdop, mode2, gps_week,
-        gps_tow, sv_count, ch1prn, ch2prn, ch3prn, ch4prn, ch5prn, ch6prn, ch7prn,
-        ch8prn, ch9prn, ch10prn, ch11prn, ch12prn) = cls.unpacker.unpack(data)
+        gps_tow, sv_count) = unpacked[:-12] # skip the last 12 fields
+
+        chprn = []
+        for i in range(-12, 0):
+            chprn.append(unpacked[i])
 
         assert message_id == 2
 
@@ -57,8 +74,6 @@ class MeasureNavigationDataOut(_SirfMessage):
         fields = locals().copy()
         del fields['data']
         del fields['cls']
+        del fields['unpacked']
         
-        ret = cls()
-        ret.__dict__ = fields
-
-        return ret
+        return cls(fields)

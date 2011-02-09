@@ -36,7 +36,8 @@ def read_message(serial):
         
         message_ending = serial.read_with_timeout(2, end_time)
         if message_ending != bytes([0xB0, 0xB3]):
-            raise SirfMessageError('Invalid message end sequence.')
+            _logger.warning('Invalid message end sequence.')
+            #raise SirfMessageError('Invalid message end sequence.')
 
         return data
     except serial_wrapper.SerialWrapperTimeout:
@@ -70,11 +71,13 @@ def from_bytes(data):
 
     message_id = data[0]
 
-    _logger.debug("Message ID: " + str(message_id) + ".")
 
     if not message_id in message_types:
+        _logger.debug("Unrecognized message, ID= " + str(message_id) + ".")
         raise UnrecognizedMessageException("Unrecognized message " +
             str(message_id) + ".")
+
+    _logger.debug("Found message, ID= " + str(message_id) + ".")
 
     klass = message_types[message_id]
 
@@ -87,8 +90,8 @@ def from_bytes(data):
 message_types = {}
 for v in vars(sirf_messages).values():
     try:
-        if v != sirf_messages._SirfMessage and \
-            issubclass(v, sirf_messages._SirfMessage):
+        if v != sirf_messages._SirfMessageBase and \
+            issubclass(v, sirf_messages._SirfMessageBase):
 
             message_types[v.get_message_id()] = v
     except TypeError:

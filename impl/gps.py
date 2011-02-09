@@ -89,7 +89,6 @@ class Gps:
         self._ser.flushInput()
         self._mode = 'unknown'
         for i in range(self.RETRY_COUNT):
-            self._logger.debug("Trying NMEA mode")
             try:
                 nmea.read_sentence(self._ser)
                 self._mode = 'NMEA'
@@ -98,7 +97,6 @@ class Gps:
             except nmea.NmeaMessageError as e:
                 pass
 
-            self._logger.debug("Trying SIRF mode")
             try:
                 sirf.read_message(self._ser)
                 self._mode = 'SIRF'
@@ -109,7 +107,7 @@ class Gps:
 
         raise DetectModeException("Mode not recognized")
 
-    def get_one(self, skip_unrecognized = True):
+    def get_one(self):
         """
         Read one recognized SIRF message from the serial port.
         """
@@ -122,7 +120,9 @@ class Gps:
         while not msg:
             try:
                 msg =  sirf.from_bytes(sirf.read_message(self._ser))
+            except sirf.SirfMessageError as e:
+                self._logger.warning("Sirf message error (" + str(e) + ").")
             except sirf.UnrecognizedMessageException:
-                if not skip_unrecognized:
-                    raise
+                pass
+                
         return msg

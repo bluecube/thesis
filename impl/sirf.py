@@ -32,12 +32,11 @@ def read_message(serial):
             serial.read_with_timeout(2, end_time))[0]
 
         if checksum != expected_checksum:
-            raise SirfMessageError('Invalid checksum')
+            raise SirfMessageError('Invalid checksum.')
         
         message_ending = serial.read_with_timeout(2, end_time)
         if message_ending != bytes([0xB0, 0xB3]):
-            _logger.warning('Invalid message end sequence.')
-            #raise SirfMessageError('Invalid message end sequence.')
+            raise SirfMessageError('Invalid message end sequence.')
 
         return data
     except serial_wrapper.SerialWrapperTimeout:
@@ -73,16 +72,14 @@ def from_bytes(data):
 
 
     if not message_id in message_types:
-        _logger.debug("Unrecognized message, ID= " + str(message_id) + ".")
         raise UnrecognizedMessageException("Unrecognized message " +
             str(message_id) + ".")
 
-    _logger.debug("Found message, ID= " + str(message_id) + ".")
+    _logger.debug("Found message, ID = " + str(message_id) + ".")
 
     klass = message_types[message_id]
 
     output = klass.from_bytes(data)
-    #assert output.message_id == message_id
 
     return output
 

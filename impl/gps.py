@@ -18,7 +18,7 @@ class Gps:
 
     NMEA_SPEED = 4800
     SIRF_SPEED = 19200
-    RETRY_COUNT = 3
+    RETRY_COUNT = 2
 
     EXPECTED_SPEEDS = (4800, 19200, 9600)
     
@@ -41,7 +41,7 @@ class Gps:
             raise DetectModeException("Mode not recognized at any speed.")
 
         if self._mode == 'NMEA':
-            self.nmea_to_sirf(self.SIRF_SPEED)
+            self.nmea_to_sirf()
 
         self._log_status()
 
@@ -54,36 +54,23 @@ class Gps:
     
     def __del__(self):
         if self._mode == 'SIRF':
-            self.sirf_to_nmea(self.NMEA_SPEED)
+            self.sirf_to_nmea()
 
         try:
             self._log_status()
         except:
             pass
 
-    def nmea_to_sirf(self, speed):
-        nmea.send_sentence(self._ser, ("PSRF100", 0, speed, 8, 1, 0))
+    def nmea_to_sirf(self):
+        nmea.send_sentence(self._ser, ("PSRF100", 0, self.SIRF_SPEED, 8, 1, 0))
 
-        self._switch_mode_internal('SIRF', speed)
+        self._switch_mode_internal('SIRF', self.SIRF_SPEED)
 
-    def sirf_to_nmea(self, speed):
-        sirf.send_message(self._ser, bytes([
-            0x81,
-            0x02, # Don't change nmea debug messages settings
-            0x01, 0x01, # GGA
-            0x00, 0x00, # suppress GLL
-            0x01, 0x01, # GSA
-            0x05, 0x01, # GSV
-            0x01, 0x01, # RMC
-            0x00, 0x00, # suppress VTG
-            0x00, 0x01, # suppress MSS
-            0x00, 0x01, # suppress EPE
-            0x00, 0x01, # suppress ZDA
-            0x00, 0x00, # unused
-            speed >> 8, speed & 0xff # speed
-        ]))
+    def sirf_to_nmea(self):
+        sirf.send_message(self._ser,
+            sirf_messages.SwitchToNmeaProtocol(speed = self.NMEA_SPEED).to_bytes())
 
-        self._switch_mode_internal('NMEA', speed)
+        self._switch_mode_internal('NMEA', self.NMEA_SPEED)
 
     def _switch_mode_internal(self, mode, speed):
         self._logger.debug("Switching to " + mode)

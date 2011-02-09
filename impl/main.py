@@ -18,6 +18,6 @@ setup_logging()
 
 x = gps.Gps('/dev/ttyUSB0')
 
-for i in range(30):
+for i in range(5):
     msg = x.get_one()
     print(msg)

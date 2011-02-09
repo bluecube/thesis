@@ -18,8 +18,6 @@ setup_logging()
 
 x = gps.Gps('/dev/ttyUSB0')
 
-for i in range(20):
-    try:
-        print(x.get_one())
-    except sirf.UnrecognizedMessageException:
-        pass
+for i in range(30):
+    msg = x.get_one()
+    print(msg)

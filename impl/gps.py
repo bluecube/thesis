@@ -122,8 +122,20 @@ class Gps:
 
         raise DetectModeException("Mode not recognized")
 
-    def get_one(self):
+    def get_one(self, skip_unrecognized = True):
+        """
+        Read one recognized SIRF message from the serial port.
+        """
+
         if self._mode != 'SIRF':
             raise Exception("Sorry, I can only handle SIRF messages.")
         
-        return sirf.from_bytes(sirf.read_message(self._ser))
+        msg = None
+
+        while not msg:
+            try:
+                msg =  sirf.from_bytes(sirf.read_message(self._ser))
+            except sirf.UnrecognizedMessageException:
+                if not skip_unrecognized:
+                    raise
+        return msg

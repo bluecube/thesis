@@ -90,8 +90,8 @@ def from_bytes(data):
 message_types = {}
 for v in vars(sirf_messages).values():
     try:
-        if v != sirf_messages._SirfMessageBase and \
-            issubclass(v, sirf_messages._SirfMessageBase):
+        if v != sirf_messages._SirfReceivedMessageBase and \
+            issubclass(v, sirf_messages._SirfReceivedMessageBase):
 
             message_types[v.get_message_id()] = v
     except TypeError:

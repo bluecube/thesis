@@ -101,6 +101,20 @@ class MeasureNavigationDataOut(_SirfReceivedMessageBase):
         
         return cls(fields)
 
+
+class SoftwareVersionString(_SirfReceivedMessageBase):
+    """
+    Response to poll message 132
+    """
+
+    @classmethod
+    def get_message_id(cls):
+        return 6
+
+    @classmethod
+    def from_bytes(cls, data):
+        return cls(string = data[1:].decode('ascii'))
+
 class SwitchToNmeaProtocol(_SirfSentMessageBase):
     packer = struct.Struct('>BB18BxxH')
 
@@ -161,3 +175,11 @@ class SwitchToNmeaProtocol(_SirfSentMessageBase):
             self.zda, (1 if self.zda_checksum else 0),
             self.speed)
 
+
+class PollSoftwareVersion(_SirfSentMessageBase):
+    @classmethod
+    def get_message_id(cls):
+        return 132
+
+    def to_bytes(self):
+        return bytes([self.get_message_id(), 0])

@@ -39,6 +39,7 @@ class Gps:
 
         if self._mode == 'unknown':
             raise DetectModeException("Mode not recognized at any speed.")
+            self._ser.close()
 
         if self._mode == 'NMEA':
             self.nmea_to_sirf()
@@ -67,8 +68,7 @@ class Gps:
         self._switch_mode_internal('SIRF', self.SIRF_SPEED)
 
     def sirf_to_nmea(self):
-        sirf.send_message(self._ser,
-            sirf_messages.SwitchToNmeaProtocol(speed = self.NMEA_SPEED).to_bytes())
+        self.send_message(sirf_messages.SwitchToNmeaProtocol(speed = self.NMEA_SPEED))
 
         self._switch_mode_internal('NMEA', self.NMEA_SPEED)
 
@@ -107,7 +107,7 @@ class Gps:
 
         raise DetectModeException("Mode not recognized")
 
-    def get_one(self):
+    def read_message(self):
         """
         Read one recognized SIRF message from the serial port.
         """
@@ -126,3 +126,9 @@ class Gps:
                 pass
                 
         return msg
+
+    def send_message(self, msg):
+        if self._mode != 'SIRF':
+            raise Exception("Sorry, I can only handle SIRF messages.")
+        
+        sirf.send_message(self._ser, msg.to_bytes())

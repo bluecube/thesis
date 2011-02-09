@@ -3,7 +3,7 @@
 import gps
 import logging
 
-import sirf
+from sirf_messages import *
 
 def setup_logging():
     logger = logging.getLogger()
@@ -18,6 +18,8 @@ setup_logging()
 
 x = gps.Gps('/dev/ttyUSB0')
 
+x.send_message(PollSoftwareVersion())
+
 for i in range(5):
-    msg = x.get_one()
+    msg = x.read_message()
     print(msg)

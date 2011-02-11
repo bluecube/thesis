@@ -17,10 +17,9 @@ class Gps:
     """
 
     NMEA_SPEED = 4800
-    SIRF_SPEED = 19200
+    SIRF_SPEED = 38400
     RETRY_COUNT = 2
-
-    EXPECTED_SPEEDS = (4800, 19200, 9600)
+    EXPECTED_SPEEDS = (4800, 38400, 9600, 19200)
     
     def __init__(self, port):
         self._mode = 'unknown'

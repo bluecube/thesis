@@ -1,0 +1,73 @@
+\documentclass[11pt,notitlepage,a4paper,pdftex]{memoir}
+
+\usepackage[utf8]{inputenc} 
+\usepackage[T1]{fontenc}
+
+\usepackage{a4wide}
+\usepackage{graphicx}
+\usepackage{microtype}
+\usepackage[
+	left=4cm,
+	right=3cm,
+	top=3cm,
+	]{geometry}
+\usepackage[
+	a4paper,
+	unicode,
+	colorlinks,
+	linkcolor=black,
+	urlcolor=black,
+	citecolor=black,
+	]{hyperref}
+\usepackage{url}
+
+%% Define a new style for url that will use a smaller font.
+\makeatletter
+\def\url@smallerstyle{%
+  \@ifundefined{selectfont}{\def\UrlFont{\sf}}{\def\UrlFont{\footnotesize\ttfamily}}}
+\makeatother
+%% Now actually use the newly defined style.
+\urlstyle{smaller}
+
+% Text: garamond, palatino, bookman old style, baskerville
+% Headings: futura Century gothic, gill sans, futura
+% http://www.kronto.org/thesis/tips/packages.html
+
+\begin{document}
+
+\chapter{Introduction}
+
+Localization is an important task for autonomous or semi-autonomous robots
+
+Outdoor robots may navigate large areas without detailed maps available, this limits
+the usefulness of some sensors used for indoor localization, like laser range finders.
+\marginpar{pure blah blah}
+
+Seeing its use in automotive industry, GPS seems to be an good candidate for
+localization in robots operating in outdoor areas.
+However if GPS should be used as one of the primary methods for robot localization
+several problems arise. 
+
+The goal of this work is to find a way to deal with these problems.
+
+The second chapter describes the GPS system and its operating principles.
+The third chapter describes \marginpar{describes FUJ} Monte Carlo Localization.
+Fourth chapter talks about \marginpar{FUJ} our \marginpar{our versus my ?} experiments
+with fusing of GPS data into MCL localization \marginpar{FUJ}.
+
+\chapter{GPS}
+
+Global Postioning System is a worldwide
+
+\section{History of GPS}
+
+\section{Principle of operation}
+
+
+\chapter{Monte Carlo Localization}
+
+\chapter{GPS in Monte Carlo Localization}
+
+\chapter{Conclusion}
+
+\end{document}

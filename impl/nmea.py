@@ -46,7 +46,8 @@ def send_sentence(serial, fields):
     Send a NMEA message to a serial port.
     fields[0] should be something like 'GPGGA'.
     """
-    serial.write(_build_sentence(fields))
+    sentence = _build_sentence(fields)
+    serial.write(sentence)
     serial.flush()
 
 def _build_sentence(fields):

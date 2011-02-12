@@ -21,8 +21,6 @@ logger.setLevel(logging.DEBUG)
 
 x = gps.Gps('/dev/ttyUSB0')
 
-x.send_message(PollSoftwareVersion())
-
 try:
     for msg in x.messages():
         logger.info("Message: " + str(msg))

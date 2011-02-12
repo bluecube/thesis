@@ -16,16 +16,14 @@ class _SirfMessageBase:
         """
         Initialize the message with given fields.
         """
+        fields.update(kwargs)
 
         if 'message_id' in fields:
             assert fields['message_id'] == self.get_message_id()
-        if 'message_id' in kwargs:
-            assert kwargs['message_id'] == self.get_message_id()
         else:
             fields['message_id'] = self.get_message_id()
 
         self.__dict__.update(fields)
-        self.__dict__.update(kwargs)
 
     def __str__(self):
         return self.__class__.__name__ + " " + str(self.__dict__)
@@ -112,7 +110,8 @@ class SoftwareVersionString(_SirfReceivedMessageBase):
 
     @classmethod
     def from_bytes(cls, data):
-        return cls(message_id = data[0], string = data[1:].decode('ascii'))
+        s = data[1:].decode('ascii').rstrip('\x00').strip()
+        return cls(message_id = data[0], string = s)
 
 class SwitchToNmeaProtocol(_SirfSentMessageBase):
     packer = struct.Struct('>BB18BxxH')

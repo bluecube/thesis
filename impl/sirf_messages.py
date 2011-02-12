@@ -106,14 +106,13 @@ class SoftwareVersionString(_SirfReceivedMessageBase):
     """
     Response to poll message 132
     """
-
     @classmethod
     def get_message_id(cls):
         return 6
 
     @classmethod
     def from_bytes(cls, data):
-        return cls(string = data[1:].decode('ascii'))
+        return cls(message_id = data[0], string = data[1:].decode('ascii'))
 
 class SwitchToNmeaProtocol(_SirfSentMessageBase):
     packer = struct.Struct('>BB18BxxH')

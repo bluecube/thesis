@@ -53,6 +53,14 @@ class Gps:
         if self._mode[0] == 'NMEA':
             self._nmea_to_sirf()
 
+        # Now we're sure we are in SIRF mode.
+        self._get_chipset_sw_version()
+
+    def _get_chipset_sw_version(self):
+        self.send_message(sirf_messages.PollSoftwareVersion())
+        self._sirf_version = self.read_specific_message(sirf_messages.SoftwareVersionString).string
+        self._logger.info("SIRF chipset version string: " + self._sirf_version)
+
     def _log_status(self):
         """
         Put a nice message about the gps status to logs.
@@ -155,22 +163,54 @@ class Gps:
         else:
             raise Exception("Unknown protocol '" + protocol + "'.")
 
-    def read_message(self):
+    def _read_binary_sirf_msg(self):
         """
-        Read one recognized SIRF message from the serial port.
+        Return bytes with a single valid message read from the port.
+        Tries to recover after less serious errors.
         """
 
         if self._mode[0] != 'SIRF':
             raise Exception("Sorry, I can only handle SIRF messages.")
         
+        data = None
+
+        while not data:
+            try:
+                data = sirf.read_message(self._ser)
+            except sirf.SirfMessageError as e:
+                self._logger.warning("Sirf message error (" + str(e) + ").")
+
+        return data
+
+    def read_message(self):
+        """
+        Read one recognized SIRF message from the serial port.
+        """
+
         msg = None
         
         while not msg:
             try:
-                data = sirf.read_message(self._ser)
-                msg =  sirf.from_bytes(data)
-            except sirf.SirfMessageError as e:
-                self._logger.warning("Sirf message error (" + str(e) + ").")
+                msg = sirf.from_bytes(self._read_binary_sirf_msg())
+            except sirf.UnrecognizedMessageException:
+                pass
+                
+        return msg
+
+    def read_specific_message(self, msg_type):
+        """
+        Discards messages until one of given type is received.
+        May block for a long time, careful with this.
+        """
+
+        if not issubclass(msg_type, sirf_messages._SirfReceivedMessageBase):
+            raise TypeError("msg_type must be a message type.")
+
+        msg = None
+        
+        while not isinstance(msg, msg_type):
+            try:
+                msg = sirf.from_bytes(self._read_binary_sirf_msg())
             except sirf.UnrecognizedMessageException:
                 pass
                 

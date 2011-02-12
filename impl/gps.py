@@ -164,16 +164,21 @@ class Gps:
             raise Exception("Sorry, I can only handle SIRF messages.")
         
         msg = None
-
+        
         while not msg:
             try:
-                msg =  sirf.from_bytes(sirf.read_message(self._ser))
+                data = sirf.read_message(self._ser)
+                msg =  sirf.from_bytes(data)
             except sirf.SirfMessageError as e:
                 self._logger.warning("Sirf message error (" + str(e) + ").")
             except sirf.UnrecognizedMessageException:
                 pass
                 
         return msg
+
+    def messages(self):
+        while True:
+            yield self.read_message()
 
     def send_message(self, msg):
         if self._mode[0] != 'SIRF':

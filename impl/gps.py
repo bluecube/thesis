@@ -47,6 +47,7 @@ class Gps:
         self._mode = None
         self._ser = serial_wrapper.SerialWrapper(None, timeout=2)
         self._ser.port = port
+        self._counter = 0
 
         self._detect_mode(self.EXPECTED_MODES)
 
@@ -58,6 +59,7 @@ class Gps:
 
         # Enable the low level SIRF messages
         
+        self._counter = 0 # We don't want to count data transfered during setup
 
     def _get_chipset_sw_version(self):
         self.send_message(sirf_messages.PollSoftwareVersion())
@@ -82,6 +84,8 @@ class Gps:
             str(parity) + str(stopbits)
     
     def __del__(self):
+        self._logger.debug("Processed " + str(self._counter) + " bytes of SIRF payload data.")
+
         if not self._mode:
             return
 
@@ -186,6 +190,7 @@ class Gps:
             except sirf.SirfMessageError as e:
                 self._logger.warning("Sirf message error (" + str(e) + ").")
 
+        self._counter += len(data)
         return data
 
     def read_message(self):

@@ -18,10 +18,7 @@ class _SirfMessageBase:
         """
         fields.update(kwargs)
 
-        if 'message_id' in fields:
-            assert fields['message_id'] == self.get_message_id()
-        else:
-            fields['message_id'] = self.get_message_id()
+        fields['message_id'] = self.get_message_id()
 
         self.__dict__.update(fields)
 

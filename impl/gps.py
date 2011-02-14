@@ -61,7 +61,7 @@ class Gps:
         self._sirf_version_string = self.read_specific_message(sirf_messages.SoftwareVersionString).string
         self._logger.info("SIRF chipset version string: " + self._sirf_version_string)
 
-        if not self._sirf_version_string.startswith("GSV3"):
+        if not self._sirf_version_string.startswith("GSW3"):
             self._logger.warning("Only SiRF III chips are supported.")
 
     def _log_status(self):

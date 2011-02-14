@@ -25,12 +25,7 @@ class Gps:
 
     # Modes that will most probably be found.
     # They will be checked in given order.
-    #
-    # The third mode is added as a way to speed up recoveries after I mess up with the
-    # port settings. It happens to be the mode I mostly end up in.
-    EXPECTED_MODES = (NMEA_MODE, SIRF_MODE,
-        ('NMEA', 38400, serial.EIGHTBITS, serial.PARITY_NONE,
-        serial.STOPBITS_ONE))
+    EXPECTED_MODES = (NMEA_MODE, SIRF_MODE)
 
     # Parameters for port detection if the expected modes didn't work
     # These are listed from the SIRF protocol manual and should

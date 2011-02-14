@@ -56,10 +56,16 @@ class Gps:
         # Now we're sure we are in SIRF mode.
         self._get_chipset_sw_version()
 
+        # Enable the low level SIRF messages
+        
+
     def _get_chipset_sw_version(self):
         self.send_message(sirf_messages.PollSoftwareVersion())
-        self._sirf_version = self.read_specific_message(sirf_messages.SoftwareVersionString).string
-        self._logger.info("SIRF chipset version string: " + self._sirf_version)
+        self._sirf_version_string = self.read_specific_message(sirf_messages.SoftwareVersionString).string
+        self._logger.info("SIRF chipset version string: " + self._sirf_version_string)
+
+        if not self._sirf_version_string.startswith("GSV3"):
+            self._logger.warning("Only SiRF III chips are supported.")
 
     def _log_status(self):
         """
@@ -209,10 +215,7 @@ class Gps:
         msg = None
         
         while not isinstance(msg, msg_type):
-            try:
-                msg = sirf.from_bytes(self._read_binary_sirf_msg())
-            except sirf.UnrecognizedMessageException:
-                pass
+            msg = self.read_message()
                 
         return msg
 

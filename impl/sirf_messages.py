@@ -38,8 +38,28 @@ class _SirfReceivedMessageBase(_SirfMessageBase):
         """
         raise NotImplementedError()
 
+    @classmethod
+    def sirf_double(cls, data):
+        """
+        Convert 8 bytes to a double.
+        !!! ONLY WORKS WITH GSW3 CHIPS !!!
+        """
+        return struct.unpack("<d",
+            bytes(reversed(data[:4])) + bytes(reversed(data[4:])))[0]
+
+    @classmethod
+    def sirf_single(cls, data):
+        """
+        Convert 4 bytes to a single.
+        """
+        return struct.unpack("<f", bytes(reversed(data)))[0]
+
 
 class _SirfSentMessageBase(_SirfMessageBase):
+    """
+    Base class for sent SIRF messages.
+    """
+
     def to_bytes(self):
         """
         Convert message to an array of bytes.
@@ -97,6 +117,38 @@ class MeasureNavigationDataOut(_SirfReceivedMessageBase):
         return cls(fields)
 
 
+class NavigationLibraryMeasurementData(_SirfReceivedMessageBase):
+    packer = struct.Struct('>BBIB8s8s4s8sHB10BHHhBB')
+
+    @classmethod
+    def get_message_id(cls):
+        return 28
+
+    @classmethod
+    def from_bytes(cls, data):
+        unpacked = cls.packer.unpack(data)
+
+        (message_id, channel, time_tag, satellite_id, gps_sw_time, pseudorange,
+            carrier_freq, carrier_phase, time_in_track, sync_flags) = unpacked[:10]
+        c_n = unpacked[10:20]
+        (delta_range_interval, mean_delta_range_time, extrapolation_time,
+            phase_error_count, low_power_count) = unpacked[-5:]
+
+        gps_sw_time = cls.sirf_double(gps_sw_time)
+        pseudorange = cls.sirf_double(pseudorange)
+        carrier_freq = cls.sirf_single(carrier_freq)
+        carrier_phase = cls.sirf_double(carrier_phase)
+
+        # TODO: expand sync flags bit field
+
+        fields = locals().copy()
+        del fields['cls']
+        del fields['data']
+        del fields['unpacked']
+        
+        return cls(fields)
+
+
 class SoftwareVersionString(_SirfReceivedMessageBase):
     """
     Response to poll message 132
@@ -109,6 +161,7 @@ class SoftwareVersionString(_SirfReceivedMessageBase):
     def from_bytes(cls, data):
         s = data[1:].decode('ascii').rstrip('\x00').strip()
         return cls(message_id = data[0], string = s)
+
 
 class SwitchToNmeaProtocol(_SirfSentMessageBase):
     packer = struct.Struct('>BB18BxxH')
@@ -178,3 +231,17 @@ class PollSoftwareVersion(_SirfSentMessageBase):
 
     def to_bytes(self):
         return bytes([self.get_message_id(), 0])
+
+
+class SetMessageRate(_SirfSentMessageBase):
+    packer = struct.Struct('>BBBBxxxx')
+    @classmethod
+    def get_message_id(cls):
+        return 166
+    
+    def to_bytes(self):
+        return self.packer.pack(
+            self.get_message_id(),
+            self.mode,
+            self.set_id,
+            self.update_rate)

@@ -2,10 +2,10 @@
 
 import gps
 import logging
+import time
 import sys
-import serial
-
-from sirf_messages import *
+import gzip
+import pickle
 
 def setup_logging():
     logger = logging.getLogger()
@@ -21,20 +21,23 @@ setup_logging()
 logger = logging.getLogger('main')
 logger.setLevel(logging.DEBUG)
 
-if len(sys.argv) != 2:
-    logger.error("Usage: " + sys.argv[0] + " <port or recording>")
+if len(sys.argv) != 3:
+    logger.error("Usage: " + sys.argv[0] + " <port> <recording>")
     sys.exit(1)
 
-try:
-    x = gps.Gps(sys.argv[1])
-except serial.serialutil.SerialException:
-    import gps_replay
-    x = gps_replay.GpsReplay(sys.argv[1])
+f = gzip.GzipFile(sys.argv[2], 'wb')
+
+x = gps.Gps(sys.argv[1])
+
+pickle.dump(time.time(), f)
+pickle.dump(x._sirf_version_string, f)
 
 try:
-    for msg in x.messages():
-        logger.info("Message: " + str(msg))
+    while True:
+        msg = x._read_binary_sirf_msg()
+        row = time.time(), msg
+        
+        pickle.dump(row, f)
+        
 except KeyboardInterrupt:
-    logger.info("Terminating.")
-except EOFError:
-    logger.info("End of recording.")
+    logger.info("Terminating")

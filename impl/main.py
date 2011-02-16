@@ -1,9 +1,8 @@
 #!/usr/bin/python3
 
-import gps
+import gps_wrapper
 import logging
 import sys
-import serial
 
 from sirf_messages import *
 
@@ -25,11 +24,7 @@ if len(sys.argv) != 2:
     logger.error("Usage: " + sys.argv[0] + " <port or recording>")
     sys.exit(1)
 
-try:
-    x = gps.Gps(sys.argv[1])
-except serial.serialutil.SerialException:
-    import gps_replay
-    x = gps_replay.GpsReplay(sys.argv[1])
+x = gps_wrapper.GpsWrapper(sys.argv[1])
 
 try:
     for msg in x.messages():

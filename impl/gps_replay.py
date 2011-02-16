@@ -13,9 +13,8 @@ class GpsReplay:
     Replay SIRF messages from a recording.
     """
 
-    def __init__(self, recording, with_timing = True):
+    def __init__(self, recording):
         self._logger = logging.getLogger('localization.gps-replay')
-        self._with_timing = with_timing
 
         self._f = gzip.GzipFile(recording, 'rb')
 
@@ -28,7 +27,6 @@ class GpsReplay:
         Tries to recover after less serious errors.
         """
         
-        # TODO: timing
         timestamp, data = self._sirf_version_string = pickle.load(self._f)
 
         return data

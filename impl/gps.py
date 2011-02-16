@@ -50,11 +50,9 @@ class Gps:
 
         # Now we're sure we are in SIRF mode.
         self._get_chipset_sw_version()
-
-        # Enable the low level SIRF messages
-        self._enable_low_level_measurements()
-        
-
+        self.set_message_rate(sirf_messages.NavigationLibraryMeasurementData, 1)
+        self.set_message_rate(sirf_messages.NavigationLibrarySVStateData, 1)
+       
     def _get_chipset_sw_version(self):
         self.send_message(sirf_messages.PollSoftwareVersion())
         self._sirf_version_string = self.read_specific_message(sirf_messages.SoftwareVersionString).string
@@ -63,12 +61,14 @@ class Gps:
         if not self._sirf_version_string.startswith("GSW3"):
             self._logger.warning("Only SiRF III chips are supported.")
 
-    def _enable_low_level_measurements(self):
+    def set_message_rate(self, msg_type, rate):
+        """
+        Set how often a message gets sent by the SIRF chip.
+        """
         msg = sirf_messages.SetMessageRate()
         msg.mode = 0 # only set single message
         msg.update_rate = 1 # repeat every second
-
-        msg.set_id = sirf_messages.NavigationLibraryMeasurementData.get_message_id()
+        msg.msg = msg_type
         self.send_message(msg)
 
     def _log_status(self):

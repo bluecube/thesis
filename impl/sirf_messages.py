@@ -148,6 +148,46 @@ class NavigationLibraryMeasurementData(_SirfReceivedMessageBase):
         
         return cls(fields)
 
+class NavigationLibrarySVStateData(_SirfReceivedMessageBase):
+    """
+    Satellite positions and speeds.
+    """
+    packer = struct.Struct('>BB8s8s8s8s8s8s8s8s4sB4x4x4s')
+
+    @classmethod
+    def get_message_id(cls):
+        return 30
+
+    @classmethod
+    def from_bytes(cls, data):
+        unpacked = cls.packer.unpack(data)
+
+        (message_id, satellite_id, gps_time, pos_x, pos_y, pos_z,
+        v_x, v_y, v_z, clock_bias, clock_drift, ephemeris_flags,
+        iono_delay) = unpacked
+
+        gps_time = cls.sirf_double(gps_time)
+
+        pos_x = cls.sirf_double(pos_x)
+        pos_y = cls.sirf_double(pos_y)
+        pos_z = cls.sirf_double(pos_z)
+        
+        v_x = cls.sirf_double(v_x)
+        v_y = cls.sirf_double(v_y)
+        v_z = cls.sirf_double(v_z)
+
+        clock_bias = cls.sirf_double(clock_bias)
+
+        clock_drift = cls.sirf_single(clock_drift)
+
+        iono_delay = cls.sirf_single(iono_delay)
+
+        fields = locals().copy()
+        del fields['cls']
+        del fields['data']
+        del fields['unpacked']
+        
+        return cls(fields)
 
 class SoftwareVersionString(_SirfReceivedMessageBase):
     """
@@ -243,5 +283,5 @@ class SetMessageRate(_SirfSentMessageBase):
         return self.packer.pack(
             self.get_message_id(),
             self.mode,
-            self.set_id,
+            self.msg.get_message_id(),
             self.update_rate)

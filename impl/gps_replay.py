@@ -28,6 +28,7 @@ class GpsReplay:
         """
         
         timestamp, data = self._sirf_version_string = pickle.load(self._f)
+        self._logger.debug("Replay message (id = " + str(data[0]) + ") @ " + str(timestamp))
 
         return data
 

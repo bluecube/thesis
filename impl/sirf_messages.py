@@ -1,4 +1,5 @@
 import struct
+import numpy
 
 class _SirfMessageBase:
     """
@@ -162,23 +163,24 @@ class NavigationLibrarySVStateData(_SirfReceivedMessageBase):
     def from_bytes(cls, data):
         unpacked = cls.packer.unpack(data)
 
-        (message_id, satellite_id, gps_time, pos_x, pos_y, pos_z,
-        v_x, v_y, v_z, clock_bias, clock_drift, ephemeris_flags,
-        iono_delay) = unpacked
+        (message_id, satellite_id, gps_time, pos_x, pos_y, pos_z, v_x, v_y, v_z,
+        clock_bias, clock_drift, ephemeris_flags, iono_delay) = unpacked
 
         gps_time = cls.sirf_double(gps_time)
 
         pos_x = cls.sirf_double(pos_x)
         pos_y = cls.sirf_double(pos_y)
         pos_z = cls.sirf_double(pos_z)
-        
+
         v_x = cls.sirf_double(v_x)
         v_y = cls.sirf_double(v_y)
         v_z = cls.sirf_double(v_z)
 
         clock_bias = cls.sirf_double(clock_bias)
-
         clock_drift = cls.sirf_single(clock_drift)
+
+        pos = numpy.matrix([[pos_x, pos_y, pos_z]]) 
+        v = numpy.matrix([[v_x, v_y, v_z]])
 
         iono_delay = cls.sirf_single(iono_delay)
 

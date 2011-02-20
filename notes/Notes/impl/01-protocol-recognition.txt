@@ -2,7 +2,7 @@ Content-Type: text/x-zim-wiki
 Wiki-Format: zim 0.4
 Creation-Date: 2010-11-26T17:38:38.307840
 
-====== 01 - protocols ======
+====== 01-protocol-recognition ======
 Created Friday 26 November 2010
 
 Detecting, talking and switching between NMEA and SIRF protocols.

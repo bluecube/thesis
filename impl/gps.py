@@ -15,7 +15,18 @@ class ModeNotDetectedError(Exception):
 
 class Gps:
     """
-    Sirf based GPS
+    SirfStar GPS receiver connected to a serial port.
+    Only GSW3 software is supported. Others might work too, but this is untested.
+    SIRF software version 2 will have some serious trouble with unpacking floats.
+
+    This class has limited abilities to autodetect a port
+    (two preset expected modes or trying all (at least a little)
+    reasonable combinations of protocol, speed, bytesize, parity and stopbits)
+    Receiver is always used in binary mode, NMEA is only used to switch
+    to SIRF binary.
+    A few SIRF messages are defined in the file sirf_messages.py .
+
+    BUG: We don't change port speed if the GPS was already in SIRF mode.
     """
 
     NMEA_MODE = ('NMEA', 4800, serial.EIGHTBITS, serial.PARITY_NONE,
@@ -64,6 +75,7 @@ class Gps:
     def set_message_rate(self, msg_type, rate):
         """
         Set how often a message gets sent by the SIRF chip.
+        Rate is integer, meaning number of seconds, 0 means disabled.
         """
         msg = sirf_messages.SetMessageRate()
         msg.mode = 0 # only set single message
@@ -86,6 +98,9 @@ class Gps:
             str(parity) + str(stopbits)
     
     def __del__(self):
+        """
+        Switch back to NMEA
+        """
         if not self._mode:
             return
 
@@ -93,14 +108,26 @@ class Gps:
             self._sirf_to_nmea()
 
     def _nmea_to_sirf(self):
+        """
+        Switch to SIRF binary mode from NMEA
+        Only one constant speed will be used.
+        """
         nmea.send_sentence(self._ser, ("PSRF100", 0, self.SIRF_MODE[1], 8, 1, 0))
         self._switch_mode_internal(self.SIRF_MODE)
 
     def _sirf_to_nmea(self):
+        """
+        Switch to NMEA mode from SIRF binary.
+        Only one constant speed will be used.
+        """
         self.send_message(sirf_messages.SwitchToNmeaProtocol(speed = self.NMEA_MODE[1]))
         self._switch_mode_internal(self.NMEA_MODE)
 
     def _switch_mode_internal(self, mode):
+        """
+        Common things to do when switching modes.
+        """
+
         self._logger.debug("Switching to " + self._mode_to_string(mode))
 
         time.sleep(0.5) # settle time for the gps chip
@@ -114,6 +141,14 @@ class Gps:
                 self._logger.warning("Mode switch failed, but the resulting protocol is OK. Continuing.")
 
     def _detect_mode(self, expected):
+        """
+        Detect port mode by trying to read a message from it.
+        First this will try the expected modes. If this fails, then all
+        combinations of port settings are tried. This might take very long.
+        Raises ModeNotDetected exception if no mode is found, otherwise directly sets
+        the self._mode field.
+        """
+
         self._logger.debug("Detecting port mode.");
         
         if len(expected):
@@ -144,6 +179,11 @@ class Gps:
         raise ModeNotDetectedError("Couldn't detect mode.")
 
     def _try_mode(self, mode, i, count):
+        """
+        Try a specific mode.
+        Returns True if a protocol was recognized on the port, 
+        False otherwise.
+        """
         self._logger.debug("Trying " + self._mode_to_string(mode) +
             " (" + str(i) + " / " + str(count) + ").")
 
@@ -175,7 +215,8 @@ class Gps:
 
     def _read_binary_sirf_msg(self):
         """
-        Return bytes with a single valid message read from the port.
+        Return bytes with a single valid message read from the port
+        (the message payload).
         Tries to recover after less serious errors.
         """
 

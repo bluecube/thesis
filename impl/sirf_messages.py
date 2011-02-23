@@ -110,6 +110,33 @@ class MeasureNavigationDataOut(_SirfReceivedMessageBase):
 
         gps_tow /= 100
 
+        pos = numpy.matrix([[float(x), float(y), float(z)]]) 
+        v = numpy.matrix([[vx, vy, vz]])
+
+        fields = locals().copy()
+        del fields['cls']
+        del fields['data']
+        del fields['unpacked']
+        
+        return cls(fields)
+
+
+class ClockStatusData(_SirfReceivedMessageBase):
+    packer = struct.Struct('>BHIBIII')
+
+    @classmethod
+    def get_message_id(cls):
+        return 7
+
+    @classmethod
+    def from_bytes(cls, data):
+        unpacked = cls.packer.unpack(data)
+
+        (message_id, extended_gps_week, gps_tow, sv_count, clock_drift,
+            clock_bias, estimated_gps_time) = unpacked
+
+        gps_tow /= 100
+
         fields = locals().copy()
         del fields['cls']
         del fields['data']

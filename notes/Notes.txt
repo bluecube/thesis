@@ -8,3 +8,7 @@ The Sirf III provides raw pseudoranges and has excellent tracking,
 but it is missing carrier phase information. It may be useful for
 static positions in poor conditions where other receivers are unable
 to track at all
+
+**Measurement domain integration** vs position domain integration:
+-> Undersanding gps 9.3.3.1
+I'm concentrating on measurement domain integration, but should say something about position domain too. And measure performance.

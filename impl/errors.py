@@ -14,13 +14,10 @@ C = 299792458
 # plot "/tmp/clock_offset.plot" using 1:2 with lines linestyle 1 title "clock offset" "/tmp/clock_offset.plot" using 1:3 with lines linestyle 2 title "derivation of clock offset"
 
 def setup_logging():
-    logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
-    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
+    logging.basicConfig(
+        format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        level = logging.DEBUG
+    )
 
     gps = logging.getLogger("localization.gps")
     gps.setLevel(logging.INFO)

@@ -9,11 +9,12 @@ import nmea
 import sirf
 
 import sirf_messages
+import gps_operations
 
 class ModeNotDetectedError(Exception):
     pass
 
-class Gps:
+class Gps(gps_operations.GpsOperations):
     """
     SirfStar GPS receiver connected to a serial port.
     Only GSW3 software is supported. Others might work too, but this is untested.
@@ -232,41 +233,6 @@ class Gps:
                 self._logger.warning("Sirf message error (" + str(e) + ").")
 
         return data
-
-    def read_message(self):
-        """
-        Read one recognized SIRF message from the serial port.
-        """
-
-        msg = None
-        
-        while not msg:
-            try:
-                msg = sirf.from_bytes(self._read_binary_sirf_msg())
-            except sirf.UnrecognizedMessageException:
-                pass
-                
-        return msg
-
-    def read_specific_message(self, msg_type):
-        """
-        Discards messages until one of given type is received.
-        May block for a long time, careful with this.
-        """
-
-        if not issubclass(msg_type, sirf_messages._SirfReceivedMessageBase):
-            raise TypeError("msg_type must be a message type.")
-
-        msg = None
-        
-        while not isinstance(msg, msg_type):
-            msg = self.read_message()
-                
-        return msg
-
-    def messages(self):
-        while True:
-            yield self.read_message()
 
     def send_message(self, msg):
         if self._mode[0] != 'SIRF':

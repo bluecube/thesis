@@ -6,9 +6,11 @@ import gzip
 import sirf
 import sirf_messages
 
+from gps_operations import GpsOperations
+
 import pickle
 
-class GpsReplay:
+class GpsReplay(GpsOperations):
     """
     Replay SIRF messages from a recording.
     """
@@ -32,37 +34,11 @@ class GpsReplay:
 
         return data
 
-    def read_message(self):
+    def __next__(self):
         """
-        Read one recognized SIRF message from the serial port.
+        Replay will stop when we hit EOF.
         """
-
-        msg = None
-        
-        while not msg:
-            try:
-                msg = sirf.from_bytes(self._read_binary_sirf_msg())
-            except sirf.UnrecognizedMessageException:
-                pass
-                
-        return msg
-
-    def read_specific_message(self, msg_type):
-        """
-        Discards messages until one of given type is received.
-        May block for a long time, careful with this.
-        """
-
-        if not issubclass(msg_type, sirf_messages._SirfReceivedMessageBase):
-            raise TypeError("msg_type must be a message type.")
-
-        msg = None
-        
-        while not isinstance(msg, msg_type):
-            msg = self.read_message()
-                
-        return msg
-
-    def messages(self):
-        while True:
-            yield self.read_message()
+        try:
+            return self.read_message()
+        except EOFError:
+            raise StopIteration

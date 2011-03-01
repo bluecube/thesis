@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import gps_wrapper
+import gps_open
 import logging
 import sys
 
@@ -21,12 +21,10 @@ if len(sys.argv) != 2:
     logger.error("Usage: " + sys.argv[0] + " <port or recording>")
     sys.exit(1)
 
-x = gps_wrapper.GpsWrapper(sys.argv[1])
+x = gps_open.open_gps(sys.argv[1])
 
 try:
-    for msg in x.messages():
+    for msg in x:
         logger.info("Message: " + str(msg))
 except KeyboardInterrupt:
     logger.info("Terminating.")
-except EOFError:
-    logger.info("End of recording.")

@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import gps
+import gps_operations
 import logging
 import time
 import sys
@@ -24,7 +24,7 @@ if len(sys.argv) != 3:
 
 f = gzip.GzipFile(sys.argv[2], 'wb')
 
-x = gps.Gps(sys.argv[1])
+x = gps_operations.open_gps(sys.argv[1])
 
 pickle.dump(time.time(), f)
 pickle.dump(x._sirf_version_string, f)

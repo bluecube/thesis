@@ -11,11 +11,15 @@ Clock drift (in message 7) is reported in Hz, must be divided by ... (receiver c
 (is clock drift a frequency difference?)
 We don't need this clock drift. We will be getting our own from the MCL later.
 
+The info from sirf manual:
 Carrier Frequency (m/s) = Reported Carrier Frequency (m/s) – Clock Drift (Hz)*C / 1575420000 Hz 
 GPS Software Time – Clock Bias = Time of Receipt (GPS Time)
 GPS Software Time – Pseudorange (sec) = Time of Transmission (GPS Time)
 Adjust satellite position: (GPS Time (msg 30 -- GPS Time)) – Time of Transmission) * Vsat
 Adjust pseudorange for iono delay ... How?
+
+-> [[Projects:Diplomka:Notes:impl]]
+
 
 We probably don't have to work with SV clock offsets, the SIRF chip removes it from _all_ the data (including pseudoranges)
 
@@ -31,8 +35,9 @@ We can assume that receiver was stationary, but we probably can't assume that th
 
 Every complete set of measurements has identical gps_sw time fields. This might be useful. On the other hand time_tag field is always zero.
 
-Receiver clock offset changes linearly (~~100ms every 25 minutes ... That is too much, isn't it?) and wraps around after it gets to about 150 ms
+Receiver clock offset changes allmost linearly (~~100ms every 25 minutes ... That is too much, isn't it?) and wraps around after it gets to about 150 ms
 [ ] Check what are reasonable values for clock drift in GPS receiver
+[ ] Relativistic effects!
 
 ===== UERE computation: =====
 Only from recording, because this has to be done in multiple passes and 

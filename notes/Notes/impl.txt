@@ -5,3 +5,16 @@ Creation-Date: 2010-11-26T17:38:28.308376
 ====== impl ======
 Created Friday 26 November 2010
 
+===== Sirf nav data physical model =====
+-> http://www.gpspassion.com/forumsen/topic.asp?TOPIC_ID=54336
+Time Tag: based on an internal timer that is reset when the receiver starts up and simply counts forward. This is used for relative timing only.
+GPS Software Time: the raw estimated GPS time of the measurement. If you subtract clock bias from MID 7 you have the true GPS time of measurement.
+Pseudorange: measured range to satellite, smoothed by carrier phase. Does NOT contain Iono corrections.
+Carrier Frequency: This is an estimate of the Doppler. It can be created from one of two places in the tracking: either the AFC loop that tracks the change in carrier due to changing Doppler and crystal changes, or by using delta pseudorange and the pseudorange measurement interval. The software picks the best available among these two sources.
+Carrier Phase: relative measurement of changes in carrier phase between two measurements. Once we achieve carrier lock, we normalize this value to the current pseudorange then track the carrier to update the value. So as long as the measurement is continuous, this is a pretty good, smooth measure of pseudorange based on the carrier phase in the receiver.
+
+
+SS3 does not report carrier phase strictly for business reasons. However, SS2 receivers (using GSW2 software, not XTrac) reports carrier phase data.
+
+Interchannel measurement times are quite variable. That is why **we normalize everything to the same point in time** by extrapolating any measurement that was not done at the same time as others. All measurements are extrapolated to the same time so you don't have to use some rather complex calculations in the nav solution, but can do a point solution at the time of common receipt.
+

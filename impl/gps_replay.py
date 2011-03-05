@@ -20,7 +20,7 @@ class GpsReplay(GpsOperations):
 
         self._f = gzip.GzipFile(recording, 'rb')
 
-        self._start_time = pickle.load(self._f)
+        self.start_time = pickle.load(self._f)
         self._sirf_version_string = pickle.load(self._f)
 
     def _read_binary_sirf_msg(self):
@@ -29,8 +29,9 @@ class GpsReplay(GpsOperations):
         Tries to recover after less serious errors.
         """
         
-        timestamp, data = self._sirf_version_string = pickle.load(self._f)
-        self._logger.debug("Replay message (id = " + str(data[0]) + ") @ " + str(timestamp))
+        self.last_msg_time, data = self._sirf_version_string = pickle.load(self._f)
+        self._logger.debug("Replay message (id = " + str(data[0]) +
+            ") @ " + str(self.last_msg_time))
 
         return data
 

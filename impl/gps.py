@@ -232,6 +232,8 @@ class Gps(gps_operations.GpsOperations):
             except sirf.SirfMessageError as e:
                 self._logger.warning("Sirf message error (" + str(e) + ").")
 
+        self.last_msg_time = time.time()
+
         return data
 
     def send_message(self, msg):

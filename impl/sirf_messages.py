@@ -105,7 +105,7 @@ class MeasureNavigationDataOut(_SirfReceivedMessageBase):
         solution_edited = (mode2 & 0x08 != 0)
         velocity_dr_timeout = (mode2 & 0x04 != 0)
         solution_validated = (mode2 & 0x02 != 0)
-        sensor_dr_used = (mode2 & 0x01 != 0) # TODO: ... whatever this means
+        sensor_dr_used = (mode2 & 0x01 != 0)
         del mode2
 
         gps_tow /= 100

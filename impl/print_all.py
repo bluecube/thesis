@@ -9,7 +9,7 @@ from sirf_messages import *
 def setup_logging():
     logging.basicConfig(
         format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        level = logging.DEBUG
+        level = logging.INFO
     )
 
 setup_logging()
@@ -25,6 +25,7 @@ x = gps_open.open_gps(sys.argv[1])
 
 try:
     for msg in x:
-        logger.info("Message: " + str(msg))
+        print(msg)
+        print()
 except KeyboardInterrupt:
     logger.info("Terminating.")

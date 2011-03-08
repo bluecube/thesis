@@ -31,3 +31,6 @@ Pfaff, Burgard, Fox - Robust Monte Carlo Localization Using Adaptive Likehood Mo
 http://aprs.gids.nl/nmea/
 
 http://wiki.openmoko.org/wiki/Hardware:AGPS
+
+Precise ephemeris:
+http://www.geod.nrcan.gc.ca/products-produits/eph_e.php

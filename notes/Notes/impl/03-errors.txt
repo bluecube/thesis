@@ -16,7 +16,7 @@ Carrier Frequency (m/s) = Reported Carrier Frequency (m/s) – Clock Drift (Hz)*
 GPS Software Time – Clock Bias = Time of Receipt (GPS Time)
 GPS Software Time – Pseudorange (sec) = Time of Transmission (GPS Time)
 Adjust satellite position: (GPS Time (msg 30 -- GPS Time)) – Time of Transmission) * Vsat
-Adjust pseudorange for iono delay ... How?
+Adjust pseudorange for iono delay ... substract ionospheric delay (msg 30) from pseudorange
 
 -> [[Projects:Diplomka:Notes:impl]]
 
@@ -38,6 +38,7 @@ Every complete set of measurements has identical gps_sw time fields. This might 
 Receiver clock offset changes allmost linearly (~~100ms every 25 minutes ... That is too much, isn't it?) and wraps around after it gets to about 150 ms
 [ ] Check what are reasonable values for clock drift in GPS receiver
 [ ] Relativistic effects!
+[ ] Tropospheric errors
 
 ===== UERE computation: =====
 Only from recording, because this has to be done in multiple passes and 

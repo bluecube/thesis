@@ -16,5 +16,5 @@ Carrier Phase: relative measurement of changes in carrier phase between two meas
 
 SS3 does not report carrier phase strictly for business reasons. However, SS2 receivers (using GSW2 software, not XTrac) reports carrier phase data.
 
-Interchannel measurement times are quite variable. That is why **we normalize everything to the same point in time** by extrapolating any measurement that was not done at the same time as others. All measurements are extrapolated to the same time so you don't have to use some rather complex calculations in the nav solution, but can do a point solution at the time of common receipt.
+Interchannel measurement times are quite variable. That is why we **normalize everything to the same point in time** by extrapolating any measurement that was not done at the same time as others. All measurements are extrapolated to the same time so you don't have to use some rather complex calculations in the nav solution, but can do a point solution at the time of common receipt.
 

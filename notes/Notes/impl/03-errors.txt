@@ -23,12 +23,6 @@ Adjust pseudorange for iono delay ... substract ionospheric delay (msg 30) from 
 
 We probably don't have to work with SV clock offsets, the SIRF chip removes it from _all_ the data (including pseudoranges)
 
-Try to use consistent naming (from the SIRF protocol):
-- software time: Clock in the receiver
-- gps time: The system time, not really present in any measurement, but every
-SV measurement is converted into this.
-- SV time: Not used anywhere in SIRF binary protocol, the clock on board of the satellite
-
 SV state messages (ID 30) are sent after measuremtent data (ID 28) how to put these together?
 
 We can assume that receiver was stationary, but we probably can't assume that the clock offset was fixed. Is at least clock drift constant?
@@ -41,9 +35,53 @@ Receiver clock offset changes allmost linearly (~~100ms every 25 minutes ... Tha
 [ ] Tropospheric errors
 
 ===== UERE computation: =====
-Only from recording, because this has to be done in multiple passes and 
-1) Calculate the receiver ECEF coordinates from msg 28 (Navigation Data Out)
-	This should converge because of the law of big numbers.
+Only from recording, because this has to be done in multiple passes.
 
-2) Do something
+==== Calculate the receiver ECEF coordinates from MID28 ====
+This should converge to the true position.
+
+==== Analyze clock offsets ====
+We can't fix the clock offset, so we're using least squares, assuming that the clock offset change is linear.
+Because the gps_sw_time field is not monotonic, we have to detect clock corrections and only calculate the clock drifts between them.
+
+Pseudorange:
+{{./equation.png?type=equation}}
+
+Because of the SIRF magic:
+{{./equation001.png?type=equation}}
+
+How receiver time relates to the system time:
+{{./equation002.png?type=equation}}
+
+{{./equation003.png?type=equation}}
+
+All together:
+{{./equation004.png?type=equation}}
+{{./equation005.png?type=equation}}
+{{./equation006.png?type=equation}}
+
+{{./equation007.png?type=equation}}
+{{./equation008.png?type=equation}}
+
+Calculated offset should be counted in system time:
+{{./equation010.png?type=equation}} ; {{./equation011.png?type=equation}}
+
+=== Clock offset [s] vs gps system time [s] of the 30 minutes recording ===
+{{./clock_offsets.png}}
+
+The points with offset < 0 are messages with pseudorange == 0.0
+
+
+Least squares:
+minimize {{./equation009.png?type=equation}}
+
+=>
+
+{{./equation012.png?type=equation}}
+{{./equation013.png?type=equation}}
+
+
+{{./equation014.png?type=equation}}
+
+{{./equation015.png?type=equation}}
 

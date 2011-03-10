@@ -34,3 +34,5 @@ http://wiki.openmoko.org/wiki/Hardware:AGPS
 
 Precise ephemeris:
 http://www.geod.nrcan.gc.ca/products-produits/eph_e.php
+
+http://www.colorado.edu/geography/gcraft/notes/gps/gps_f.html

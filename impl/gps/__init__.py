@@ -1,5 +1,9 @@
-import gps
-import gps_replay
+__all__ = ['gps', 'gps_operations', 'gps_replay',
+    'nmea', 'sirf', 'sirf_messages']
+    # serial_wrapper is intentionally missing.
+
+import gps.gps
+import gps.gps_replay
 
 def open_gps(file):
     """

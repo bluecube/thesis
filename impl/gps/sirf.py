@@ -2,8 +2,8 @@ import time
 import struct
 import logging
 
-import serial_wrapper
-import sirf_messages
+import gps.serial_wrapper
+import gps.sirf_messages
 
 _logger = logging.getLogger('localization.gps')
 
@@ -85,10 +85,10 @@ def from_bytes(data):
 
 # Enumeration of all available messages:
 message_types = {}
-for v in vars(sirf_messages).values():
+for v in vars(gps.sirf_messages).values():
     try:
-        if v != sirf_messages._SirfReceivedMessageBase and \
-            issubclass(v, sirf_messages._SirfReceivedMessageBase):
+        if v != gps.sirf_messages._SirfReceivedMessageBase and \
+            issubclass(v, gps.sirf_messages._SirfReceivedMessageBase):
 
             message_types[v.get_message_id()] = v
     except TypeError:

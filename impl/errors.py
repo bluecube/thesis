@@ -5,9 +5,9 @@ import sys
 import numpy
 import math
 
-import gps_replay
+import gps.gps_replay
 
-from sirf_messages import *
+from gps.sirf_messages import *
 
 C = 299792458
     # Speed of light
@@ -76,13 +76,13 @@ def measurement_generator():
     Yields measurements which are used in passes 2 and 3.
     """
 
-    gps = gps_replay.GpsReplay(sys.argv[1])
+    replay = gps.gps_replay.GpsReplay(sys.argv[1])
     sv = {}
 
     group = []
     groupTime = None
 
-    for msg in gps:
+    for msg in replay:
         if isinstance(msg, NavigationLibraryMeasurementData):
             measurement = Measurement(msg)
 
@@ -105,12 +105,12 @@ def measurement_generator():
 def pass_one():
     logger.info("Pass 1: Estimate receiver position.")
 
-    gps = gps_replay.GpsReplay(sys.argv[1])
+    replay = gps.gps_replay.GpsReplay(sys.argv[1])
 
     count = 0
     receiver_pos = numpy.matrix([[0., 0., 0.]])
 
-    for msg in gps:
+    for msg in replay:
         if isinstance(msg, MeasureNavigationDataOut):
             count += 1
             receiver_pos += msg.pos

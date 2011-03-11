@@ -1,10 +1,10 @@
 #!/usr/bin/python3
 
-import gps_open
+import gps
 import logging
 import sys
 
-from sirf_messages import *
+from gps.sirf_messages import *
 
 def setup_logging():
     logging.basicConfig(
@@ -21,7 +21,7 @@ if len(sys.argv) != 2:
     logger.error("Usage: " + sys.argv[0] + " <port or recording>")
     sys.exit(1)
 
-x = gps_open.open_gps(sys.argv[1])
+x = gps.open_gps(sys.argv[1])
 
 try:
     for msg in x:

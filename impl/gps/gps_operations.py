@@ -1,5 +1,5 @@
-import sirf
-import sirf_messages
+import gps.sirf
+import gps.sirf_messages
 
 class GpsOperations:
     """
@@ -22,8 +22,8 @@ class GpsOperations:
         
         while not msg:
             try:
-                msg = sirf.from_bytes(self._read_binary_sirf_msg())
-            except sirf.UnrecognizedMessageException:
+                msg = gps.sirf.from_bytes(self._read_binary_sirf_msg())
+            except gps.sirf.UnrecognizedMessageException:
                 pass
                 
         return msg

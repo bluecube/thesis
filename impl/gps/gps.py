@@ -3,18 +3,18 @@ import logging
 import itertools
 
 import serial
-import serial_wrapper
+import gps.serial_wrapper
 
-import nmea
-import sirf
+import gps.nmea
+import gps.sirf
 
-import sirf_messages
-import gps_operations
+import gps.sirf_messages
+import gps.gps_operations
 
 class ModeNotDetectedError(Exception):
     pass
 
-class Gps(gps_operations.GpsOperations):
+class Gps(gps.gps_operations.GpsOperations):
     """
     SirfStar GPS receiver connected to a serial port.
     Only GSW3 software is supported. Others might work too, but this is untested.

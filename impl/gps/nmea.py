@@ -1,7 +1,7 @@
 import operator
 import functools
 import time
-import serial_wrapper
+import gps.serial_wrapper
 
 class NmeaMessageError(Exception):
     pass

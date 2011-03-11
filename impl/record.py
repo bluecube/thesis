@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
-import gps_open
-import gps_replay
+import gps
+import gps.gps_replay
     # we need to know if this is the replay to keep the timestamps
     # if we're re-recording
 import logging
@@ -27,9 +27,9 @@ if len(sys.argv) != 3:
 
 f = gzip.GzipFile(sys.argv[2], 'wb')
 
-x = gps_open.open_gps(sys.argv[1])
+x = gps.open_gps(sys.argv[1])
 
-if isinstance(x, gps_replay.GpsReplay):
+if isinstance(x, gps.gps_replay.GpsReplay):
     pickle.dump(x.start_time, f)
 else:
     pickle.dump(time.time(), f)

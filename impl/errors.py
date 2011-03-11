@@ -10,8 +10,54 @@ import gps_replay
 from sirf_messages import *
 
 C = 299792458
+    # Speed of light
 
-# plot "/tmp/clock_offset.plot" using 1:2 with lines linestyle 1 title "clock offset" "/tmp/clock_offset.plot" using 1:3 with lines linestyle 2 title "derivation of clock offset"
+MAX_CLOCK_DRIFT = 1e-2
+    # This is a maximum clock drift (in absolute value) between two
+    # measurement groups before we call it a clock correction
+
+class Measurement:
+    """
+    A single measurement of the user to sv distance, speed, ....
+    """
+    def __init__(self, msg):
+        self.gps_sw_time = msg.gps_sw_time
+        self.pseudorange = msg.pseudorange
+        self.time = msg.gps_sw_time
+
+        self.satellite_id = msg.satellite_id
+
+    def process_sv(self, svs):
+        """
+        Because SV data come after the measurement data, we have to
+        add this part after the measurement is initialized.
+        Returns false if the measurement was valid.
+        """
+
+        if self.satellite_id not in svs:
+            return False
+
+        if self.pseudorange == 0.0:
+            return False
+
+        sv = svs[self.satellite_id]
+
+        time_of_transmission = self.gps_sw_time - self.pseudorange / C
+
+        self.sv_pos = sv.pos + (sv.gps_time - time_of_transmission) * sv.v
+
+        self.iono_delay = sv.iono_delay
+        
+        return True
+
+    def clock_offset(self, receiver_pos):
+        return (self.pseudorange - self.iono_delay -
+            self.geom_range(receiver_pos)) / C
+        
+    def geom_range(self, receiver_pos):
+        distance = self.sv_pos - receiver_pos
+        return math.sqrt(distance * distance.T)
+        
 
 def setup_logging():
     logging.basicConfig(
@@ -25,67 +71,138 @@ def setup_logging():
     replay = logging.getLogger("localization.gps-replay")
     replay.setLevel(logging.INFO)
 
-def estimate_position():
+def measurement_generator():
+    """
+    Yields measurements which are used in passes 2 and 3.
+    """
+
+    gps = gps_replay.GpsReplay(sys.argv[1])
+    sv = {}
+
+    group = []
+    groupTime = None
+
+    for msg in gps:
+        if isinstance(msg, NavigationLibraryMeasurementData):
+            measurement = Measurement(msg)
+
+            if groupTime == measurement.time:
+                group.append(measurement)
+            else:
+                for x in group:
+                    if x.process_sv(sv):
+                        yield x
+
+                group = [measurement]
+                groupTime = measurement.time
+        elif isinstance(msg, NavigationLibrarySVStateData):
+            sv[msg.satellite_id] = msg
+
+        for x in group:
+            if x.process_sv(sv):
+                yield x
+
+def pass_one():
     logger.info("Pass 1: Estimate receiver position.")
 
     gps = gps_replay.GpsReplay(sys.argv[1])
 
     count = 0
     receiver_pos = numpy.matrix([[0., 0., 0.]])
-    try:
-        while True:
-            msg = gps.read_specific_message(MeasureNavigationDataOut)
-            
+
+    for msg in gps:
+        if isinstance(msg, MeasureNavigationDataOut):
             count += 1
             receiver_pos += msg.pos
-    except KeyboardInterrupt:
-        logger.info("Terminating.")
-        exit(0)
-    except EOFError:
-        pass
 
     receiver_pos /= count
     logger.debug("Found " + str(count) + " messages, average position is " + str(receiver_pos) + ".")
 
     return receiver_pos
 
-def analyze_clock_offsets(receiver_pos):
+def get_drift(m1, m2, receiver_pos):
+    """
+    Calculate clock drift between two measurement groups.
+    """
+    if m1.time == m2.time:
+        return 0
+
+    drift = m2.clock_offset(receiver_pos) - m1.clock_offset(receiver_pos)
+    drift /= m2.time - m1.time
+
+    return drift
+
+def is_clock_correction(m1, m2, receiver_pos):
+    """
+    Returns true if there was a clock correction between the 
+    two measurements.
+    """
+    return abs(get_drift(m1, m2, receiver_pos)) > MAX_CLOCK_DRIFT
+
+def pass_two(receiver_pos):
+    """
+    Splits the measurements into blocks between clock corrections,
+    calculates the least squares on the blocks and calls pass
+    three on every block.
+    """
     logger.info("Pass 2: Analyze clock offsets.")
 
-    gps = gps_replay.GpsReplay(sys.argv[1])
+    generator = measurement_generator()
 
-    last_time = None
-    sv = {}
-    measurements = []
+    block = []
 
-    plot = open(sys.argv[2], 'wt')
+    # the following variables are temporary storage for the least squares.
+    # see the notes for better description
+    p = 0
+    q = 0
+    r = 0
+    s = 0
 
-    try:
-        while True:
-            msg = gps.read_message()
+    for measurement in generator:
+        if len(block) > 0 and is_clock_correction(measurement, block[-1], receiver_pos):
+            pass_three(block, receiver_pos, p, q, r, s)
 
-            if isinstance(msg, NavigationLibraryMeasurementData):
-                if last_time == msg.gps_sw_time:
-                    measurements.append(msg)
-                else:
-                    new_clock_offset = process_clock_offsets_batch(measurements, sv, receiver_pos)
-                    if not (last_time is None or clock_offset is None):
-                        clock_drift = (new_clock_offset - clock_offset) / (msg.gps_sw_time - last_time)
+            # reset it all.
+            block = []
+            p = 0
+            q = 0
+            r = 0
+            s = 0
 
-                        print(last_time, new_clock_offset, clock_drift, file=plot)
+        block.append(measurement)
 
-                    measurements = [msg]
-                    last_time = msg.gps_sw_time
-                    clock_offset = new_clock_offset
-                    
-            elif isinstance(msg, NavigationLibrarySVStateData):
-                sv[msg.satellite_id] = msg
+        offset = measurement.clock_offset(receiver_pos)
+        time = measurement.time - offset
 
-    except KeyboardInterrupt:
-        logger.info("Terminating.")
-        exit(0)
-    except EOFError:
-        pass
+        p += offset * time
+        q += offset
+        r += time
+        s += time * time
+
+    
+    pass_three(block, receiver_pos, p, q, r, s)
+
+def pass_three(block, receiver_pos, p, q, r, s):
+    """
+    Do the main error calculations.
+    At this place we know both the physical position of the receiver
+    and the (hopefully precise) clock offset.
+    """
+    # finish the least squares calculation:
+    div = 1 / (len(block) * s - r * r)
+    a = (len(block) * p - q * r) * div
+    b = (q * s - p * r) * div
+
+    print("Found a block:")
+    print("  length:", len(block))
+    print("  a:     ", a)
+    print("  b:     ", b)
+    print("  start: ", block[0].time)
+    print("  end:   ", block[-1].time)
+
+#    for measurement in block:
+#        corrected_pseudorange = measurement.pseudorange - measurement.iono_delay
+#        clock_offset = a * measurement.
 
 def process_clock_offsets_batch(measurements, sv, pos):
     offset_sum = 0
@@ -127,15 +244,17 @@ def process_clock_offsets_batch(measurements, sv, pos):
 setup_logging()
 
 logger = logging.getLogger('main')
-logger.setLevel(logging.DEBUG)
 
 logger.info("Calculate the UERE from recorded data.")
 logger.info("Assumes that the receiver was stationary during whole recording.")
 
-if len(sys.argv) != 3:
-    logger.error("Usage: " + sys.argv[0] + " <recording> <plot file>")
+if len(sys.argv) != 2:
+    logger.error("Usage: " + sys.argv[0] + " <recording>")
     sys.exit(1)
 
-pos = estimate_position()
-analyze_clock_offsets(pos)
-
+try:
+    pos = pass_one()
+    pass_two(pos)
+except KeyboardInterrupt:
+    logger.info("Terminating.")
+    exit(0)

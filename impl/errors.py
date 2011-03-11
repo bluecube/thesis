@@ -200,47 +200,21 @@ def pass_three(block, receiver_pos, p, q, r, s):
     print("  start: ", block[0].time)
     print("  end:   ", block[-1].time)
 
-#    for measurement in block:
-#        corrected_pseudorange = measurement.pseudorange - measurement.iono_delay
-#        clock_offset = a * measurement.
+    # convert the a and b to calculate clock offset from receiver sw time instead
+    # of gps system time.
+    b /= (1 + a)
+    a /= (1 + a)
 
-def process_clock_offsets_batch(measurements, sv, pos):
-    offset_sum = 0
-    offset_count = 0
+    for measurement in block:
+        clock_offset_equiv = C * (a * measurement.time + b)
+        corrected_pseudorange = measurement.pseudorange - measurement.iono_delay
+    
+        corrected_pseudorange -= clock_offset_equiv
 
-    if len(measurements) == 0:
-        return
+        error = corrected_pseudorange - measurement.geom_range(receiver_pos)
 
-    for data in measurements:
-        if data.pseudorange == 0:
-            print("Pseudorange == 0")
-            continue
-
-        sv_data = sv[data.satellite_id]
-        time_of_transmission = data.gps_sw_time - data.pseudorange / C
-
-        sv_pos = sv_data.pos
-        sv_pos += (sv_data.gps_time - time_of_transmission) * sv_data.v
-
-        distance = sv_pos - pos
-
-        geom_range = math.sqrt(distance * distance.T)
-
-        clock_offset = (data.pseudorange - sv_data.iono_delay - geom_range) / C
-
-        print("Satellite is at " + str(sv_pos) + "; pseudorange = " +
-            str(data.pseudorange) + "; range = " + str(geom_range) +
-            "; clock offset = " + str(clock_offset))
+        print("Error is " + str(error) + " meters")
         
-        offset_count += 1
-        offset_sum += clock_offset
-
-    clock_offset = offset_sum / offset_count
-
-    print("Average clock offset is " + str(clock_offset))
-
-    return clock_offset
-
 setup_logging()
 
 logger = logging.getLogger('main')

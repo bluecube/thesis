@@ -85,3 +85,12 @@ minimize {{./equation009.png?type=equation}}
 
 {{./equation015.png?type=equation}}
 
+==== ...and now the errors: ====
+From the previous step we know the clock offset at given system time, but we need it at given receiver time.
+{{./equation017.png?type=equation}}
+{{./equation002.png?type=equation}}
+{{./equation018.png?type=equation}}
+{{./equation019.png?type=equation}}
+{{./equation020.png?type=equation}}
+
+{{./equation016.png?type=equation}}

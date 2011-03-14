@@ -5,6 +5,7 @@ import sys
 import numpy
 import math
 import argparse
+import collections
 
 import gps.gps_replay
 
@@ -16,6 +17,9 @@ C = 299792458
 MAX_CLOCK_DRIFT = 1e-2
     # This is a maximum clock drift (in absolute value) between two
     # measurement groups before we call it a clock correction
+
+HISTOGRAM_RESOLUTION = 10
+    # Width of error histogram bin in meters.
 
 class Measurement:
     """
@@ -225,10 +229,7 @@ def pass_three(block, p, q, r, s):
     print("  length:", len(block))
     print("  a:     ", a)
     print("  b:     ", b)
-    print("  start: ", block[0].time)
-    print("  end:   ", block[-1].time)
-    print("  a * C: ", a * C)
-    print("  b * C: ", b * C)
+    print("  time:  ", block[-1].time, "-", block[0].time, "=", (block[-1].time - block[0].time) / 60, "minutes")
 
     # convert the a and b to calculate clock offset from receiver sw time instead
     # of gps system time.
@@ -236,17 +237,21 @@ def pass_three(block, p, q, r, s):
     #a /= (1 + a)
 
     for measurement in block:
-        clock_offset_equiv = C * (a * measurement.time + b)
-        corrected_pseudorange = measurement.pseudorange - measurement.iono_delay
+        clock_offset = a * measurement.time + b
 
-        print(measurement.time, clock_offset_equiv, file=arguments.datapoints)
-    
-        corrected_pseudorange -= clock_offset_equiv
+        print(measurement.time, clock_offset, file=arguments.datapoints)
+
+        corrected_pseudorange = measurement.pseudorange - measurement.iono_delay
+        corrected_pseudorange -= C * clock_offset
 
         error = corrected_pseudorange - measurement.geom_range()
 
-        #print("Error is " + str(error) + " meters")
-        
+        histogram[error // HISTOGRAM_RESOLUTION] += 1
+
+def print_histogram():
+    for i in sorted(histogram):
+        print(i * HISTOGRAM_RESOLUTION, histogram[i], file=arguments.histogram)
+
 setup_logging()
 
 logger = logging.getLogger('main')
@@ -260,12 +265,20 @@ arg_parser.add_argument('--group', default=None, type=int,
 arg_parser.add_argument('--datapoints', default=open("/dev/null", "w"),
     type=argparse.FileType("w"),
     help="File into which the data points in phase 3 will go.")
-
+arg_parser.add_argument('--histogram', default=None, type=argparse.FileType("w"),
+    help="File into which the error histogram will go.")
 arguments = arg_parser.parse_args()
+
+histogram = collections.Counter()
 
 receiver_pos = pass_one()
 try:
     pass_two()
+    if arguments.histogram:
+        print_histogram()
+
 except KeyboardInterrupt:
     logger.info("Terminating.")
-    exit(0)
+else:
+    logger.info("Done.")
+

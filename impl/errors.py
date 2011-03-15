@@ -239,7 +239,7 @@ def pass_three(block, p, q, r, s):
     for measurement in block:
         clock_offset = a * measurement.time + b
 
-        print(measurement.time, clock_offset, file=arguments.datapoints)
+        print(measurement.time, measurement.clock_offset(), file=arguments.datapoints)
 
         corrected_pseudorange = measurement.pseudorange - measurement.iono_delay
         corrected_pseudorange -= C * clock_offset

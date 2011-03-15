@@ -93,7 +93,10 @@ From the previous step we know the clock offset at given system time, but we nee
 {{./equation019.png?type=equation}}
 {{./equation020.png?type=equation}}
 
-__These corrections (1 / (1 + a)) seem to make the result worse. Why?__
-
 {{./equation016.png?type=equation}}
-__Errors are in the order of 1e4 meters with the "30 minutes" data. That's way too much.__
+__Errors are in the order of 1e4. That's way too much.__
+
+=== Time[s] vs range error[m], colors are SV ids ===
+30_minutes_weak_signal data, first group
+{{./range_error.png}}
+This looks like I'm missing some important SV specific correction.

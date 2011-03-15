@@ -234,8 +234,8 @@ def pass_three(block, p, q, r, s):
 
     # convert the a and b to calculate clock offset from receiver sw time instead
     # of gps system time.
-    #b /= (1 + a)
-    #a /= (1 + a)
+    b /= (1 + a)
+    a /= (1 + a)
 
     for measurement in block:
         clock_offset = a * measurement.time + b

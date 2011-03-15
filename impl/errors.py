@@ -225,12 +225,6 @@ def pass_three(block, p, q, r, s):
     a = (len(block) * p - q * r) * div
     b = (q * s - p * r) * div
 
-    print("Found a block:")
-    print("  length:", len(block))
-    print("  a:     ", a)
-    print("  b:     ", b)
-    print("  time:  ", block[-1].time, "-", block[0].time, "=", (block[-1].time - block[0].time) / 60, "minutes")
-
     # convert the a and b to calculate clock offset from receiver sw time instead
     # of gps system time.
     #b /= (1 + a)
@@ -247,6 +241,11 @@ def pass_three(block, p, q, r, s):
         error = corrected_pseudorange - measurement.geom_range()
 
         histogram[error // HISTOGRAM_RESOLUTION] += 1
+
+    print("Found a block:")
+    print("  length:", len(block))
+    print("  offset:", a, "* x +", b)
+    print("  time:  ", block[-1].time, "-", block[0].time, "=", (block[-1].time - block[0].time) / 60, "minutes")
 
 def print_histogram():
     for i in sorted(histogram):

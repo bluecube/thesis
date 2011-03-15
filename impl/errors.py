@@ -240,12 +240,12 @@ def pass_three(block, p, q, r, s):
     for measurement in block:
         clock_offset = a * measurement.time + b
 
-        print(measurement.time, measurement.clock_offset(), file=arguments.datapoints)
-
         corrected_pseudorange = measurement.pseudorange - measurement.delays()
         corrected_pseudorange -= C * clock_offset
 
         error = corrected_pseudorange - measurement.geom_range()
+
+        print(measurement.time, error, measurement.satellite_id, file=arguments.datapoints)
 
         histogram[error // HISTOGRAM_RESOLUTION] += 1
 

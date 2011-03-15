@@ -56,11 +56,18 @@ class Measurement:
         return True
 
     def clock_offset(self):
-        return (self.pseudorange - self.iono_delay - self.geom_range()) / C
+        return (self.pseudorange - self.delays() - self.geom_range()) / C
         
     def geom_range(self):
         distance = self.sv_pos - receiver_pos
         return math.sqrt(distance * distance.T)
+
+    def delays(self):
+        """
+        Return the expected delays of the gps signal
+        in meters.
+        """
+        return self.iono_delay
         
 
 def setup_logging():
@@ -235,7 +242,7 @@ def pass_three(block, p, q, r, s):
 
         print(measurement.time, measurement.clock_offset(), file=arguments.datapoints)
 
-        corrected_pseudorange = measurement.pseudorange - measurement.iono_delay
+        corrected_pseudorange = measurement.pseudorange - measurement.delays()
         corrected_pseudorange -= C * clock_offset
 
         error = corrected_pseudorange - measurement.geom_range()

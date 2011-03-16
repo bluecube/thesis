@@ -51,24 +51,17 @@ class Measurement:
 
         self.sv_pos = sv.pos + (sv.gps_time - time_of_transmission) * sv.v
 
-        self.iono_delay = sv.iono_delay
         
+        ############################
+        self.delays = sv.iono_delay
+
+        distance = self.sv_pos - receiver_pos
+        self.geom_range = math.sqrt(distance * distance.T)
+        
+        self.clock_offset = (self.pseudorange - self.delays - self.geom_range) / C
+
         return True
 
-    def clock_offset(self):
-        return (self.pseudorange - self.delays() - self.geom_range()) / C
-        
-    def geom_range(self):
-        distance = self.sv_pos - receiver_pos
-        return math.sqrt(distance * distance.T)
-
-    def delays(self):
-        """
-        Return the expected delays of the gps signal
-        in meters.
-        """
-        return self.iono_delay
-        
 
 def setup_logging():
     logging.basicConfig(
@@ -141,7 +134,7 @@ def get_drift(m1, m2):
     if m1.time == m2.time:
         return 0
 
-    drift = m2.clock_offset() - m1.clock_offset()
+    drift = m2.clock_offset - m1.clock_offset
     drift /= m2.time - m1.time
 
     return drift
@@ -190,7 +183,7 @@ def pass_two():
 
 
     for measurement in generator:
-        offset = block[-1].clock_offset()
+        offset = block[-1].clock_offset
         time = block[-1].time - offset
         p += offset * time
         q += offset
@@ -212,7 +205,7 @@ def pass_two():
 
         block.append(measurement)
 
-    offset = block[-1].clock_offset()
+    offset = block[-1].clock_offset
     time = block[-1].time - offset
     p += offset * time
     q += offset
@@ -240,10 +233,10 @@ def pass_three(block, p, q, r, s):
     for measurement in block:
         clock_offset = a * measurement.time + b
 
-        corrected_pseudorange = measurement.pseudorange - measurement.delays()
+        corrected_pseudorange = measurement.pseudorange - measurement.delays
         corrected_pseudorange -= C * clock_offset
 
-        error = corrected_pseudorange - measurement.geom_range()
+        error = corrected_pseudorange - measurement.geom_range
 
         print(measurement.time, error, measurement.satellite_id, file=arguments.datapoints)
 

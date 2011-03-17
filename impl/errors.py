@@ -49,7 +49,7 @@ class Measurement:
 
         time_of_transmission = self.gps_sw_time - self.pseudorange / C
 
-        self.sv_pos = sv.pos + (sv.gps_time - time_of_transmission) * sv.v
+        self.sv_pos = sv.pos - (sv.gps_time - time_of_transmission) * sv.v
 
         
         ############################

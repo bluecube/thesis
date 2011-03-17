@@ -36,7 +36,7 @@ class Measurement:
         """
         Because SV data come after the measurement data, we have to
         add this part after the measurement is initialized.
-        Returns false if the measurement was valid.
+        Returns false if the measurement was invalid.
         """
 
         if self.satellite_id not in svs:

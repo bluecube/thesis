@@ -102,9 +102,9 @@ def measurement_generator():
         elif isinstance(msg, NavigationLibrarySVStateData):
             sv[msg.satellite_id] = msg
 
-        for x in group:
-            if x.process_sv(sv):
-                yield x
+    for x in group:
+        if x.process_sv(sv):
+            yield x
 
 def pass_one():
     logger.info("Pass 1: Estimate receiver position.")

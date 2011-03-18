@@ -42,7 +42,7 @@ This should converge to the true position.
 
 ==== Analyze clock offsets ====
 We can't fix the clock offset, so we're using least squares, assuming that the clock offset change is linear.
-Because the gps_sw_time field is not monotonic, we have to detect clock corrections and only calculate the clock drifts between them.
+Because the gps_sw_time field is not monotonic, we have to detect clock corrections and only calculate the clock drifts between them (the parts between the clock corrections are called blocks in the code).
 
 Pseudorange:
 {{./equation.png?type=equation}}

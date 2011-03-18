@@ -165,22 +165,19 @@ def pass_two():
     r = 0
     s = 0
 
-    if not (arguments.group is None):
-        last = generator.__next__()
+    block = [generator.__next__()]
 
+    if not (arguments.group is None):
+        logger.debug("skipping " + str(arguments.group) + " blocks")
         for i in range(arguments.group):
             for measurement in generator:
-                if is_clock_correction(last, measurement):
-                    last = measurement
+                if is_clock_correction(block[-1], measurement):
                     block = [measurement]
                     break
                 else:
-                    last = measurement
+                    block.append(measurement)
 
-        block = [last]
-    else:
-        block = [generator.__next__()]
-
+    assert len(block) == 1
 
     for measurement in generator:
         offset = block[-1].clock_offset
@@ -233,8 +230,9 @@ def pass_three(block, p, q, r, s):
     for measurement in block:
         clock_offset = a * measurement.time + b
 
-        corrected_pseudorange = measurement.pseudorange - measurement.delays
+        corrected_pseudorange = measurement.pseudorange
         corrected_pseudorange -= C * clock_offset
+        corrected_pseudorange -= measurement.delays
 
         error = corrected_pseudorange - measurement.geom_range
 

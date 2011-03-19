@@ -30,7 +30,7 @@ We can assume that receiver was stationary, but we probably can't assume that th
 Every complete set of measurements has identical gps_sw time fields. This might be useful. On the other hand time_tag field is always zero.
 
 Receiver clock offset changes allmost linearly (~~100ms every 25 minutes ... That is too much, isn't it?) and wraps around after it gets to about 150 ms
-[ ] Check what are reasonable values for clock drift in GPS receiver
+[*] Check what are reasonable values for clock drift in GPS receiver
 [ ] Relativistic effects!
 [ ] Tropospheric errors
 
@@ -44,21 +44,24 @@ This should converge to the true position.
 We can't fix the clock offset, so we're using least squares, assuming that the clock offset change is linear.
 Because the gps_sw_time field is not monotonic, we have to detect clock corrections and only calculate the clock drifts between them (the parts between the clock corrections are called blocks in the code).
 
-Pseudorange:
+=== Pseudorange: ===
 {{./equation.png?type=equation}}
 
-Because of the SIRF magic:
+=== SV : ===
+{{./equation006.png?type=equation}}
 {{./equation001.png?type=equation}}
+{{./equation021.png?type=equation}}
+{{./equation022.png?type=equation}}
 
-How receiver time relates to the system time:
+=>
+{{./equation024.png?type=equation}}
+
+=== Receiver: ===
 {{./equation002.png?type=equation}}
-
 {{./equation003.png?type=equation}}
 
-All together:
 {{./equation004.png?type=equation}}
 {{./equation005.png?type=equation}}
-{{./equation006.png?type=equation}}
 
 {{./equation007.png?type=equation}}
 {{./equation008.png?type=equation}}
@@ -66,7 +69,7 @@ All together:
 Calculated offset should be counted in system time:
 {{./equation010.png?type=equation}} ; {{./equation011.png?type=equation}}
 
-=== Clock offset [s] vs gps system time [s] of the 30 minutes recording ===
+=== Receiver clock offset [s] vs gps system time [s] of the 30 minutes recording ===
 {{./clock_offsets.png}}
 
 The points with offset < 0 are messages with pseudorange == 0.0
@@ -86,7 +89,7 @@ minimize {{./equation009.png?type=equation}}
 {{./equation015.png?type=equation}}
 
 ==== ...and now the errors: ====
-From the previous step we know the clock offset at given system time, but we need it at given receiver time.
+From the previous step we know the receiver clock offset at given system time, but we need it at given receiver time.
 {{./equation017.png?type=equation}}
 {{./equation002.png?type=equation}}
 {{./equation018.png?type=equation}}

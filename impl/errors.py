@@ -49,7 +49,8 @@ class Measurement:
 
         time_of_transmission = self.gps_sw_time - self.pseudorange / C
 
-        self.sv_pos = sv.pos - (sv.gps_time - time_of_transmission) * sv.v
+        sv_pos_correction = (sv.gps_time - time_of_transmission) * sv.v
+        self.sv_pos = sv.pos - sv_pos_correction
 
         
         ############################
@@ -236,11 +237,15 @@ def pass_three(block, p, q, r, s):
 
         error = corrected_pseudorange - measurement.geom_range
 
-        print(measurement.time, error, measurement.satellite_id, file=arguments.datapoints)
+        print(
+            measurement.time - clock_offset,
+            error,
+            measurement.satellite_id,
+            file=arguments.datapoints)
 
         histogram[error // HISTOGRAM_RESOLUTION] += 1
 
-    print("Found a block:")
+    logger.info("Pass 3: Found a block.")
     print("  length:", len(block))
     print("  offset:", a, "* x +", b)
     print("  time:  ", block[-1].time, "-", block[0].time, "=", (block[-1].time - block[0].time) / 60, "minutes")

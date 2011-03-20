@@ -32,7 +32,7 @@ class Measurement:
 
         self.satellite_id = msg.satellite_id
 
-    def process_sv(self, svs):
+    def process(self, svs):
         """
         Because SV data come after the measurement data, we have to
         add this part after the measurement is initialized.
@@ -45,31 +45,55 @@ class Measurement:
         if self.pseudorange == 0.0:
             return False
 
-        sv = svs[self.satellite_id]
+        self.process_sv(svs[self.satellite_id])
+        self.process_delays(svs[self.satellite_id])
+        self.process_geom_range()
+        self.process_corrected_pseudorange()
+        self.process_raw_clock_offset()
 
+        return True
+
+    def process_sv(self, sv):
+        """
+        Handle all the calculations related to SV state.
+
+        Sets the clock_offset_sv, sv_pos
+        """
+        # Time of transmission in SV clock
         time_of_transmission_sv = self.gps_sw_time - self.pseudorange / C
 
-        # sv clock offset at the time of transmission
+        # SV clock offset at the time of transmission.
         self.clock_offset_sv = ((sv.clock_bias -
             (sv.gps_time - time_of_transmission_sv) * sv.clock_drift) /
             (1 + sv.clock_drift))
         
+        # Time of transmission in GPS system clock
         time_of_transmission_sys = time_of_transmission_sv - self.clock_offset_sv
 
+        # How far is the current SV position from the position announced in MID30
         sv_pos_correction = (sv.gps_time - time_of_transmission_sys) * sv.v
+
         self.sv_pos = sv.pos - sv_pos_correction
 
-        ############################
-        self.delays = sv.iono_delay
+        return 
 
+    def process_geom_range(self):
         distance = self.sv_pos - receiver_pos
         self.geom_range = math.sqrt(distance * distance.T)
-        
-        self.clock_offset = self.clock_offset_sv + (self.pseudorange - self.delays -
-            self.geom_range) / C
 
-        return True
+    def process_raw_clock_offset(self):
+        """
+        Calculate the raw clock offset as an input for the least squares.
+        This is what the clock offset would be if there was no measurement error.
+        """
+        self.raw_clock_offset = (self.corrected_pseudorange - self.geom_range) / C
 
+    def process_delays(self, sv):
+        self.delays = sv.iono_delay
+
+    def process_corrected_pseudorange(self):
+        self.corrected_pseudorange = (
+            self.pseudorange + C * self.clock_offset_sv - self.delays)
 
 def setup_logging():
     logging.basicConfig(
@@ -102,7 +126,7 @@ def measurement_generator():
                 group.append(measurement)
             else:
                 for x in group:
-                    if x.process_sv(sv):
+                    if x.process(sv):
                         yield x
 
                 group = [measurement]
@@ -111,7 +135,7 @@ def measurement_generator():
             sv[msg.satellite_id] = msg
 
     for x in group:
-        if x.process_sv(sv):
+        if x.process(sv):
             yield x
 
 def pass_one():
@@ -142,7 +166,7 @@ def get_drift(m1, m2):
     if m1.time == m2.time:
         return 0
 
-    drift = m2.clock_offset - m1.clock_offset
+    drift = m2.raw_clock_offset - m1.raw_clock_offset
     drift /= m2.time - m1.time
 
     return drift
@@ -188,7 +212,7 @@ def pass_two():
     assert len(block) == 1
 
     for measurement in generator:
-        offset = block[-1].clock_offset
+        offset = block[-1].raw_clock_offset
         time = block[-1].time - offset
         p += offset * time
         q += offset
@@ -210,7 +234,7 @@ def pass_two():
 
         block.append(measurement)
 
-    offset = block[-1].clock_offset
+    offset = block[-1].raw_clock_offset
     time = block[-1].time - offset
     p += offset * time
     q += offset
@@ -238,12 +262,9 @@ def pass_three(block, p, q, r, s):
     for measurement in block:
         clock_offset = a * measurement.time + b
 
-        corrected_pseudorange = measurement.pseudorange
-        corrected_pseudorange -= C * clock_offset
-        corrected_pseudorange += C * measurement.clock_offset_sv
-        corrected_pseudorange -= measurement.delays
-
-        error = corrected_pseudorange - measurement.geom_range
+        error = (
+            measurement.corrected_pseudorange - C * clock_offset -
+            measurement.geom_range)
 
         print(
             measurement.time - clock_offset,

@@ -278,13 +278,13 @@ arg_parser.add_argument('--datapoints', default=open("/dev/null", "w"),
     help="File into which the data points in phase 3 will go.")
 arg_parser.add_argument('--histogram', default=None, type=argparse.FileType("w"),
     help="File into which the error histogram will go.")
-arg_parser.add_argument('--receiver-pos', type=numpy.matrix,
+arg_parser.add_argument('--receiver-pos', type=numpy.matrix, default=None,
     help="Use this ECEF receiver position instead of computing it in phase 1.")
 arguments = arg_parser.parse_args()
 
 histogram = collections.Counter()
 
-if 'receiver_pos' not in arguments:
+if arguments.receiver_pos is None:
     receiver_pos = pass_one()
 else:
     logger.info("Skipping phase 1, because receiver pos was given.")

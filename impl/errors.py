@@ -54,8 +54,6 @@ class Measurement:
             (sv.gps_time - time_of_transmission_sv) * sv.clock_drift) /
             (1 + sv.clock_drift))
         
-        #print(clock_offset_sv * C)
-
         time_of_transmission_sys = time_of_transmission_sv - self.clock_offset_sv
 
         sv_pos_correction = (sv.gps_time - time_of_transmission_sys) * sv.v
@@ -67,7 +65,8 @@ class Measurement:
         distance = self.sv_pos - receiver_pos
         self.geom_range = math.sqrt(distance * distance.T)
         
-        self.clock_offset = (self.pseudorange - self.delays - self.geom_range) / C
+        self.clock_offset = self.clock_offset_sv + (self.pseudorange - self.delays -
+            self.geom_range) / C
 
         return True
 
@@ -241,7 +240,7 @@ def pass_three(block, p, q, r, s):
 
         corrected_pseudorange = measurement.pseudorange
         corrected_pseudorange -= C * clock_offset
-        corrected_pseudorange -= C * measurement.clock_offset_sv
+        corrected_pseudorange += C * measurement.clock_offset_sv
         corrected_pseudorange -= measurement.delays
 
         error = corrected_pseudorange - measurement.geom_range

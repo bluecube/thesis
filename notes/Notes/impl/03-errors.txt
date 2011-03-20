@@ -59,14 +59,13 @@ Because the gps_sw_time field is not monotonic, we have to detect clock correcti
 === Receiver: ===
 {{./equation002.png?type=equation}}
 {{./equation003.png?type=equation}}
-
 {{./equation004.png?type=equation}}
-{{./equation005.png?type=equation}}
 
+For the first clock offset estimation we assume that {{./equation026.png?type=equation}}
 {{./equation007.png?type=equation}}
 {{./equation008.png?type=equation}}
 
-Calculated offset should be counted in system time:
+Calculated offset is stored in system time:
 {{./equation010.png?type=equation}} ; {{./equation011.png?type=equation}}
 
 === Receiver clock offset [s] vs gps system time [s] of the 30 minutes recording ===
@@ -75,7 +74,7 @@ Calculated offset should be counted in system time:
 The points with offset < 0 are messages with pseudorange == 0.0
 
 
-Least squares:
+Least squares to find out the (real) clock drift and offset
 minimize {{./equation009.png?type=equation}}
 
 =>
@@ -96,10 +95,9 @@ From the previous step we know the receiver clock offset at given system time, b
 {{./equation019.png?type=equation}}
 {{./equation020.png?type=equation}}
 
-{{./equation016.png?type=equation}}
-__Errors are in the order of 1e4. That's way too much.__
 
-=== Time[s] vs range error[m], colors are SV ids ===
-30_minutes_weak_signal data, first group
-{{./range_error.png}}
-This looks like I'm missing some important SV specific correction.
+{{./equation005.png?type=equation}}
+{{./equation028.png?type=equation}}
+{{./equation027.png?type=equation}}
+{{./equation029.png?type=equation}}
+{{./equation016.png?type=equation}}

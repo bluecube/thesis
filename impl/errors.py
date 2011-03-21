@@ -29,6 +29,7 @@ class Measurement:
         self.gps_sw_time = msg.gps_sw_time
         self.pseudorange = msg.pseudorange
         self.time = msg.gps_sw_time
+        self.c_n = msg.c_n
 
         self.satellite_id = msg.satellite_id
 
@@ -288,6 +289,7 @@ def pass_three(block, p, q, r, s):
             measurement.time - clock_offset,
             error,
             measurement.satellite_id,
+            min(measurement.c_n),
             file=arguments.datapoints)
 
         histogram[error // HISTOGRAM_RESOLUTION] += 1

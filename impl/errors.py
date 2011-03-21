@@ -46,8 +46,9 @@ class Measurement:
             return False
 
         self.process_sv(svs[self.satellite_id])
+        self.process_geometry()
+
         self.process_delays(svs[self.satellite_id])
-        self.process_geom_range()
         self.process_corrected_pseudorange()
         self.process_raw_clock_offset()
 
@@ -77,9 +78,17 @@ class Measurement:
 
         return 
 
-    def process_geom_range(self):
-        distance = self.sv_pos - receiver_pos
-        self.geom_range = math.sqrt(distance * distance.T)
+    def process_geometry(self):
+        """
+        Handles the relative positions of user and SV.
+        This is distance and SV elevation.
+        """
+        user_to_sv = self.sv_pos - receiver_pos
+
+        self.geom_range = math.sqrt(user_to_sv * user_to_sv.T)
+
+        self.elevation = math.pi / 2 - math.acos((user_to_sv * receiver_pos.T) /
+            (self.geom_range * math.sqrt(receiver_pos * receiver_pos.T)))
 
     def process_raw_clock_offset(self):
         """
@@ -90,10 +99,19 @@ class Measurement:
 
     def process_delays(self, sv):
         self.delays = sv.iono_delay
+        self.delays += self.tropo_delay()
 
     def process_corrected_pseudorange(self):
         self.corrected_pseudorange = (
             self.pseudorange + C * self.clock_offset_sv - self.delays)
+
+    def tropo_delay(self):
+        """
+        Estimate the tropospheric delay.
+        """
+        elevation_squared = self.elevation * self.elevation
+        return 2.312 / math.sin(math.sqrt(elevation_squared + 1.904E-3)) + \
+            0.084 / math.sin(math.sqrt(elevation_squared + 0.6854E-3))
 
 def setup_logging():
     logging.basicConfig(

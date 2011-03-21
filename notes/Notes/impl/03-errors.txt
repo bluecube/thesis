@@ -65,8 +65,14 @@ For the first clock offset estimation we assume that {{./equation026.png?type=eq
 {{./equation007.png?type=equation}}
 {{./equation008.png?type=equation}}
 
-Calculated offset is stored in system time:
-{{./equation010.png?type=equation}} ; {{./equation011.png?type=equation}}
+Least squares to find out the (real) clock drift parameters
+
+{{./equation017.png?type=equation}}
+calculated from:
+{{./equation011.png?type=equation}} ; {{./equation010.png?type=equation}}
+Offset is stored in receiver time, that way we won't have to convert back to system time
+after the least squares
+
 
 === Receiver clock offset [s] vs gps system time [s] of the 30 minutes recording ===
 {{./clock_offsets.png}}
@@ -74,28 +80,7 @@ Calculated offset is stored in system time:
 The points with offset < 0 are messages with pseudorange == 0.0
 
 
-Least squares to find out the (real) clock drift and offset
-minimize {{./equation009.png?type=equation}}
-
-=>
-
-{{./equation012.png?type=equation}}
-{{./equation013.png?type=equation}}
-
-
-{{./equation014.png?type=equation}}
-
-{{./equation015.png?type=equation}}
-
 ==== ...and now the errors: ====
-From the previous step we know the receiver clock offset at given system time, but we need it at given receiver time.
-{{./equation017.png?type=equation}}
-{{./equation002.png?type=equation}}
-{{./equation018.png?type=equation}}
-{{./equation019.png?type=equation}}
-{{./equation020.png?type=equation}}
-
-
 {{./equation005.png?type=equation}}
 {{./equation028.png?type=equation}}
 {{./equation027.png?type=equation}}

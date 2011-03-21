@@ -209,13 +209,6 @@ def pass_two():
 
     block = []
 
-    # the following variables are temporary storage for the least squares.
-    # see the notes for better description
-    p = 0
-    q = 0
-    r = 0
-    s = 0
-
     block = [generator.__next__()]
 
     if not (arguments.group is None):
@@ -230,56 +223,35 @@ def pass_two():
 
     assert len(block) == 1
 
-    for measurement in generator:
-        offset = block[-1].raw_clock_offset
-        time = block[-1].time - offset
-        p += offset * time
-        q += offset
-        r += time
-        s += time * time
+    x = [block[-1].time]
+    y = [block[-1].raw_clock_offset]
 
+    for measurement in generator:
         if is_clock_correction(block[-1], measurement):
-            pass_three(block, p, q, r, s)
+            pass_three(block, x, y)
 
             if not (arguments.group is None):
                 return
 
             # reset it all.
             block = []
-            p = 0
-            q = 0
-            r = 0
-            s = 0
+            x = []
+            y = []
 
         block.append(measurement)
+        x.append(block[-1].time)
+        y.append(block[-1].raw_clock_offset)
+    
+    pass_three(block, x, y)
 
-    offset = block[-1].raw_clock_offset
-    time = block[-1].time - offset
-    p += offset * time
-    q += offset
-    r += time
-    s += time * time
-
-    pass_three(block, p, q, r, s)
-
-def pass_three(block, p, q, r, s):
+def pass_three(block, x, y):
     """
-    Do the main error calculations.
-    At this place we know both the physical position of the receiver
-    and the (hopefully precise) clock offset.
+    Do the least squares and the main error calculations.
     """
-    # finish the least squares calculation:
-    div = 1 / (len(block) * s - r * r)
-    a = (len(block) * p - q * r) * div
-    b = (q * s - p * r) * div
-
-    # convert the a and b to calculate clock offset from receiver sw time instead
-    # of gps system time.
-    b /= (1 + a)
-    a /= (1 + a)
+    a, b, c = numpy.polyfit(x, y, deg = 2)
 
     for measurement in block:
-        clock_offset = a * measurement.time + b
+        clock_offset = a * measurement.time * measurement.time + b * measurement.time + c
 
         error = (
             measurement.corrected_pseudorange - C * clock_offset -
@@ -296,7 +268,7 @@ def pass_three(block, p, q, r, s):
 
     logger.info("Pass 3: Found a block.")
     print("  length:", len(block))
-    print("  offset:", a, "* x +", b)
+    print("  offset:", a, "* x^2 +", b, "* x +", c)
     print("  time:  ", block[-1].time, "-", block[0].time, "=", (block[-1].time - block[0].time) / 60, "minutes")
 
 def print_histogram():

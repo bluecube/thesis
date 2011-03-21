@@ -88,7 +88,7 @@ class Measurement:
 
         self.geom_range = math.sqrt(user_to_sv * user_to_sv.T)
 
-        self.elevation = math.pi / 2 - math.acos((user_to_sv * receiver_pos.T) /
+        self.elevation = math.asin((user_to_sv * receiver_pos.T) /
             (self.geom_range * math.sqrt(receiver_pos * receiver_pos.T)))
 
     def process_raw_clock_offset(self):

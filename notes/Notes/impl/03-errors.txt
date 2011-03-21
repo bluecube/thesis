@@ -32,7 +32,7 @@ Every complete set of measurements has identical gps_sw time fields. This might 
 Receiver clock offset changes allmost linearly (~~100ms every 25 minutes ... That is too much, isn't it?) and wraps around after it gets to about 150 ms
 [*] Check what are reasonable values for clock drift in GPS receiver
 [ ] Relativistic effects!
-[ ] Tropospheric errors
+[*] Tropospheric errors
 
 ===== UERE computation: =====
 Only from recording, because this has to be done in multiple passes.
@@ -86,3 +86,7 @@ The points with offset < 0 are messages with pseudorange == 0.0
 {{./equation027.png?type=equation}}
 {{./equation029.png?type=equation}}
 {{./equation016.png?type=equation}}
+
+=== Compensating for tropospheric errors: ===
+http://home.tiscali.nl/~samsvl/pseucorr.htm
+

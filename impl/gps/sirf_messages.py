@@ -218,6 +218,30 @@ class NavigationLibrarySVStateData(_SirfReceivedMessageBase):
         
         return cls(fields)
 
+class SbasParameters(_SirfReceivedMessageBase):
+    packer = struct.Struct('>BBBBB8x')
+
+    @classmethod
+    def get_message_id(cls):
+        return 50
+
+    @classmethod
+    def from_bytes(cls, data):
+        unpacked = cls.packer.unpack(data)
+        (message_id, sbas_prn, sbas_mode, dgps_timeout, flag_bits) = unpacked
+
+        timeout = "User" if (flag_bits & 0x01) else "Default";
+        health = "Unhealthy" if (flag_bits & 0x02) else "Healthy";
+        correction = flag_bits & 0x04 != 0
+        sbas_prn_mode = "User" if (flag_bits & 0x08) else "Default";
+
+        fields = locals().copy()
+        del fields['cls']
+        del fields['data']
+        del fields['unpacked']
+        
+        return cls(fields)
+
 class SoftwareVersionString(_SirfReceivedMessageBase):
     """
     Response to poll message 132

@@ -248,10 +248,10 @@ def pass_three(block, x, y):
     """
     Do the least squares and the main error calculations.
     """
-    a, b, c = numpy.polyfit(x, y, deg = 2)
+    poly = numpy.poly1d(numpy.polyfit(x, y, deg = 2))
 
     for measurement in block:
-        clock_offset = a * measurement.time * measurement.time + b * measurement.time + c
+        clock_offset = poly(measurement.time)
 
         error = (
             measurement.corrected_pseudorange - C * clock_offset -
@@ -268,7 +268,7 @@ def pass_three(block, x, y):
 
     logger.info("Pass 3: Found a block.")
     print("  length:", len(block))
-    print("  offset:", a, "* x^2 +", b, "* x +", c)
+    print("  offset:", repr(poly))
     print("  time:  ", block[-1].time, "-", block[0].time, "=", (block[-1].time - block[0].time) / 60, "minutes")
 
 def print_histogram():

@@ -30,6 +30,9 @@ arguments = arg_parser.parse_args()
 
 x = gps.open_gps(arguments.gps)
 
+if arguments.filter is not None:
+    x.set_message_rate(arguments, 1)
+
 try:
     for msg in x:
         if arguments.filter is not None and msg.message_id != arguments.filter:

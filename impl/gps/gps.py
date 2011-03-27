@@ -52,7 +52,7 @@ class Gps(gps.gps_operations.GpsOperations):
         self._logger = logging.getLogger('localization.gps')
 
         self._mode = None
-        self._ser = serial_wrapper.SerialWrapper(None, timeout=2)
+        self._ser = gps.serial_wrapper.SerialWrapper(None, timeout=2)
         self._ser.port = port
 
         self._detect_mode(self.EXPECTED_MODES)
@@ -62,12 +62,12 @@ class Gps(gps.gps_operations.GpsOperations):
 
         # Now we're sure we are in SIRF mode.
         self._get_chipset_sw_version()
-        self.set_message_rate(sirf_messages.NavigationLibraryMeasurementData, 1)
-        self.set_message_rate(sirf_messages.NavigationLibrarySVStateData, 1)
+        self.set_message_rate(gps.sirf_messages.NavigationLibraryMeasurementData, 1)
+        self.set_message_rate(gps.sirf_messages.NavigationLibrarySVStateData, 1)
        
     def _get_chipset_sw_version(self):
-        self.send_message(sirf_messages.PollSoftwareVersion())
-        self._sirf_version_string = self.read_specific_message(sirf_messages.SoftwareVersionString).string
+        self.send_message(gps.sirf_messages.PollSoftwareVersion())
+        self._sirf_version_string = self.read_specific_message(gps.sirf_messages.SoftwareVersionString).string
         self._logger.info("SIRF chipset version string: " + self._sirf_version_string)
 
         if not self._sirf_version_string.startswith("GSW3"):
@@ -78,7 +78,7 @@ class Gps(gps.gps_operations.GpsOperations):
         Set how often a message gets sent by the SIRF chip.
         Rate is integer, meaning number of seconds, 0 means disabled.
         """
-        msg = sirf_messages.SetMessageRate()
+        msg = gps.sirf_messages.SetMessageRate()
         msg.mode = 0 # only set single message
         msg.update_rate = 1 # repeat every second
         msg.msg = msg_type
@@ -113,7 +113,7 @@ class Gps(gps.gps_operations.GpsOperations):
         Switch to SIRF binary mode from NMEA
         Only one constant speed will be used.
         """
-        nmea.send_sentence(self._ser, ("PSRF100", 0, self.SIRF_MODE[1], 8, 1, 0))
+        gps.nmea.send_sentence(self._ser, ("PSRF100", 0, self.SIRF_MODE[1], 8, 1, 0))
         self._switch_mode_internal(self.SIRF_MODE)
 
     def _sirf_to_nmea(self):
@@ -121,7 +121,7 @@ class Gps(gps.gps_operations.GpsOperations):
         Switch to NMEA mode from SIRF binary.
         Only one constant speed will be used.
         """
-        self.send_message(sirf_messages.SwitchToNmeaProtocol(speed = self.NMEA_MODE[1]))
+        self.send_message(gps.sirf_messages.SwitchToNmeaProtocol(speed = self.NMEA_MODE[1]))
         self._switch_mode_internal(self.NMEA_MODE)
 
     def _switch_mode_internal(self, mode):
@@ -201,15 +201,15 @@ class Gps(gps.gps_operations.GpsOperations):
 
         if protocol == 'NMEA':
             try:
-                nmea.read_sentence(self._ser)
+                gps.nmea.read_sentence(self._ser)
                 return True
-            except nmea.NmeaMessageError as e:
+            except gps.nmea.NmeaMessageError as e:
                 return False
         elif protocol == 'SIRF':
             try:
-                sirf.read_message(self._ser)
+                gps.sirf.read_message(self._ser)
                 return True
-            except sirf.SirfMessageError as e:
+            except gps.sirf.SirfMessageError as e:
                 return False
         else:
             raise Exception("Unknown protocol '" + protocol + "'.")
@@ -228,8 +228,8 @@ class Gps(gps.gps_operations.GpsOperations):
 
         while not data:
             try:
-                data = sirf.read_message(self._ser)
-            except sirf.SirfMessageError as e:
+                data = gps.sirf.read_message(self._ser)
+            except gps.sirf.SirfMessageError as e:
                 self._logger.warning("Sirf message error (" + str(e) + ").")
 
         self.last_msg_time = time.time()
@@ -240,4 +240,4 @@ class Gps(gps.gps_operations.GpsOperations):
         if self._mode[0] != 'SIRF':
             raise Exception("Sorry, I can only handle SIRF messages.")
         
-        sirf.send_message(self._ser, msg.to_bytes())
+        gps.sirf.send_message(self._ser, msg.to_bytes())

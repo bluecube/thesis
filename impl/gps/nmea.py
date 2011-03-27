@@ -36,7 +36,7 @@ def read_sentence(serial):
             raise NmeaMessageError("Checksum error")
 
         return line[1:-5].decode('ascii').split(',')
-    except serial_wrapper.SerialWrapperTimeout:
+    except gps.serial_wrapper.SerialWrapperTimeout:
         raise NmeaMessageError("Timed out.")
     finally:
         serial.timeout = old_timeout

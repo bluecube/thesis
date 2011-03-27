@@ -13,6 +13,14 @@ class GpsOperations:
         """
         raise NotImplemented()
 
+    def set_message_rate(self, msg_type, rate):
+        """
+        Set how often a message gets sent by the SIRF chip.
+        Rate is integer, meaning number of seconds, 0 means disabled.
+        This is a no-op unless we are on a real gps.
+        """
+        pass
+
     def read_message(self):
         """
         Read one recognized SIRF message from the gps.
@@ -34,7 +42,7 @@ class GpsOperations:
         May block for a long time, careful with this.
         """
 
-        if not issubclass(msg_type, sirf_messages._SirfReceivedMessageBase):
+        if not issubclass(msg_type, gps.sirf_messages._SirfReceivedMessageBase):
             raise TypeError("msg_type must be a message type.")
 
         msg = None

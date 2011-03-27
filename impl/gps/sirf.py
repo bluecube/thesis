@@ -39,7 +39,7 @@ def read_message(serial):
             raise SirfMessageError('Invalid message end sequence.')
 
         return data
-    except serial_wrapper.SerialWrapperTimeout:
+    except gps.serial_wrapper.SerialWrapperTimeout:
         raise SirfMessageError("Malformed message (timeout).")
     finally:
         serial.timeout = old_timeout

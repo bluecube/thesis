@@ -292,12 +292,20 @@ arg_parser.add_argument('--histogram', default=None, type=argparse.FileType("w")
     help="File into which the error histogram will go.")
 arg_parser.add_argument('--receiver-pos', type=numpy.matrix, default=None,
     help="Use this ECEF receiver position instead of computing it in phase 1.")
+arg_parser.add_argument('--only-pass1', action='store_true', default=False,
+    help="Only calculate the ECEF position of the receiver and print it in a form "
+    "suitable for --receiever-pos")
+
 arguments = arg_parser.parse_args()
 
 histogram = collections.Counter()
 
 if arguments.receiver_pos is None:
     receiver_pos = pass_one()
+
+    if arguments.only_pass1:
+        print("{0},{1},{2}".format(receiver_pos[0, 0], receiver_pos[0, 1], receiver_pos[0, 2]))
+        exit()
 else:
     logger.info("Skipping phase 1, because receiver pos was given.")
     receiver_pos = arguments.receiver_pos

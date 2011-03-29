@@ -6,6 +6,7 @@ import numpy
 import math
 import argparse
 import collections
+import itertools
 
 import gps.gps_replay
 
@@ -16,10 +17,14 @@ C = 299792458
 
 MAX_CLOCK_DRIFT = 1e-2
     # This is a maximum clock drift (in absolute value) between two
-    # measurement groups before we call it a clock correction
+    # measurement blocks before we call it a clock correction
 
 HISTOGRAM_RESOLUTION = 10
     # Width of error histogram bin in meters.
+
+OUTLIER_THRESHOLD = 100 / C
+    # Distance in seconds from the average clock offset of a group
+    # that is assumed an outlier.
 
 class Measurement:
     """
@@ -41,10 +46,12 @@ class Measurement:
         """
 
         if self.satellite_id not in svs:
-            return False
+            self.valid = False
+            return
 
         if self.pseudorange == 0.0:
-            return False
+            self.valid = False
+            return
 
         self.process_sv(svs[self.satellite_id])
         self.process_geometry()
@@ -53,7 +60,7 @@ class Measurement:
         self.process_corrected_pseudorange()
         self.process_raw_clock_offset()
 
-        return True
+        self.valid = True
 
     def process_sv(self, sv):
         """
@@ -128,34 +135,37 @@ def setup_logging():
 
 def measurement_generator():
     """
-    Yields measurements which are used in passes 2 and 3.
+    Yields measurements blocks which are used in passes 2 and 3.
+    Measurement blocks are lists of measurements.
     """
 
     replay = gps.gps_replay.GpsReplay(arguments.recording)
     sv = {}
 
-    group = []
-    groupTime = None
+    block = []
+    blockTime = None
 
     for msg in replay:
         if isinstance(msg, NavigationLibraryMeasurementData):
             measurement = Measurement(msg)
 
-            if groupTime == measurement.time:
-                group.append(measurement)
+            if blockTime == measurement.time:
+                block.append(measurement)
             else:
-                for x in group:
-                    if x.process(sv):
-                        yield x
+                if len(block):
+                    for x in block:
+                        x.process(sv)
+                    yield block
 
-                group = [measurement]
-                groupTime = measurement.time
+                block = [measurement]
+                blockTime = measurement.time
         elif isinstance(msg, NavigationLibrarySVStateData):
             sv[msg.satellite_id] = msg
 
-    for x in group:
-        if x.process(sv):
-            yield x
+    if len(block):
+        for x in block:
+            x.process(sv)
+        yield block
 
 def pass_one():
     logger.info("Pass 1: Estimate receiver position.")
@@ -180,7 +190,7 @@ def pass_one():
 
 def get_drift(m1, m2):
     """
-    Calculate clock drift between two measurement groups.
+    Calculate clock drift between two measurement blocks.
     """
     if m1.time == m2.time:
         return 0
@@ -207,50 +217,62 @@ def pass_two():
 
     generator = measurement_generator()
 
-    block = []
+    last = []
 
-    block = [generator.__next__()]
-
-    if not (arguments.group is None):
-        logger.debug("skipping " + str(arguments.group) + " blocks")
-        for i in range(arguments.group):
-            for measurement in generator:
-                if is_clock_correction(block[-1], measurement):
-                    block = [measurement]
+    if not (arguments.block is None):
+        logger.debug("skipping " + str(arguments.block) + " blocks")
+        for i in range(arguments.block):
+            for group in generator:
+                filtered = [measurement for measurement in group if measurement.valid]
+                if not len(last) or is_clock_correction(last[-1], filtered[-1]):
+                    last = group
                     break
-                else:
-                    block.append(measurement)
 
-    assert len(block) == 1
+    block = []
+    x = []
+    y = []
 
-    x = [block[-1].time]
-    y = [block[-1].raw_clock_offset]
+    if len(last):
+        generator = itertools.chain([last], generator) # this is something like unget
 
-    for measurement in generator:
-        if is_clock_correction(block[-1], measurement):
-            pass_three(block, x, y)
+    for group in generator:
+        filtered = [measurement for measurement in group if measurement.valid]
 
-            if not (arguments.group is None):
-                return
+        if not len(block) or is_clock_correction(block[-1], filtered[-1]):
+            if len(block):
+                pass_three(block, x, y)
+
+                if not (arguments.block is None):
+                    return
 
             # reset it all.
             block = []
             x = []
             y = []
 
-        block.append(measurement)
-        x.append(block[-1].time)
-        y.append(block[-1].raw_clock_offset)
+        block.extend(filtered)
+
+        # outlier detection:
+        avg_offset = (
+            math.fsum((measurement.raw_clock_offset for measurement in filtered)) /
+            len(filtered))
+        for measurement in filtered:
+            if not measurement.valid:
+                continue
+            if abs(measurement.raw_clock_offset - avg_offset) > OUTLIER_THRESHOLD:
+                continue
+            x.append(measurement.time)
+            y.append(measurement.raw_clock_offset)
     
     pass_three(block, x, y)
 
-def pass_three(block, x, y):
+def pass_three(group, x, y):
     """
     Do the least squares and the main error calculations.
     """
     poly = numpy.poly1d(numpy.polyfit(x, y, deg = 2))
 
-    for measurement in block:
+    for measurement in group:
         clock_offset = poly(measurement.time)
 
         error = (
@@ -266,10 +288,10 @@ def pass_three(block, x, y):
 
         histogram[error // HISTOGRAM_RESOLUTION] += 1
 
-    logger.info("Pass 3: Found a block.")
-    print("  length:", len(block))
+    logger.info("Pass 3: Found a group.")
+    print("  length:", len(group))
     print("  offset:", repr(poly))
-    print("  time:  ", block[-1].time, "-", block[0].time, "=", (block[-1].time - block[0].time) / 60, "minutes")
+    print("  time:  ", group[-1].time, "-", group[0].time, "=", (group[-1].time - group[0].time) / 60, "minutes")
 
 def print_histogram():
     for i in sorted(histogram):
@@ -283,8 +305,8 @@ arg_parser = argparse.ArgumentParser(
     description="Calculate the UERE from recorded data.\n"
     "Assumes that the receiver was stationary during whole recording.")
 arg_parser.add_argument('recording')
-arg_parser.add_argument('--group', default=None, type=int,
-    help="Work only with the given group in phase 3. For testing only.")
+arg_parser.add_argument('--block', default=None, type=int,
+    help="Work only with the given block in phase 3. For testing only.")
 arg_parser.add_argument('--datapoints', default=open("/dev/null", "w"),
     type=argparse.FileType("w"),
     help="File into which the data points in phase 3 will go.")

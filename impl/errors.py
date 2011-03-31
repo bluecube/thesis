@@ -168,22 +168,32 @@ def measurement_generator():
         yield block
 
 def pass_one():
+    FIXED_POINT_CONSTANT = 1000
+
     logger.info("Pass 1: Estimate receiver position.")
 
     replay = gps.gps_replay.GpsReplay(arguments.recording)
 
     count = 0
-    receiver_pos = numpy.matrix([[0., 0., 0.]])
+    x = 0
+    y = 0
+    z = 0
 
     try:
         for msg in replay:
             if isinstance(msg, MeasureNavigationDataOut):
                 count += 1
-                receiver_pos += msg.pos
+                x += int(FIXED_POINT_CONSTANT * msg.pos[0, 0])
+                y += int(FIXED_POINT_CONSTANT * msg.pos[0, 1])
+                z += int(FIXED_POINT_CONSTANT * msg.pos[0, 2])
     except KeyboardInterrupt:
         logger.info("Ok, that should be enough.")
 
-    receiver_pos /= count
+    receiver_pos = numpy.matrix([[
+        (x / count) / FIXED_POINT_CONSTANT,
+        (y / count) / FIXED_POINT_CONSTANT,
+        (z / count) / FIXED_POINT_CONSTANT]])
+
     logger.debug("Found " + str(count) + " messages, average position is " + str(receiver_pos) + ".")
 
     return receiver_pos
@@ -326,7 +336,7 @@ if arguments.receiver_pos is None:
     receiver_pos = pass_one()
 
     if arguments.only_pass1:
-        print("{0},{1},{2}".format(receiver_pos[0, 0], receiver_pos[0, 1], receiver_pos[0, 2]))
+        print("{0!r},{1!r},{2!r}".format(receiver_pos[0, 0], receiver_pos[0, 1], receiver_pos[0, 2]))
         exit()
 else:
     logger.info("Skipping phase 1, because receiver pos was given.")

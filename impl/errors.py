@@ -19,7 +19,7 @@ MAX_CLOCK_DRIFT = 1e-2
     # This is a maximum clock drift (in absolute value) between two
     # measurement blocks before we call it a clock correction
 
-HISTOGRAM_RESOLUTION = 10
+HISTOGRAM_RESOLUTION = 1
     # Width of error histogram bin in meters.
 
 OUTLIER_THRESHOLD = 100 / C
@@ -273,14 +273,22 @@ def pass_two():
                 continue
             x.append(measurement.time)
             y.append(measurement.raw_clock_offset)
-    
+
     pass_three(block, x, y)
 
 def pass_three(group, x, y):
     """
     Do the least squares and the main error calculations.
     """
-    poly = numpy.poly1d(numpy.polyfit(x, y, deg = 2))
+    try:
+        poly = numpy.poly1d(numpy.polyfit(x, y, deg = 2))
+    except TypeError:
+        print("!!!!!!!!!!!!!!!!!!!!!!!")
+        print("  length:", len(group))
+        print("  length(x):", len(x))
+        print("  length(y):", len(y))
+        print("  time:  ", group[-1].time, "-", group[0].time, "=", (group[-1].time - group[0].time) / 60, "minutes")
+        return
 
     for measurement in group:
         clock_offset = poly(measurement.time)

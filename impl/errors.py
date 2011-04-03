@@ -267,9 +267,9 @@ def pass_two():
             math.fsum((measurement.raw_clock_offset for measurement in filtered)) /
             len(filtered))
         for measurement in filtered:
-            if not measurement.valid:
-                continue
-            if abs(measurement.raw_clock_offset - avg_offset) > OUTLIER_THRESHOLD:
+            measurement.is_outlier = \
+                abs(measurement.raw_clock_offset - avg_offset) > OUTLIER_THRESHOLD
+            if measurement.is_outlier:
                 continue
             x.append(measurement.time)
             y.append(measurement.raw_clock_offset)

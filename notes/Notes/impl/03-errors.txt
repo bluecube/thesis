@@ -90,3 +90,7 @@ The points with offset < 0 are messages with pseudorange == 0.0
 === Compensating for tropospheric errors: ===
 http://home.tiscali.nl/~samsvl/pseucorr.htm
 
+Error histogram so far (2011-04-04):
+{{./error_histogram.png}}
+Still not really good.
+The skew looks weird. Maybe multipath errors?

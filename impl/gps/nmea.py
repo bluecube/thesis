@@ -1,7 +1,7 @@
 import operator
 import functools
 import time
-import gps.serial_wrapper
+from . import serial_wrapper
 
 class NmeaMessageError(Exception):
     pass
@@ -36,7 +36,7 @@ def read_sentence(serial):
             raise NmeaMessageError("Checksum error")
 
         return line[1:-5].decode('ascii').split(',')
-    except gps.serial_wrapper.SerialWrapperTimeout:
+    except serial_wrapper.SerialWrapperTimeout:
         raise NmeaMessageError("Timed out.")
     finally:
         serial.timeout = old_timeout

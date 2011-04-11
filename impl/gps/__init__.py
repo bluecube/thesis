@@ -2,8 +2,8 @@ __all__ = ['gps', 'gps_operations', 'gps_replay',
     'nmea', 'sirf', 'sirf_messages']
     # serial_wrapper is intentionally missing.
 
-from gps.gps import Gps
-from gps.gps_replay import GpsReplay
+from . import gps
+from . import gps_replay
 
 def open_gps(file):
     """
@@ -11,7 +11,7 @@ def open_gps(file):
     tries a real gps.
     """
     try:
-        return GpsReplay(file)
+        return gps_replay.GpsReplay(file)
     except IOError:
-        return Gps(file)
+        return gps.Gps(file)
 

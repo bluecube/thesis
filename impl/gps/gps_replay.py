@@ -3,11 +3,11 @@ import logging
 import itertools
 import gzip
 
-import gps.gps_operations
+from . import gps_operations
 
 import pickle
 
-class GpsReplay(gps.gps_operations.GpsOperations):
+class GpsReplay(gps_operations.GpsOperations):
     """
     Replay SIRF messages from a recording.
     """

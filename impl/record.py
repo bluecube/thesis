@@ -38,11 +38,15 @@ pickle.dump(x._sirf_version_string, f)
 
 try:
     while True:
-        msg = x._read_binary_sirf_msg()
+        try:
+            msg = x._read_binary_sirf_msg()
+        except EOFError:
+            break
+
         row = x.last_msg_time, msg
         
         pickle.dump(row, f)
-        
+
 except KeyboardInterrupt:
     logger.info("Terminating")
 except Exception as e:

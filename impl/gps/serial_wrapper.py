@@ -19,7 +19,7 @@ class SerialWrapper(serial.Serial):
         self._wrapper_buffer = b''
 
     def flushInput(self):
-        super().flushInput()
+        super(SerialWrapper, self).flushInput()
         self._wrapper_buffer = b''
 
     def _raw_read_with_timeout(self, count, end_time):
@@ -75,3 +75,5 @@ class SerialWrapper(serial.Serial):
         self._wrapper_buffer = self._wrapper_buffer[found.end():]
 
         return output
+
+to_bytes = serial.to_bytes

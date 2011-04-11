@@ -22,7 +22,7 @@ def read_message(serial):
     try:
         end_time = time.time() + serial.timeout
 
-        serial.read_until(bytes([0xA0, 0xA2]), end_time)
+        serial.read_until(serial_wrapper.to_bytes([0xA0, 0xA2]), end_time)
 
         length = struct.unpack('>H', serial.read_with_timeout(2, end_time))[0]
 
@@ -35,7 +35,7 @@ def read_message(serial):
             raise SirfMessageError('Invalid checksum.')
         
         message_ending = serial.read_with_timeout(2, end_time)
-        if message_ending != bytes([0xB0, 0xB3]):
+        if message_ending != serial_wrapper.to_bytes([0xB0, 0xB3]):
             raise SirfMessageError('Invalid message end sequence.')
 
         return data
@@ -55,9 +55,9 @@ def send_message(serial, data):
 
     checksum = sum(data) & 0x7FFF
 
-    serial.write(bytes([0xA0, 0xA2, len(data) >> 8, len(data) & 0xFF]))
+    serial.write(serial_wrapper.to_bytes([0xA0, 0xA2, len(data) >> 8, len(data) & 0xFF]))
     serial.write(data)
-    serial.write(bytes([checksum >> 8, checksum & 0xFF, 0xB0, 0xB3]))
+    serial.write(serial_wrapper.to_bytes([checksum >> 8, checksum & 0xFF, 0xB0, 0xB3]))
     serial.flush()
 
 

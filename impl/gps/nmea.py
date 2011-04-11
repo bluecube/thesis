@@ -61,9 +61,9 @@ def _build_sentence(fields):
         if field.find(',') != -1:
             raise NmeaException("Fields may not contain ','.")
 
-    line = ",".join(fields).encode('ascii')
+    line = ",".join(fields).encode()
 
     checksum = functools.reduce(operator.__xor__, line)
 
     return "$".encode('ascii') + line + \
-        "*{:02X}\r\n".format(checksum).encode('ascii')
+        "*{0:02X}\r\n".format(checksum).encode()

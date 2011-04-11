@@ -1,7 +1,7 @@
 from . import sirf
 from . import sirf_messages
 
-class GpsOperations:
+class GpsOperations(object):
     """
     Operations common to both real gps and recording.
     """
@@ -63,3 +63,10 @@ class GpsOperations:
         We want to support iterator protocol.
         """
         return self.read_message()
+
+    def next(self):
+        """
+        Iterator protocol for python 2.x
+        """
+        return self.__next__()
+        

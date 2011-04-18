@@ -94,3 +94,13 @@ Error histogram so far (2011-04-04):
 {{./error_histogram.png}}
 Still not really good.
 The skew looks weird. Maybe multipath errors?
+
+
+
+
+
+
+
+
+Averaged receiver position for the "month" dataset:
+3960414.8872512225,1243097.6094489514,4826752.3188620238

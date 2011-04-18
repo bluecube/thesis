@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 import logging
-import sys
 import numpy
 import math
 import argparse
@@ -91,12 +90,12 @@ class Measurement:
         Handles the relative positions of user and SV.
         This is distance and SV elevation.
         """
-        user_to_sv = self.sv_pos - receiver_pos
+        user_to_sv = self.sv_pos - arguments.receiver_pos
 
         self.geom_range = math.sqrt(user_to_sv * user_to_sv.T)
 
-        self.elevation = math.asin((user_to_sv * receiver_pos.T) /
-            (self.geom_range * math.sqrt(receiver_pos * receiver_pos.T)))
+        self.elevation = math.asin((user_to_sv * arguments.receiver_pos.T) /
+            (self.geom_range * math.sqrt(arguments.receiver_pos * arguments.receiver_pos.T)))
 
     def process_raw_clock_offset(self):
         """
@@ -135,7 +134,7 @@ def setup_logging():
 
 def measurement_generator():
     """
-    Yields measurements blocks which are used in passes 2 and 3.
+    Yields measurements blocks.
     Measurement blocks are lists of measurements.
     """
 
@@ -167,37 +166,6 @@ def measurement_generator():
             x.process(sv)
         yield block
 
-def pass_one():
-    FIXED_POINT_CONSTANT = 1000
-
-    logger.info("Pass 1: Estimate receiver position.")
-
-    replay = gps.gps_replay.GpsReplay(arguments.recording)
-
-    count = 0
-    x = 0
-    y = 0
-    z = 0
-
-    try:
-        for msg in replay:
-            if isinstance(msg, MeasureNavigationDataOut):
-                count += 1
-                x += int(FIXED_POINT_CONSTANT * msg.pos[0, 0])
-                y += int(FIXED_POINT_CONSTANT * msg.pos[0, 1])
-                z += int(FIXED_POINT_CONSTANT * msg.pos[0, 2])
-    except KeyboardInterrupt:
-        logger.info("Ok, that should be enough.")
-
-    receiver_pos = numpy.matrix([[
-        (x / count) / FIXED_POINT_CONSTANT,
-        (y / count) / FIXED_POINT_CONSTANT,
-        (z / count) / FIXED_POINT_CONSTANT]])
-
-    logger.debug("Found " + str(count) + " messages, average position is " + str(receiver_pos) + ".")
-
-    return receiver_pos
-
 def get_drift(m1, m2):
     """
     Calculate clock drift between two measurement blocks.
@@ -217,13 +185,12 @@ def is_clock_correction(m1, m2):
     """
     return abs(get_drift(m1, m2)) > MAX_CLOCK_DRIFT
 
-def pass_two():
+def split_to_blocks():
     """
     Splits the measurements into blocks between clock corrections,
-    calculates the least squares on the blocks and calls pass
-    three on every block.
+    calculates the least squares on the blocks and process every block.
     """
-    logger.info("Pass 2: Analyze clock offsets.")
+    logger.info("Splitting to blocks.")
 
     generator = measurement_generator()
 
@@ -250,7 +217,7 @@ def pass_two():
 
         if not len(block) or is_clock_correction(block[-1], filtered[-1]):
             if len(block):
-                pass_three(block, x, y)
+                process_block(block, x, y)
 
                 if not (arguments.block is None):
                     return
@@ -274,23 +241,35 @@ def pass_two():
             x.append(measurement.time)
             y.append(measurement.raw_clock_offset)
 
-    pass_three(block, x, y)
+    process_block(block, x, y)
 
-def pass_three(group, x, y):
+def process_block(block, x, y):
     """
     Do the least squares and the main error calculations.
     """
+
     try:
         poly = numpy.poly1d(numpy.polyfit(x, y, deg = 2))
     except TypeError:
         print("!!!!!!!!!!!!!!!!!!!!!!!")
-        print("  length:", len(group))
+        print("  length:", len(block))
         print("  length(x):", len(x))
         print("  length(y):", len(y))
-        print("  time:  ", group[-1].time, "-", group[0].time, "=", (group[-1].time - group[0].time) / 60, "minutes")
+        print("  time:  ", block[-1].time, "-", block[0].time, "=", (block[-1].time - block[0].time) / 60, "minutes")
         return
 
-    for measurement in group:
+    # Recalculating the polynomial once more:
+    # x = []
+    # y = []
+    # for measurement in block:
+    #     clock_offset = poly(measurement.time)
+    #     if not abs(measurement.raw_clock_offset - clock_offset) > OUTLIER_THRESHOLD:
+    #         x.append(measurement.time)
+    #         y.append(measurement.raw_clock_offset)
+
+    # poly = numpy.poly1d(numpy.polyfit(x, y, deg = 2))
+
+    for measurement in block:
         clock_offset = poly(measurement.time)
 
         error = (
@@ -306,10 +285,10 @@ def pass_three(group, x, y):
 
         histogram[error // HISTOGRAM_RESOLUTION] += 1
 
-    logger.info("Pass 3: Found a group.")
-    print("  length:", len(group))
+    logger.info("Found a block.")
+    print("  length:", len(block))
     print("  offset:", repr(poly))
-    print("  time:  ", group[-1].time, "-", group[0].time, "=", (group[-1].time - group[0].time) / 60, "minutes")
+    print("  time:  ", block[-1].time, "-", block[0].time, "=", (block[-1].time - block[0].time) / 60, "minutes")
 
 def print_histogram():
     for i in sorted(histogram):
@@ -323,6 +302,8 @@ arg_parser = argparse.ArgumentParser(
     description="Calculate the UERE from recorded data.\n"
     "Assumes that the receiver was stationary during whole recording.")
 arg_parser.add_argument('recording')
+arg_parser.add_argument('--receiver-pos', type=numpy.matrix, default=None, required=True,
+    help="Ground truth receiver position.")
 arg_parser.add_argument('--block', default=None, type=int,
     help="Work only with the given block in phase 3. For testing only.")
 arg_parser.add_argument('--datapoints', default=open("/dev/null", "w"),
@@ -330,28 +311,12 @@ arg_parser.add_argument('--datapoints', default=open("/dev/null", "w"),
     help="File into which the data points in phase 3 will go.")
 arg_parser.add_argument('--histogram', default=None, type=argparse.FileType("w"),
     help="File into which the error histogram will go.")
-arg_parser.add_argument('--receiver-pos', type=numpy.matrix, default=None,
-    help="Use this ECEF receiver position instead of computing it in phase 1.")
-arg_parser.add_argument('--only-pass1', action='store_true', default=False,
-    help="Only calculate the ECEF position of the receiver and print it in a form "
-    "suitable for --receiever-pos")
-
 arguments = arg_parser.parse_args()
 
 histogram = collections.Counter()
 
-if arguments.receiver_pos is None:
-    receiver_pos = pass_one()
-
-    if arguments.only_pass1:
-        print("{0!r},{1!r},{2!r}".format(receiver_pos[0, 0], receiver_pos[0, 1], receiver_pos[0, 2]))
-        exit()
-else:
-    logger.info("Skipping phase 1, because receiver pos was given.")
-    receiver_pos = arguments.receiver_pos
-
 try:
-    pass_two()
+    split_to_blocks()
     if arguments.histogram:
         print_histogram()
 

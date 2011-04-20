@@ -4,10 +4,10 @@ import logging
 import numpy
 import math
 import argparse
-import collections
 import itertools
 
 import gps.gps_replay
+import stats
 
 from gps.sirf_messages import *
 
@@ -18,13 +18,10 @@ MAX_CLOCK_DRIFT = 1e-2
     # This is a maximum clock drift (in absolute value) between two
     # measurement blocks before we call it a clock correction
 
-HISTOGRAM_RESOLUTION = 1
-    # Width of error histogram bin in meters.
-
 OUTLIER_THRESHOLD = 100 / C
     # Distance in seconds from the average clock offset of a group
     # that is assumed an outlier.
-
+       
 class Measurement:
     """
     A single measurement of the user to sv distance, speed, ....
@@ -185,6 +182,7 @@ def is_clock_correction(m1, m2):
     """
     return abs(get_drift(m1, m2)) > MAX_CLOCK_DRIFT
 
+
 def split_to_blocks():
     """
     Splits the measurements into blocks between clock corrections,
@@ -282,17 +280,13 @@ def process_block(block, x, y):
             measurement.satellite_id,
             min(measurement.c_n),
             file=arguments.datapoints)
-
-        histogram[error // HISTOGRAM_RESOLUTION] += 1
+        
+        stats.add(error)
 
     logger.info("Found a block.")
     print("  length:", len(block))
     print("  offset:", repr(poly))
     print("  time:  ", block[-1].time, "-", block[0].time, "=", (block[-1].time - block[0].time) / 60, "minutes")
-
-def print_histogram():
-    for i in sorted(histogram):
-        print(i * HISTOGRAM_RESOLUTION, histogram[i], file=arguments.histogram)
 
 setup_logging()
 
@@ -311,17 +305,27 @@ arg_parser.add_argument('--datapoints', default=open("/dev/null", "w"),
     help="File into which the data points in phase 3 will go.")
 arg_parser.add_argument('--histogram', default=None, type=argparse.FileType("w"),
     help="File into which the error histogram will go.")
+arg_parser.add_argument('--precision', default=1000, type=int,
+    help="Multiplier for fixed point arithmetic.")
+arg_parser.add_argument('--hist-resolution', default=1, type=float,
+    help="Width of the histogram bin.")
 arguments = arg_parser.parse_args()
 
-histogram = collections.Counter()
+stats = stats.Stats(arguments.precision, arguments.hist_resolution)
 
 try:
     split_to_blocks()
     if arguments.histogram:
-        print_histogram()
+        stats.print_histogram(arguments.histogram)
 
 except KeyboardInterrupt:
     logger.info("Terminating.")
 else:
     logger.info("Done.")
+
+
+print("mean: {0!r}".format(stats.mean()))
+print("variance: {0!r}".format(stats.variance()))
+print("sigma: {0!r}".format(math.sqrt(stats.variance())))
+
 

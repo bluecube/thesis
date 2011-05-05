@@ -206,6 +206,7 @@ def split_to_blocks():
     block = []
     x = []
     y = []
+    outlier_count = 0
 
     if len(last):
         generator = itertools.chain([last], generator) # this is something like unget
@@ -215,7 +216,7 @@ def split_to_blocks():
 
         if not len(block) or is_clock_correction(block[-1], filtered[-1]):
             if len(block):
-                process_block(block, x, y)
+                process_block(block, x, y, outlier_count)
 
                 if not (arguments.block is None):
                     return
@@ -224,8 +225,7 @@ def split_to_blocks():
             block = []
             x = []
             y = []
-
-        block.extend(filtered)
+            outlier_count = 0
 
         # outlier detection:
         avg_offset = (
@@ -235,13 +235,16 @@ def split_to_blocks():
             measurement.is_outlier = \
                 abs(measurement.raw_clock_offset - avg_offset) > OUTLIER_THRESHOLD
             if measurement.is_outlier:
+                outlier_count += 1
                 continue
             x.append(measurement.time)
             y.append(measurement.raw_clock_offset)
+            block.append(measurement)
 
-    process_block(block, x, y)
 
-def process_block(block, x, y):
+    process_block(block, x, y, outlier_count)
+
+def process_block(block, x, y, outlier_count):
     """
     Do the least squares and the main error calculations.
     """
@@ -254,6 +257,7 @@ def process_block(block, x, y):
         print("  length(x):", len(x))
         print("  length(y):", len(y))
         print("  time:  ", block[-1].time, "-", block[0].time, "=", (block[-1].time - block[0].time) / 60, "minutes")
+        print("  outlier count:", outlier_count)
         return
 
     # Recalculating the polynomial once more:
@@ -287,6 +291,7 @@ def process_block(block, x, y):
     print("  length:", len(block))
     print("  offset:", repr(poly))
     print("  time:  ", block[-1].time, "-", block[0].time, "=", (block[-1].time - block[0].time) / 60, "minutes")
+    print("  outlier count:", outlier_count)
 
 setup_logging()
 
@@ -325,7 +330,6 @@ else:
 
 
 print("mean: {0!r}".format(stats.mean()))
-print("variance: {0!r}".format(stats.variance()))
-print("sigma: {0!r}".format(math.sqrt(stats.variance())))
+print("stdev: {0!r}".format(math.sqrt(stats.variance())))
 
 

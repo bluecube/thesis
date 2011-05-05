@@ -141,6 +141,8 @@ def measurement_generator():
     block = []
     blockTime = None
 
+    clock_status = None
+
     for msg in replay:
         if isinstance(msg, NavigationLibraryMeasurementData):
             measurement = Measurement(msg)
@@ -151,17 +153,19 @@ def measurement_generator():
                 if len(block):
                     for x in block:
                         x.process(sv)
-                    yield block
+                    yield (block, clock_status)
 
                 block = [measurement]
                 blockTime = measurement.time
         elif isinstance(msg, NavigationLibrarySVStateData):
             sv[msg.satellite_id] = msg
+        elif isinstance(msg, ClockStatusData):
+            clock_status = msg
 
     if len(block):
         for x in block:
             x.process(sv)
-        yield block
+        yield (block, clock_status)
 
 def get_drift(m1, m2):
     """
@@ -198,6 +202,7 @@ def split_to_blocks():
         logger.debug("skipping " + str(arguments.block) + " blocks")
         for i in range(arguments.block):
             for group in generator:
+                (group, clock_status) = group
                 filtered = [measurement for measurement in group if measurement.valid]
                 if not len(last) or is_clock_correction(last[-1], filtered[-1]):
                     last = group
@@ -211,7 +216,19 @@ def split_to_blocks():
     if len(last):
         generator = itertools.chain([last], generator) # this is something like unget
 
+    if arguments.sirf_clock_offsets:
+        for group in generator:
+            (group, clock_status) = group
+
+            for measurement in group:
+                if not measurement.valid:
+                    continue
+                process_measurement_error(measurement, clock_status.clock_bias * 1e-9)
+
+        return
+
     for group in generator:
+        (group, clock_status) = group
         filtered = [measurement for measurement in group if measurement.valid]
 
         if not len(block) or is_clock_correction(block[-1], filtered[-1]):
@@ -244,6 +261,21 @@ def split_to_blocks():
 
     process_block(block, x, y, outlier_count)
 
+def process_measurement_error(measurement, clock_offset):
+    error = (
+        measurement.corrected_pseudorange - C * clock_offset -
+        measurement.geom_range)
+
+    print(
+        measurement.time - clock_offset,
+        error,
+        measurement.satellite_id,
+        min(measurement.c_n),
+        file=arguments.datapoints)
+    
+    stats.add(error)
+
+
 def process_block(block, x, y, outlier_count):
     """
     Do the least squares and the main error calculations.
@@ -274,18 +306,7 @@ def process_block(block, x, y, outlier_count):
     for measurement in block:
         clock_offset = poly(measurement.time)
 
-        error = (
-            measurement.corrected_pseudorange - C * clock_offset -
-            measurement.geom_range)
-
-        print(
-            measurement.time - clock_offset,
-            error,
-            measurement.satellite_id,
-            min(measurement.c_n),
-            file=arguments.datapoints)
-        
-        stats.add(error)
+        process_measurement_error(measurement, clock_offset)
 
     logger.info("Found a block.")
     print("  length:", len(block))
@@ -314,6 +335,8 @@ arg_parser.add_argument('--precision', default=1000, type=int,
     help="Multiplier for fixed point arithmetic.")
 arg_parser.add_argument('--hist-resolution', default=1, type=float,
     help="Width of the histogram bin.")
+arg_parser.add_argument('--sirf-clock-offsets', default=False, action='store_true',
+    help="Use clock offsets from sirf messages instead of calculating them.")
 arguments = arg_parser.parse_args()
 
 stats = stats.Stats(arguments.precision, arguments.hist_resolution)

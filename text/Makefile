@@ -13,14 +13,13 @@ IMAGEFILES = $(MPFILES:.mp=.pdf) $(EPSFILES:.eps=.pdf) \
 
 RMEVERYTHING = rm -f *.1 *.log *.aux *.out *.pdf *.toc mperr.tex mptextmp.mp *.mpx *.mpo *-temp.* *-temp-* *.dependencies
 
-all: $(FILENAME).pdf
+all: $(FILENAME).pdf todo.txt
 
 view: all
 	evince $(FILENAME).pdf &
 
 %.pdf: %.tex
-	cd $(<D); pdflatex $(<F)
-	cd $(<D); pdflatex $(<F)
+	cd $(<D); pdflatex $(<F) -file-line-error
 
 %.dependencies: %.tex
 	echo -n "$*.pdf: " > $@
@@ -37,5 +36,9 @@ view: all
 clean:
 	$(RMEVERYTHING)
 	cd img ; $(RMEVERYTHING)
+	rm todo.txt
+
+todo.txt: $(TEXFILES)
+	./todo.sh $(TEXFILES) > todo.txt
 
 include $(FILENAME).dependencies

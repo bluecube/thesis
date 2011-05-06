@@ -1,40 +1,3 @@
-\documentclass[11pt,notitlepage,a4paper,pdftex]{memoir}
-
-\usepackage[utf8]{inputenc} 
-\usepackage[T1]{fontenc}
-
-\usepackage{a4wide}
-\usepackage{graphicx}
-\usepackage{microtype}
-\usepackage[
-	left=4cm,
-	right=3cm,
-	top=3cm,
-	]{geometry}
-\usepackage[
-	a4paper,
-	unicode,
-	colorlinks,
-	linkcolor=black,
-	urlcolor=black,
-	citecolor=black,
-	]{hyperref}
-\usepackage{url}
-
-%% Define a new style for url that will use a smaller font.
-\makeatletter
-\def\url@smallerstyle{%
-  \@ifundefined{selectfont}{\def\UrlFont{\sf}}{\def\UrlFont{\footnotesize\ttfamily}}}
-\makeatother
-%% Now actually use the newly defined style.
-\urlstyle{smaller}
-
-% Text: garamond, palatino, bookman old style, baskerville
-% Headings: futura Century gothic, gill sans, futura
-% http://www.kronto.org/thesis/tips/packages.html
-
-\begin{document}
-
 \chapter{Introduction}
 
 Localization is an important task for autonomous or semi-autonomous robots
@@ -65,18 +28,3 @@ The second chapter describes the GPS system and its operating principles.
 The third chapter describes Monte Carlo Localization.
 Fourth chapter talks about experiments with fusing of GPS data into
 MCL localization.
-
-\chapter{GPS}
-
-\section{History of GPS}
-
-\section{Principle of operation}
-
-
-\chapter{Monte Carlo Localization}
-
-\chapter{GPS in Monte Carlo Localization}
-
-\chapter{Conclusion}
-
-\end{document}

@@ -1,0 +1,34 @@
+\ProvidesPackage{thesis_style}
+
+\usepackage[utf8]{inputenc} 
+\usepackage[T1]{fontenc}
+
+\usepackage{a4wide}
+\usepackage{graphicx}
+\usepackage{microtype}
+\usepackage[
+	left=4cm,
+	right=3cm,
+	top=3cm,
+	]{geometry}
+\usepackage[
+	a4paper,
+	unicode,
+	colorlinks,
+	linkcolor=black,
+	urlcolor=black,
+	citecolor=black,
+	]{hyperref}
+\usepackage[hyphens]{url}
+
+%% Define a new style for url that will use a smaller font.
+\makeatletter
+\def\url@smallerstyle{%
+  \@ifundefined{selectfont}{\def\UrlFont{\sf}}{\def\UrlFont{\footnotesize\ttfamily}}}
+\makeatother
+%% Now actually use the newly defined style.
+\urlstyle{smaller}
+
+% Text: garamond, palatino, bookman old style, baskerville
+% Headings: futura Century gothic, gill sans, futura
+% http://www.kronto.org/thesis/tips/packages.html

@@ -1,15 +1,22 @@
 \ProvidesPackage{thesis_style}
 
+\OnehalfSpacing
+
+\usepackage[hyphens]{url}
+
 \usepackage[utf8]{inputenc} 
 \usepackage[T1]{fontenc}
+\usepackage[czech,english]{babel}
 
 \usepackage{a4wide}
 \usepackage{graphicx}
 \usepackage{microtype}
 \usepackage[
-	left=4cm,
-	right=3cm,
-	top=3cm,
+	inner=25mm,
+	outer=25mm,
+	top=25mm,
+	bottom=30mm,
+	bindingoffset=10mm
 	]{geometry}
 \usepackage[
 	a4paper,
@@ -19,7 +26,6 @@
 	urlcolor=black,
 	citecolor=black,
 	]{hyperref}
-\usepackage[hyphens]{url}
 
 %% Define a new style for url that will use a smaller font.
 \makeatletter
@@ -28,6 +34,8 @@
 \makeatother
 %% Now actually use the newly defined style.
 \urlstyle{smaller}
+
+\usepackage{tgpagella} % Gyre pagella -- based on palatino
 
 % Text: garamond, palatino, bookman old style, baskerville
 % Headings: futura Century gothic, gill sans, futura

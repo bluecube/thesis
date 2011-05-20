@@ -1,25 +1,31 @@
 \chapter{Introduction}
 
-Localization is an important task for autonomous or semi-autonomous robots
+%Localization is an important task for autonomous or semi-autonomous robots
 
 Outdoor robots may navigate large areas without detailed maps available, this limits
 the usefulness of some sensors used for indoor localization, like laser range finders.
+This leaves a robot designer looking for alternative sensors.
 
-Global positioning system, or GPS for short, is a satellite navigation system
-
+Global positioning system, or GPS for short, is a satellite navigation system that
+provides position, velocity and time information for any place on Earth with direct
+satellite visibility.
 
 Seeing its use in automotive industry, GPS seems to be an good candidate for
 localization in robots operating in outdoor areas.
 However if GPS should be used as one of the primary methods for robot localization,
-consumer grade receivers don't offer enough precision.
+precision offered by consumer grade receivers isn't enough to let the robot navigate safely.
+
+The best position measurement precisions available with GPS are around a millimeter,
+however this requires expensive survey hardware.
+In this work I will concentrate on low cost consumer grade receivers, which mostly
+offer measurement errors in the range of several meters.
+
 
 Monte Carlo localization (MCL) is an algorithm that estimates position of a robot
 based on several noisy measurements.
-MCL is a type of bayesian filter that represents
-%TODO: bayesian, nebo Bayesian?
+MCL is a type of Bayesian filter that represents
 the position estimation as a set of weighted samples.
-One of the key advantages of MCL is the simplicity with which it \ldots
-%TODO: PROČ to funguje je kouzlo, ale JAK to funguje se dá pochopit. Jak to napsat?
+One of the key advantages of MCL is the simplicity of implementation
 
 The goal of this work is therefore to gain as much precision as possible from low cost
 GPS receivers in the framework provided by MCL algorithm.

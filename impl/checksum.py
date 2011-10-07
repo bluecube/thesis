@@ -33,7 +33,7 @@ checksum = crc32(b'')
 try:
     while True:
         checksum = crc32(x._read_binary_sirf_msg(), checksum)
-except EOFError:
+except StopIteration:
     pass
 
 print("checksum: {:#08x}".format(checksum))

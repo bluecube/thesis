@@ -15,7 +15,8 @@ class UnrecognizedMessageException(Exception):
 
 def read_message(serial):
     """
-    Read a sirf sentence from the gps
+    Read a sirf sentence from the gps, return the payload data
+    or raise an SirfMessageError exception.
     """
     old_timeout = serial.timeout
 

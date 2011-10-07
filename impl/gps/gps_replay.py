@@ -12,13 +12,25 @@ class GpsReplay(gps_operations.GpsOperations):
     Replay SIRF messages from a recording.
     """
 
+    def _read_int(self):
+        line = next(self._f).rstrip()
+        return int(line)
+        
+    def _read_float(self):
+        line = next(self._f).rstrip()
+        return float(line)
+
+    def _read_bytes(self):
+        length = self._read_int()
+        return self._f.read(length)
+
     def __init__(self, recording):
         self._logger = logging.getLogger('localization.gps-replay')
 
         self._f = gzip.GzipFile(recording, 'rb')
 
-        self.start_time = pickle.load(self._f)
-        self._sirf_version_string = pickle.load(self._f)
+        self.start_time = self._read_float()
+        self._sirf_version_string = self._read_bytes().decode('ascii')
 
     def _read_binary_sirf_msg(self):
         """
@@ -26,7 +38,9 @@ class GpsReplay(gps_operations.GpsOperations):
         Tries to recover after less serious errors.
         """
         
-        self.last_msg_time, data = self._sirf_version_string = pickle.load(self._f)
+        data = self._read_bytes()
+        self.last_msg_time = self._read_float()
+
         self._logger.debug("Replay message (id = " + str(data[0]) +
             ") @ " + str(self.last_msg_time))
 

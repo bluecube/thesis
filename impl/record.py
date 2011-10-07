@@ -8,7 +8,6 @@ import logging
 import time
 import sys
 import gzip
-import pickle
 import argparse
 
 def setup_logging():
@@ -17,48 +16,44 @@ def setup_logging():
         level = logging.INFO
     )
 
+def write_number(f, n):
+    f.write(repr(n).encode('ascii'))
+    f.write(b'\n')
+
+def write_bytes(f, b):
+    write_number(target, len(b))
+    f.write(b)
+
 setup_logging()
 
 logger = logging.getLogger('main')
 logger.setLevel(logging.DEBUG)
 
 arg_parser = argparse.ArgumentParser(
-    description="(Re)Record a GPS data stream.")
+    description="(Re)Record a GPS data stream to a new format.")
 
 arg_parser.add_argument('source',
     help="Source GPS or recording.")
 arg_parser.add_argument('target',
     help="Target recording.")
-arg_parser.add_argument('--pickle-protocol', default=-1, type=int,
-    help="Pickle protocol version to use in the recording."
-    "Default is to use highest available.")
 arguments = arg_parser.parse_args()
 
-target = pickle.Pickler(
-    gzip.GzipFile(arguments.target, 'wb'),
-    protocol = arguments.pickle_protocol)
-
+target = gzip.open(arguments.target, 'wb')
 source = gps.open_gps(arguments.source)
 
 if isinstance(source, gps.gps_replay.GpsReplay):
-    target.dump(source.start_time)
+    write_number(target, source.start_time)
 else:
-    target.dump(time.time())
+    write_number(target, time.time())
 
-target.dump(source._sirf_version_string)
+write_bytes(target, source._sirf_version_string.encode('ascii'))
 
 try:
     while True:
-        try:
-            msg = source._read_binary_sirf_msg()
-        except EOFError:
-            break
-
-        row = source.last_msg_time, msg
-        
-        target.dump(row)
+        write_bytes(target, source._read_binary_sirf_msg())
+        write_number(target, source.last_msg_time)
 
 except KeyboardInterrupt:
     logger.info("Terminating")
-except Exception as e:
-    logger.info("Got exception: " + str(e) + ", terminating.")
+except EOFError:
+    logger.info("End of recorded data.")

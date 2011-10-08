@@ -55,11 +55,12 @@ try:
 except KeyboardInterrupt:
     logger.info("Ok, that should be enough.")
 
-receiver_pos = (
-    (x / count) / arguments.precision,
-    (y / count) / arguments.precision,
-    (z / count) / arguments.precision)
-
 logger.info("Found " + str(count) + " messages.")
 
-print("{0[0]!r},{0[1]!r},{0[2]!r}".format(receiver_pos))
+if count != 0:
+    receiver_pos = (
+        (x / count) / arguments.precision,
+        (y / count) / arguments.precision,
+        (z / count) / arguments.precision)
+
+    print("{0[0]!r},{0[1]!r},{0[2]!r}".format(receiver_pos))

@@ -26,14 +26,24 @@ class _SirfMessageBase:
     def __str__(self):
         return self.__class__.__name__ + " " + str(self.__dict__)
 
+    def to_bytes(self):
+        """
+        Convert message to an array of bytes.
+        """
+        raise NotImplementedError()
+
 
 class _SirfReceivedMessageBase(_SirfMessageBase):
     """
     Base class for received SIRF messages.
     """
 
+    def __init__(self, fields, data):
+        super().__init__(fields)
+        self.data = data
+
     @classmethod
-    def from_tuple(cls, data):
+    def from_bytes(cls, data):
         """
         Construct the message fom a tuple.
         """
@@ -55,17 +65,18 @@ class _SirfReceivedMessageBase(_SirfMessageBase):
         """
         return struct.unpack("<f", bytes(reversed(data)))[0]
 
+    def to_bytes(self):
+        """
+        Return the bytes that created this message
+        """
+        return self.data
+
 
 class _SirfSentMessageBase(_SirfMessageBase):
     """
     Base class for sent SIRF messages.
     """
-
-    def to_bytes(self):
-        """
-        Convert message to an array of bytes.
-        """
-        raise NotImplementedError()
+    pass
 
 
 class MeasureNavigationDataOut(_SirfReceivedMessageBase):
@@ -118,7 +129,7 @@ class MeasureNavigationDataOut(_SirfReceivedMessageBase):
         del fields['data']
         del fields['unpacked']
         
-        return cls(fields)
+        return cls(fields, data)
 
 
 class ClockStatusData(_SirfReceivedMessageBase):
@@ -142,7 +153,7 @@ class ClockStatusData(_SirfReceivedMessageBase):
         del fields['data']
         del fields['unpacked']
         
-        return cls(fields)
+        return cls(fields, data)
 
 
 class NavigationLibraryMeasurementData(_SirfReceivedMessageBase):
@@ -174,7 +185,7 @@ class NavigationLibraryMeasurementData(_SirfReceivedMessageBase):
         del fields['data']
         del fields['unpacked']
         
-        return cls(fields)
+        return cls(fields, data)
 
 class NavigationLibrarySVStateData(_SirfReceivedMessageBase):
     """
@@ -216,7 +227,7 @@ class NavigationLibrarySVStateData(_SirfReceivedMessageBase):
         del fields['data']
         del fields['unpacked']
         
-        return cls(fields)
+        return cls(fields, data)
 
 class SbasParameters(_SirfReceivedMessageBase):
     packer = struct.Struct('>BBBBB8x')
@@ -240,7 +251,7 @@ class SbasParameters(_SirfReceivedMessageBase):
         del fields['data']
         del fields['unpacked']
         
-        return cls(fields)
+        return cls(fields, data)
 
 class SoftwareVersionString(_SirfReceivedMessageBase):
     """
@@ -253,7 +264,7 @@ class SoftwareVersionString(_SirfReceivedMessageBase):
     @classmethod
     def from_bytes(cls, data):
         s = data[1:].decode('ascii').rstrip('\x00').strip()
-        return cls(message_id = data[0], string = s)
+        return cls({message_id: data[0], string: s}, data)
 
 
 class SwitchToNmeaProtocol(_SirfSentMessageBase):
@@ -263,7 +274,7 @@ class SwitchToNmeaProtocol(_SirfSentMessageBase):
     def get_message_id(cls):
         return 129
 
-    def __init__(self, fields = {}, **kwargs):
+    def __init__(self, **kwargs):
         #set some reasonable defaults
         # these are taken from GPSD
         self.mode = 2
@@ -297,9 +308,7 @@ class SwitchToNmeaProtocol(_SirfSentMessageBase):
 
         self.speed = 4800
 
-        fields.update(kwargs)
-
-        super().__init__(fields)
+        super().__init__(kwargs)
 
     def to_bytes(self):
         return self.packer.pack(

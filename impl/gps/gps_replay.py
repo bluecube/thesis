@@ -41,8 +41,7 @@ class GpsReplay(gps_operations.GpsOperations):
         data = self._read_bytes()
         self.last_msg_time = self._read_float()
 
-        self._logger.debug("Replay message (id = " + str(data[0]) +
-            ") @ " + str(self.last_msg_time))
+        self._logger.debug("Replay message (id = {}) @ {}".format(data[0], str(self.last_msg_time)))
 
         return data
 

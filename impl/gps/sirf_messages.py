@@ -55,15 +55,14 @@ class _SirfReceivedMessageBase(_SirfMessageBase):
         Convert 8 bytes to a double.
         !!! ONLY WORKS WITH GSW3 CHIPS !!!
         """
-        return struct.unpack("<d",
-            bytes(reversed(data[:4])) + bytes(reversed(data[4:])))[0]
+        return struct.unpack(">d", data[4:] + data[:4])[0]
 
     @classmethod
     def sirf_single(cls, data):
         """
         Convert 4 bytes to a single.
         """
-        return struct.unpack("<f", bytes(reversed(data)))[0]
+        return struct.unpack(">f", data)[0]
 
     def to_bytes(self):
         """
@@ -121,7 +120,7 @@ class MeasureNavigationDataOut(_SirfReceivedMessageBase):
 
         gps_tow /= 100
 
-        pos = numpy.matrix([[float(x), float(y), float(z)]]) 
+        pos = numpy.matrix([[float(x), float(y), float(z)]])
         v = numpy.matrix([[vx, vy, vz]])
 
         fields = locals().copy()

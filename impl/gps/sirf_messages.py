@@ -336,5 +336,5 @@ class SetMessageRate(_SirfSentMessageBase):
         return self.packer.pack(
             self.get_message_id(),
             self.mode,
-            self.get_message_id(),
+            self.msg.get_message_id(),
             self.update_rate)

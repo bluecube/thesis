@@ -328,10 +328,28 @@ class PollSoftwareVersion(_SirfSentMessageBase):
 
 class SetMessageRate(_SirfSentMessageBase):
     packer = struct.Struct('>BBBBxxxx')
+
+    # constants for mode 
+    ONE_MESSAGE = 0
+    ONE_MESSAGE_INSTANTLY = 1
+    ALL_MESSAGES = 2
+    NAV_MESSAGES = 3
+    DEBUG_MESSAGES = 4
+    NAV_DEBUG_MESSAGES = 5
+
+    # constant for update rate
+    DISABLE_MESSAGE = 0
+
     @classmethod
     def get_message_id(cls):
         return 166
     
+    def __init__(self, **kwargs):
+        #reasonable defaults
+        self.mode = self.ONE_MESSAGE
+        self.update_rate = 1
+        super().__init__(kwargs)
+
     def to_bytes(self):
         return self.packer.pack(
             self.get_message_id(),

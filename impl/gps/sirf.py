@@ -62,6 +62,14 @@ def send_message(serial, data):
     serial.flush()
 
 
+if isinstance(b'0'[0], str):
+    def bytes_to_message_id(data):
+        return ord(data[0])
+else:
+    def bytes_to_message_id(data):
+        return data[0]
+    
+
 def from_bytes(data):
     """
     Factory method that returns an sirf message object from its
@@ -69,7 +77,7 @@ def from_bytes(data):
     data: Payload of the sirf message.
     """
 
-    message_id = data[0]
+    message_id = bytes_to_message_id(data)
 
 
     if not message_id in message_types:

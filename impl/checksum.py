@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 
 import gps
 import logging
@@ -36,4 +36,4 @@ try:
 except StopIteration:
     pass
 
-print("checksum: {:#08x}".format(checksum))
+print("checksum: {:#08x}".format(checksum & 0xffffffff))

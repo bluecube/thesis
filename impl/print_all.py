@@ -1,4 +1,6 @@
-#!/usr/bin/python3
+#!/usr/bin/python
+
+from __future__ import division, print_function, unicode_literals
 
 import gps
 import logging

@@ -1,11 +1,19 @@
+from __future__ import division, print_function
+
 import collections
+
+try:
+    long
+except:
+    long = int
 
 class Stats:
     """
     Calculate mean, variance and histogram. Fixed point arithmetic is used for all sums.
     """
 
-    def __init__(self, multiplier, hist_resolution):
+    def __init__(self, multiplier, hist_resolution = 1):
+        # TODO: Histogram isn't necessary when using matplotlib
         self.histogram = collections.Counter()
         self.count = 0
         self.simple_sum = 0
@@ -23,8 +31,8 @@ class Stats:
 
         value = value * self.multiplier
 
-        self.simple_sum += int(value)
-        self.squared_sum += int(value * value)
+        self.simple_sum += long(value)
+        self.squared_sum += long(value * value)
 
     def mean(self):
         """

@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 
 import logging
 import numpy
@@ -6,6 +6,8 @@ import math
 import argparse
 
 import gps
+
+import stats
 
 from gps.sirf_messages import *
 
@@ -41,26 +43,23 @@ gps_dev = gps.open_gps(arguments.gps)
 logger.info("Starting.")
 
 count = 0
-x = 0
-y = 0
-z = 0
+x = stats.Stats(arguments.precision)
+y = stats.Stats(arguments.precision)
+z = stats.Stats(arguments.precision)
 
 try:
     for msg in gps_dev:
         if isinstance(msg, MeasureNavigationDataOut):
             count += 1
-            x += int(arguments.precision * msg.pos[0, 0])
-            y += int(arguments.precision * msg.pos[0, 1])
-            z += int(arguments.precision * msg.pos[0, 2])
+            x.add(msg.pos[0, 0])
+            y.add(msg.pos[0, 1])
+            z.add(msg.pos[0, 2])
 except KeyboardInterrupt:
     logger.info("Ok, that should be enough.")
 
 logger.info("Found " + str(count) + " messages.")
 
 if count != 0:
-    receiver_pos = (
-        (x / count) / arguments.precision,
-        (y / count) / arguments.precision,
-        (z / count) / arguments.precision)
+    receiver_pos = (x.mean(), y.mean(), z.mean())
 
     print("{0[0]!r},{0[1]!r},{0[2]!r}".format(receiver_pos))

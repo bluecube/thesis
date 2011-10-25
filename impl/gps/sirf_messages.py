@@ -1,7 +1,9 @@
+from __future__ import division
+
 import struct
 import numpy
 
-class _SirfMessageBase:
+class _SirfMessageBase(object):
     """
     Base class for all SIRF messages
     """
@@ -39,7 +41,7 @@ class _SirfReceivedMessageBase(_SirfMessageBase):
     """
 
     def __init__(self, fields, data):
-        super().__init__(fields)
+        super(_SirfReceivedMessageBase, self).__init__(fields)
         self.data = data
 
     @classmethod
@@ -307,7 +309,7 @@ class SwitchToNmeaProtocol(_SirfSentMessageBase):
 
         self.speed = 4800
 
-        super().__init__(kwargs)
+        super(SwitchToNmeaProtocol, self).__init__(kwargs)
 
     def to_bytes(self):
         return self.packer.pack(
@@ -356,7 +358,7 @@ class SetMessageRate(_SirfSentMessageBase):
         #reasonable defaults
         self.mode = self.ONE_MESSAGE
         self.update_rate = 1
-        super().__init__(kwargs)
+        super(SetMessageRate, self).__init__(kwargs)
 
     def to_bytes(self):
         return self.packer.pack(

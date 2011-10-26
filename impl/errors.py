@@ -139,8 +139,8 @@ def measurement_generator():
     replay = gps.gps_replay.GpsReplay(arguments.recording)
     sv = {}
 
-    block = []
-    blockTime = None
+    group = []
+    groupTime = None
 
     clock_status = None
 
@@ -148,25 +148,25 @@ def measurement_generator():
         if isinstance(msg, NavigationLibraryMeasurementData):
             measurement = Measurement(msg)
 
-            if blockTime == measurement.time:
-                block.append(measurement)
+            if groupTime == measurement.time:
+                group.append(measurement)
             else:
-                if len(block):
-                    for x in block:
+                if len(group):
+                    for x in group:
                         x.process(sv)
-                    yield (block, clock_status)
+                    yield (group, clock_status)
 
-                block = [measurement]
-                blockTime = measurement.time
+                group = [measurement]
+                groupTime = measurement.time
         elif isinstance(msg, NavigationLibrarySVStateData):
             sv[msg.satellite_id] = msg
         elif isinstance(msg, ClockStatusData):
             clock_status = msg
 
-    if len(block):
-        for x in block:
+    if len(group):
+        for x in group:
             x.process(sv)
-        yield (block, clock_status)
+        yield (group, clock_status)
 
 def get_drift(m1, m2):
     """

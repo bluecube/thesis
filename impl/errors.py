@@ -131,8 +131,9 @@ def setup_logging():
 
 def measurement_generator():
     """
-    Yields measurements blocks.
-    Measurement blocks are lists of measurements.
+    Yields measurements groups.
+    Measurement groups are lists of measurements that happened at the same time (this is SIRF trick
+    -- in reality measurements are taken at random (?) times.
     """
 
     replay = gps.gps_replay.GpsReplay(arguments.recording)

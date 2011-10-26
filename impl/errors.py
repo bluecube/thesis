@@ -197,25 +197,10 @@ def split_to_blocks():
 
     generator = measurement_generator()
 
-    last = []
-
-    if not (arguments.block is None):
-        logger.debug("skipping " + str(arguments.block) + " blocks")
-        for i in range(arguments.block):
-            for group in generator:
-                (group, clock_status) = group
-                filtered = [measurement for measurement in group if measurement.valid]
-                if not len(last) or is_clock_correction(last[-1], filtered[-1]):
-                    last = group
-                    break
-
     block = []
     x = []
     y = []
     outlier_count = 0
-
-    if len(last):
-        generator = itertools.chain([last], generator) # this is something like unget
 
     if arguments.sirf_clock_offsets:
         for group in generator:
@@ -235,9 +220,6 @@ def split_to_blocks():
         if not len(block) or is_clock_correction(block[-1], filtered[-1]):
             if len(block):
                 process_block(block, x, y, outlier_count)
-
-                if not (arguments.block is None):
-                    return
 
             # reset it all.
             block = []
@@ -325,8 +307,6 @@ arg_parser = argparse.ArgumentParser(
 arg_parser.add_argument('recording')
 arg_parser.add_argument('--receiver-pos', type=numpy.matrix, default=None, required=True,
     help="Ground truth receiver position.")
-arg_parser.add_argument('--block', default=None, type=int,
-    help="Work only with the given block in phase 3. For testing only.")
 arg_parser.add_argument('--datapoints', default=open("/dev/null", "w"),
     type=argparse.FileType("w"),
     help="File into which the data points in phase 3 will go.")

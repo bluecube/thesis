@@ -9,7 +9,17 @@ import itertools
 import gps.gps_replay
 import stats
 
+from pprint import pprint
+
 from gps.sirf_messages import *
+
+import matplotlib
+import matplotlib.pyplot as plt
+import matplotlib.mlab
+
+plot_time = numpy.array([])
+plot_error = numpy.array([])
+plot_sat_id = numpy.array([], dtype=numpy.uint8)
 
 C = 299792458
     # Speed of light
@@ -26,6 +36,14 @@ class Measurement:
     """
     A single measurement of the user to sv distance, speed, ....
     """
+
+    DTYPE = numpy.dtype([
+        ('time', numpy.float64),
+        ('raw_clock_offset', numpy.float64),
+        ('corrected_pseudorange', numpy.float64),
+        ('geom_range', numpy.float64),
+        ('satellite_id', numpy.uint8)])
+
     def __init__(self, msg):
         self.gps_sw_time = msg.gps_sw_time
         self.pseudorange = msg.pseudorange
@@ -33,6 +51,13 @@ class Measurement:
         self.c_n = msg.c_n
 
         self.satellite_id = msg.satellite_id
+
+    def to_tuple(self):
+        """
+        Return tuple suitable for inserting to numpy
+        array with type self.dtype().
+        """
+        return tuple((getattr(self, x) for x in self.DTYPE.names))
 
     def process(self, svs):
         """
@@ -198,82 +223,65 @@ def split_to_blocks():
     generator = measurement_generator()
 
     block = []
-    x = []
-    y = []
-    outlier_count = 0
+    last_measurement = None
 
     if arguments.sirf_clock_offsets:
-        for group in generator:
-            (group, clock_status) = group
+        raise Exception("Sirf clock offsets are not implemented")
+#        for (group, clock_status) in generator:
+# 
+#            for measurement in group:
+#                if not measurement.valid:
+#                    continue
+#                process_measurement_error(measurement, clock_status.clock_bias * 1e-9)
+#
+#        return
 
-            for measurement in group:
-                if not measurement.valid:
-                    continue
-                process_measurement_error(measurement, clock_status.clock_bias * 1e-9)
-
-        return
-
-    for group in generator:
-        (group, clock_status) = group
+    for (group, clock_status) in generator:
         filtered = [measurement for measurement in group if measurement.valid]
 
-        if not len(block) or is_clock_correction(block[-1], filtered[-1]):
-            if len(block):
-                process_block(block, x, y, outlier_count)
-
-            # reset it all.
+        if len(block) and is_clock_correction(last_measurement, filtered[-1]):
+            process_block(block)
             block = []
-            x = []
-            y = []
-            outlier_count = 0
 
-        # outlier detection:
-        avg_offset = (
-            math.fsum((measurement.raw_clock_offset for measurement in filtered)) /
-            len(filtered))
         for measurement in filtered:
-            measurement.is_outlier = \
-                abs(measurement.raw_clock_offset - avg_offset) > OUTLIER_THRESHOLD
-            if measurement.is_outlier:
-                outlier_count += 1
-                continue
-            x.append(measurement.time)
-            y.append(measurement.raw_clock_offset)
-            block.append(measurement)
+            block.append(measurement.to_tuple())
+            last_measurement = measurement
 
+#        # outlier detection:
+#        avg_offset = (
+#            math.fsum((measurement.raw_clock_offset for measurement in filtered)) /
+#            len(filtered))
+#        for measurement in filtered:
+#            measurement.is_outlier = \
+#                abs(measurement.raw_clock_offset - avg_offset) > OUTLIER_THRESHOLD
+#            if measurement.is_outlier:
+#                outlier_count += 1
+#                continue
+#            x.append(measurement.time)
+#            y.append(measurement.raw_clock_offset)
+#            block.append(measurement)
+#
 
-    process_block(block, x, y, outlier_count)
+    process_block(block)
 
-def process_measurement_error(measurement, clock_offset):
-    error = (
-        measurement.corrected_pseudorange - C * clock_offset -
-        measurement.geom_range)
-
-    print(
-        measurement.time - clock_offset,
-        error,
-        measurement.satellite_id,
-        min(measurement.c_n),
-        file=arguments.datapoints)
-    
-    stats.add(error)
-
-
-def process_block(block, x, y, outlier_count):
+def process_block(block):
     """
     Do the least squares and the main error calculations.
     """
 
-    try:
-        poly = numpy.poly1d(numpy.polyfit(x, y, deg = 2))
-    except TypeError:
-        print("!!!!!!!!!!!!!!!!!!!!!!!")
-        print("  length:", len(block))
-        print("  length(x):", len(x))
-        print("  length(y):", len(y))
-        print("  time:  ", block[-1].time, "-", block[0].time, "=", (block[-1].time - block[0].time) / 60, "minutes")
-        print("  outlier count:", outlier_count)
-        return
+    global plot_time
+    global plot_error
+    global plot_sat_id
+
+    block = numpy.array(block, Measurement.DTYPE)
+
+    #try:
+    poly = numpy.polyfit(block['time'], block['raw_clock_offset'], deg = 2)
+    #except TypeError:
+        #print("!!!!!!!!!!!!!!!!!!!!!!!")
+        #print("  length:", len(block))
+        #print("  time:  ", block[-1][0], "-", block[0][0], "=", (block[-1][0] - block[0][0]) / 60, "minutes")
+        #return
 
     # Recalculating the polynomial once more:
     # x = []
@@ -286,16 +294,17 @@ def process_block(block, x, y, outlier_count):
 
     # poly = numpy.poly1d(numpy.polyfit(x, y, deg = 2))
 
-    for measurement in block:
-        clock_offset = poly(measurement.time)
+    clock_offsets = numpy.polyval(poly, block['time'])
+    errors = block['corrected_pseudorange'] - C * clock_offsets - block['geom_range']
 
-        process_measurement_error(measurement, clock_offset)
+    plot_time = numpy.concatenate((plot_time, block['time']))
+    plot_error = numpy.concatenate((plot_error, errors))
+    plot_sat_id = numpy.concatenate((plot_sat_id, block['satellite_id']))
 
     logger.info("Found a block.")
     print("  length:", len(block))
-    print("  offset:", repr(poly))
-    print("  time:  ", block[-1].time, "-", block[0].time, "=", (block[-1].time - block[0].time) / 60, "minutes")
-    print("  outlier count:", outlier_count)
+    print("  offset:", poly)
+    print("  time:  ", block[-1][0], "-", block[0][0], "=", (block[-1][0] - block[0][0]) / 60, "minutes")
 
 setup_logging()
 
@@ -307,11 +316,6 @@ arg_parser = argparse.ArgumentParser(
 arg_parser.add_argument('recording')
 arg_parser.add_argument('--receiver-pos', type=numpy.matrix, default=None, required=True,
     help="Ground truth receiver position.")
-arg_parser.add_argument('--datapoints', default=open("/dev/null", "w"),
-    type=argparse.FileType("w"),
-    help="File into which the data points in phase 3 will go.")
-arg_parser.add_argument('--histogram', default=None, type=argparse.FileType("w"),
-    help="File into which the error histogram will go.")
 arg_parser.add_argument('--precision', default=1000, type=int,
     help="Multiplier for fixed point arithmetic.")
 arg_parser.add_argument('--hist-resolution', default=1, type=float,
@@ -320,12 +324,8 @@ arg_parser.add_argument('--sirf-clock-offsets', default=False, action='store_tru
     help="Use clock offsets from sirf messages instead of calculating them.")
 arguments = arg_parser.parse_args()
 
-stats = stats.Stats(arguments.precision, arguments.hist_resolution)
-
 try:
     split_to_blocks()
-    if arguments.histogram:
-        stats.print_histogram(arguments.histogram)
 
 except KeyboardInterrupt:
     logger.info("Terminating.")
@@ -333,7 +333,29 @@ else:
     logger.info("Done.")
 
 
-print("mean: {0!r}".format(stats.mean()))
-print("stdev: {0!r}".format(math.sqrt(stats.variance())))
+sat_id = plot_sat_id / float(plot_sat_id.max())
 
+print(sat_id.min())
+print(sat_id.max())
 
+fig = plt.figure()
+
+error_plot = fig.add_subplot(1, 2, 1)
+error_plot.scatter(plot_time, plot_error, marker='+', s=10, alpha=0.75)
+error_plot.set_xlabel('time [s]')
+error_plot.set_ylabel('error [m]')
+error_plot.grid(True)
+
+mu = numpy.mean(plot_error)
+sigma = numpy.std(plot_error)
+
+histogram = fig.add_subplot(1, 2, 2)
+n, bins, patches = histogram.hist(plot_error, bins=1000, normed=True, alpha=0.75)
+bincenters = 0.5 * (bins[1:] + bins[:-1])
+y = matplotlib.mlab.normpdf(bincenters, mu, sigma)
+histogram.plot(bincenters, y, 'r--')
+histogram.set_xlabel('error [m]')
+histogram.set_ylabel('probability')
+histogram.grid(True)
+
+plt.show()

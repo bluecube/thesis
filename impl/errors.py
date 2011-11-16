@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+from __future__ import division, print_function
 import logging
 import numpy
 import math

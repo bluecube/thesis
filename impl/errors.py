@@ -1,8 +1,10 @@
 #!/usr/bin/python
 
 from __future__ import division, print_function
+
 import logging
 import numpy
+import numpy.ma
 import math
 import argparse
 import itertools
@@ -29,9 +31,15 @@ MAX_CLOCK_DRIFT = 1e-2
     # This is a maximum clock drift (in absolute value) between two
     # measurement blocks before we call it a clock correction
 
-OUTLIER_THRESHOLD = 100 / C
-    # Distance in seconds from the average clock offset of a group
+OUTLIER_THRESHOLD_METERS = 100
+    # Distance in meters from the average clock offset of a group
     # that is assumed an outlier.
+
+OUTLIER_THRESHOLD = OUTLIER_THRESHOLD_METERS / C
+    # Like OUTLIER_THRESHOLD_METERS, but in seconds
+
+FIT_DEGREE = 2
+    # Degree of the polynomial used for clock offset fitting.
        
 class Measurement:
     """
@@ -248,21 +256,6 @@ def split_to_blocks():
             block.append(measurement.to_tuple())
             last_measurement = measurement
 
-#        # outlier detection:
-#        avg_offset = (
-#            math.fsum((measurement.raw_clock_offset for measurement in filtered)) /
-#            len(filtered))
-#        for measurement in filtered:
-#            measurement.is_outlier = \
-#                abs(measurement.raw_clock_offset - avg_offset) > OUTLIER_THRESHOLD
-#            if measurement.is_outlier:
-#                outlier_count += 1
-#                continue
-#            x.append(measurement.time)
-#            y.append(measurement.raw_clock_offset)
-#            block.append(measurement)
-#
-
     process_block(block)
 
 def process_block(block):
@@ -276,26 +269,18 @@ def process_block(block):
 
     block = numpy.array(block, Measurement.DTYPE)
 
-    #try:
-    poly = numpy.polyfit(block['time'], block['raw_clock_offset'], deg = 2)
-    #except TypeError:
-        #print("!!!!!!!!!!!!!!!!!!!!!!!")
-        #print("  length:", len(block))
-        #print("  time:  ", block[-1][0], "-", block[0][0], "=", (block[-1][0] - block[0][0]) / 60, "minutes")
-        #return
-
-    # Recalculating the polynomial once more:
-    # x = []
-    # y = []
-    # for measurement in block:
-    #     clock_offset = poly(measurement.time)
-    #     if not abs(measurement.raw_clock_offset - clock_offset) > OUTLIER_THRESHOLD:
-    #         x.append(measurement.time)
-    #         y.append(measurement.raw_clock_offset)
-
-    # poly = numpy.poly1d(numpy.polyfit(x, y, deg = 2))
-
+    poly = numpy.polyfit(block['time'], block['raw_clock_offset'], deg = FIT_DEGREE)
     clock_offsets = numpy.polyval(poly, block['time'])
+
+    differences = clock_offsets - block['raw_clock_offset']
+
+    # Mask outliers and do the fitting once more
+    masked_differences = numpy.ma.masked_outside(differences, -OUTLIER_THRESHOLD, OUTLIER_THRESHOLD)
+    masked_times = numpy.ma.masked_array(block['time'], mask=masked_differences.mask)
+
+    poly = numpy.ma.polyfit(masked_times, block['raw_clock_offset'], deg = FIT_DEGREE)
+    clock_offsets = numpy.polyval(poly, block['time'])
+
     errors = block['corrected_pseudorange'] - C * clock_offsets - block['geom_range']
 
     plot_time = numpy.concatenate((plot_time, block['time']))
@@ -303,9 +288,10 @@ def process_block(block):
     plot_sat_id = numpy.concatenate((plot_sat_id, block['satellite_id']))
 
     logger.info("Found a block.")
-    print("  length:", len(block))
-    print("  offset:", poly)
-    print("  time:  ", block[-1][0], "-", block[0][0], "=", (block[-1][0] - block[0][0]) / 60, "minutes")
+    print("  length:   {}".format(len(block)))
+    print("  outliers: {}".format(numpy.ma.count_masked(masked_times)))
+    print("  offset:   {}".format(poly))
+    print("  time:     {}-{} = {} minutes".format(block[-1][0], block[0][0], (block[-1][0] - block[0][0]) / 60))
 
 setup_logging()
 
@@ -336,9 +322,6 @@ else:
 
 sat_id = plot_sat_id / float(plot_sat_id.max())
 
-print(sat_id.min())
-print(sat_id.max())
-
 fig1 = plt.figure()
 error_plot = fig1.add_subplot(1, 1, 1)
 error_plot.scatter(plot_time, plot_error, c=sat_id, marker='.', s=40, alpha=0.75, edgecolors='none')
@@ -352,11 +335,11 @@ sigma = numpy.std(plot_error)
 
 fig2 = plt.figure()
 histogram = fig2.add_subplot(1, 1, 1)
-n, bins, patches = histogram.hist(plot_error, bins=1000, normed=True, alpha=0.75)
+n, bins, patches = histogram.hist(plot_error, bins=100, normed=True, alpha=0.75, range=(-OUTLIER_THRESHOLD_METERS, OUTLIER_THRESHOLD_METERS))
 bincenters = 0.5 * (bins[1:] + bins[:-1])
 y = matplotlib.mlab.normpdf(bincenters, mu, sigma)
 histogram.plot(bincenters, y, 'r--')
-histogram.set_title(r'Histogram of measurement errors ($\mu={}, \ \sigma={}$)'.format(mu, sigma))
+histogram.set_title('Histogram of measurement errors without outliers\n' + r'$\mu={}, \ \sigma={}$'.format(mu, sigma))
 histogram.set_xlabel('error [m]')
 histogram.set_ylabel('probability')
 histogram.grid(True)

@@ -70,5 +70,5 @@ class GpsOperations(object):
         """
         Iterator protocol for python 2.x
         """
-        return self.__next__()
+        return self.read_message()
         

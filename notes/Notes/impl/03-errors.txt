@@ -95,12 +95,15 @@ Error histogram so far (2011-04-04):
 Still not really good.
 The skew looks weird. Maybe multipath errors?
 
+===== Backport to python2.7, using numpy. =====
+{{./errors.png}}
 
+{{./hist.png}}
+Using average position with another dataset is a fun way yo spend two weeks :-)
 
+Finally I've achieved the same errors as in the python3 code. The skew remains. Next step is to make something that will be able to work as correction input for MCL.
 
-
-
-
+Also speeds should be handled somehow.
 
 Averaged receiver position for the "month" dataset:
 3960414.8872512225,1243097.6094489514,4826752.3188620238

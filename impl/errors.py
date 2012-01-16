@@ -23,7 +23,6 @@ import matplotlib.mlab
 plot_time = numpy.array([])
 plot_error = numpy.array([])
 plot_sat_id = numpy.array([], dtype=numpy.uint8)
-plot_sv_state_age = numpy.array([])
 
 C = 299792458
     # Speed of light
@@ -52,8 +51,7 @@ class Measurement:
         ('raw_clock_offset', numpy.float64),
         ('corrected_pseudorange', numpy.float64),
         ('geom_range', numpy.float64),
-        ('satellite_id', numpy.uint8),
-        ('sv_state_age', numpy.uint8)])
+        ('satellite_id', numpy.uint8)])
 
     def __init__(self, msg):
         self.gps_sw_time = msg.gps_sw_time
@@ -100,22 +98,19 @@ class Measurement:
 
         Sets the clock_offset_sv, sv_pos
         """
-
         # Time of transmission in SV clock
         time_of_transmission_sv = self.gps_sw_time - self.pseudorange / C
 
-        self.sv_state_age = sv.gps_time - time_of_transmission_sv
-
         # SV clock offset at the time of transmission.
         self.clock_offset_sv = ((sv.clock_bias -
-            self.sv_state_age * sv.clock_drift) /
+            (sv.gps_time - time_of_transmission_sv) * sv.clock_drift) /
             (1 + sv.clock_drift))
         
         # Time of transmission in GPS system clock
         time_of_transmission_sys = time_of_transmission_sv - self.clock_offset_sv
 
         # How far is the current SV position from the position announced in MID30
-        sv_pos_correction = self.sv_state_age * sv.v
+        sv_pos_correction = (sv.gps_time - time_of_transmission_sys) * sv.v
 
         self.sv_pos = sv.pos - sv_pos_correction
 
@@ -271,7 +266,6 @@ def process_block(block):
     global plot_time
     global plot_error
     global plot_sat_id
-    global plot_sv_state_age
 
     block = numpy.array(block, Measurement.DTYPE)
 
@@ -292,7 +286,6 @@ def process_block(block):
     plot_time = numpy.concatenate((plot_time, block['time']))
     plot_error = numpy.concatenate((plot_error, errors))
     plot_sat_id = numpy.concatenate((plot_sat_id, block['satellite_id']))
-    plot_sv_state_age = numpy.concatenate((plot_sv_state_age, block['sv_state_age']))
 
     logger.info("Found a block.")
     print("  length:   {}".format(len(block)))
@@ -349,13 +342,6 @@ histogram.plot(bincenters, y, 'r--')
 histogram.set_title('Histogram of measurement errors without outliers\n' + r'$\mu={}, \ \sigma={}$'.format(mu, sigma))
 histogram.set_xlabel('error [m]')
 histogram.set_ylabel('probability')
-histogram.grid(True)
-
-fig3 = plt.figure()
-ages = fig3.add_subplot(1, 1, 1)
-ages.scatter(plot_sv_state_age, plot_error, edgecolors='none')
-histogram.set_xlabel('SV state age [s]')
-histogram.set_ylabel('error [m]')
 histogram.grid(True)
 
 plt.show()

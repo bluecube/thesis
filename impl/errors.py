@@ -38,7 +38,7 @@ OUTLIER_THRESHOLD_METERS = 100
 OUTLIER_THRESHOLD = OUTLIER_THRESHOLD_METERS / C
     # Like OUTLIER_THRESHOLD_METERS, but in seconds
 
-FIT_DEGREE = 2
+FIT_DEGREE = 1
     # Degree of the polynomial used for clock offset fitting.
        
 class Measurement:

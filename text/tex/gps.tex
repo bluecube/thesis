@@ -1,66 +1,134 @@
 \chapter{GPS}
 
-This chapter contains a description of Global Positioning System,
-its history and basic operation.
-
-Global Positioning System is ...
-
-GPS consists of three segments: space segment, control segment and user segment.
-
-Space segment VERB! at least 24 satellites (space vehicles, SVs), orbiting
-approximately \(20000 km\) above earth surface.
-
+%This chapter contains a description of Global Positioning System,
+%its history and basic operation.
+%
+%Global Positioning System is ...
+%
+%GPS consists of three segments: space segment, control segment and user segment.
+%
+%Space segment VERB! at least 24 satellites (space vehicles, SVs), orbiting
+%approximately \(20000 km\) above earth surface.
+%
 \section{History}
-
-\section{Basic principles}
-
+%
+\section{Operation Principles}
+%
 \subsection{Time of Arival measurements}
 
-GPS calculates position by measuring the time it takes for a signal
-emitted from a known position to reach reach the receiver.
-
-Each GPS satellite transmits a timed pseudo random sequence.
-The receiver is able to replicate and match this sequence, and therefore
-is able to determine the transmission time of the signal.
-
-Because the position of satellites is known, the position of the receiver
-can be calculated as an intersection of spheres centered around the satellites
-and with radius corresponding to signal time of flight.
-
-The previous paragraph assumes, that clock in the satellites and in the receiver 
-are perfectly synchronized, in reality, however, this is not true.
-
-There are three basic time frames appearing in the GPS system.
-
+%
+%GPS calculates position by measuring the time it takes for a signal
+%emitted from a known position to reach reach the receiver.
+%
+%Each GPS satellite transmits a timed pseudo random sequence.
+%The receiver is able to replicate and match this sequence, and therefore
+%is able to determine the transmission time of the signal.
+%
+%Because the position of satellites is known, the position of the receiver
+%can be calculated as an intersection of spheres centered around the satellites
+%and with radius corresponding to signal time of flight.
+%
+%The previous paragraph assumes, that clock in the satellites and in the receiver 
+%are perfectly synchronized, in reality, however, this is not true.
+%
+\subsection{Time and GPS}
 \begin{itemize}
-\item
-GPS System Time
-GPS System Time is a paper time scale based on atomic clock standards in GPS
-satellites and on the ground. This time standard is not directly available
-neither in SVs or in user receivers.
-
-\item
-SV Time
-SV Time is a value obtained from the satellite's atomic clock.
-Although the atomic clock standards are highly stable, the offset between SV
-Time and GPS System Time may reach up to \(1 ms\) (~ \(300 km\)).
-Corrections for this offset are periodically calculated by the control segment
-and uploaded to the satellites for broadcast (and therefore known to the
-receiver).
-
-\item
-Receiver Time
-Receiver Time is a time reading in the GPS receiver.
-Low cost receivers are usually equipped only with simple crystal oscillators
-and aren't capable of keeping precise time.
-
-\subsubsection{Pseudorange}
-Pseudorange is a distance corresponding to 
-
-\[\rho = c (receiveTime_{receiver} - transmitTime_{SV})\]
-
-
-
-
-
+\item GPS System Time
+\item SV Time
+\item Receiver Time
 \end{itemize}
+%There are three basic time frames appearing in the GPS system.
+%
+%\begin{itemize}
+%\item
+%GPS System Time
+%GPS System Time is a paper time scale based on atomic clock standards in GPS
+%satellites and on the ground. This time standard is not directly available
+%neither in SVs or in user receivers.
+%
+%\item
+%SV Time
+%SV Time is a value obtained from the satellite's atomic clock.
+%Although the atomic clock standards are highly stable, the offset between SV
+%Time and GPS System Time may reach up to \(1 ms\) (~ \(300 km\)).
+%Corrections for this offset are periodically calculated by the control segment
+%and uploaded to the satellites for broadcast (and therefore known to the
+%receiver).
+%
+%\item
+%Receiver Time
+%Receiver Time is a time reading in the GPS receiver.
+%Low cost receivers are usually equipped only with simple crystal oscillators
+%and aren't capable of keeping precise time.
+%
+
+\subsection{PRN signals}
+\begin{itemize}
+\item How it works
+\item Codes: C/A, P(Y), M
+\end{itemize}
+
+\subsection{Ephemeris}
+
+\subsection{Reference Frames}
+\begin{itemize}
+\item ECEF, ECI, WGS84
+\end{itemize}
+
+\section{Obtaining Position and Speed}
+
+\subsection{Pseudorange}
+
+%Pseudorange is a distance corresponding to 
+%
+\[\rho = c (receiveTime_{receiver} - transmitTime_{SV})\]
+%
+
+\section{Position}
+\begin{itemize}
+\item Some math goes in here
+\end{itemize}
+
+\subsection{Carrier phase}
+\begin{itemize}
+\item Not much to say in here
+\end{itemize}
+
+\section{Velocity}
+\begin{itemize}
+\item More math
+\end{itemize}
+
+\section{Kalman Filters}
+\begin{itemize}
+\item In end-user receivers.
+\end{itemize}
+
+\section{Measurement errors}
+\begin{itemize}
+\item Multipath
+\item Ionospheric \& tropospheric delays
+\item Ephemeris errors (+ precise ephemeris web sources)
+\item SV clock errors
+\end{itemize}
+
+\subsection{Dilution of Precision}
+\begin{itemize}
+\item effect of sattelite geometry on position error
+\end{itemize}
+
+\section{Differential GPS}
+\begin{itemize}
+\item Very briefly; won't be used anywhere further
+\end{itemize}
+
+\section{Assisted GPS}
+
+\section{GPS Receivers}
+\subsection{Protocols}
+\begin{itemize}
+\item NMEA
+\item Proprietary protocols (especially SiRF)
+\end{itemize}
+
+

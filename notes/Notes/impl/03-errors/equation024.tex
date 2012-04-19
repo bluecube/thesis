@@ -1,1 +1,1 @@
-clockOffset_{SV} = \frac{clockBias_{MID30} - (gpsTime_{MID30} - transmitTime_{SV}) * clockDrift_{MID30}}{1 + clockDrift_{MID30}}
+clockOffset_{SV} = \frac{clockBias_{MID30} + (transmitTime_{SV} - gpsTime_{MID30}) * clockDrift_{MID30}}{1 + clockDrift_{MID30}}

@@ -37,7 +37,7 @@ Receiver clock offset changes allmost linearly (~~100ms every 25 minutes ... Tha
 ===== UERE computation: =====
 Only from recording, because this has to be done in multiple passes.
 
-==== Calculate the receiver ECEF coordinates from MID28 ====
+==== Calculate the receiver ECEF coordinates from MID2 ====
 This should converge to the true position.
 
 ==== Analyze clock offsets ====
@@ -46,6 +46,12 @@ Because the gps_sw_time field is not monotonic, we have to detect clock correcti
 
 === Pseudorange: ===
 {{./equation.png?type=equation}}
+
+==== Range: ====
+{{./equation030.png?type=equation}}
+{{./equation031.png?type=equation}}
+{{./equation032.png?type=equation}}
+{{./equation033.png?type=equation}}
 
 === SV : ===
 {{./equation006.png?type=equation}}
@@ -111,3 +117,8 @@ Averaged receiver position for the "month" dataset:
 
 
 Age of SV state data doesn't cause too much of an error: commit 09261af525b21a18c0c48139ccafa117baa54632
+
+- Check Age of data for SV clock correction??
+
+This experiment seems to have serious issues with calculations of receiver clock offset and drift because of the outliers (reducing the outlier threshold doesn't help)
+Filtering usable SVs based on consistency of their output could work, But how to do it?

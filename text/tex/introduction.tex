@@ -1,11 +1,9 @@
 \chapter{Introduction}
 
-%Localization is an important task for autonomous or semi-autonomous robots
-
-%Outdoor robots may navigate large areas without detailed maps available, this limits
-%the usefulness of some sensors used for indoor localization, like laser range finders.
-%This leaves a robot designer looking for alternative sensors.
-
+Localization is an important task for autonomous or semi-autonomous robots.
+Outdoor robots may navigate large areas without detailed maps available, thus limits
+the usefulness of some sensors used for indoor localization, like laser range finders.
+This leaves a robot designer looking for alternative sensors.
 
 
 
@@ -15,15 +13,10 @@ satellite visibility.
 
 Seeing its use in automotive industry, GPS seems to be an good candidate for
 localization of robots operating in outdoor areas.
-However if GPS should be used as one of the primary methods for robot localization,
-precision offered by consumer grade receivers isn't good enough for the robot to navigate safely.
-
 The best position measurement precisions available from the Global Positioning System
-are in the orders of millimeters,
-however this requires expensive survey grade hardware.
-In this work I will concentrate on low cost consumer grade receivers, which mostly
-offer measurement errors in the range of several meters.
-
+are in the orders of millimeters with survey grade hardware.
+However consumer grade receivers only offer precision of several meters, which
+by itself isn't good enough for the robot to navigate safely.
 
 
 Monte Carlo localization (MCL) is an algorithm that estimates position of a robot
@@ -33,10 +26,12 @@ set of weighted samples.
 This estimate is periodically updated and corrected based on sensor input.
 
 
+\vspace{1.5em}
 
 
 The goal of this work is to acquire as much precision as possible from low cost
-GPS receivers by using it as an correction input to MCL.
+GPS receivers by using it as an correction input to MCL and to make it possible to use
+GPS as one of the primary sensors for robot localization.
 
 I will show two methods of integrating GPS measurements into Monte Carlo Localization,
 one of them based on low level GPS measurements and one based on easily accessed WGS84 data
@@ -47,8 +42,7 @@ and compare their performance on a real robot.
 The reset of this text is organized as follows:
 Chapter \ref{chap:gps} describes the GPS system and its operating principles.
 Chapter \ref{chap:mcl} describes Monte Carlo Localization.
-Chapter \ref{chap:gps_and_mcl} chapter talks about fusing of GPS data into
-MCL localization.
+Chapter \ref{chap:gps_and_mcl} proposes fusing of GPS data into MCL localization.
 Chapter \ref{chap:implementation} describes my implementation,
 and chapter \ref{chap:performance} compares performance of the implemented algorithms.
 Chapter \ref{chap:conclusion} concludes and evaluates the work.

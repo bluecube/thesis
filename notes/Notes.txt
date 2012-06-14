@@ -16,3 +16,6 @@ This means that for any other receiver this will have to be handled differently 
 -> Undersanding gps 9.3.3.1
 I'm concentrating on measurement domain integration, but should say something about position domain too. And measure performance.
 
+
+===== Things to try: =====
+Use something better than just linear extrapolation when calculating the SV position at given time. We know that it's going at almost circular path. This could bring the errors to less than ~20cm/sec

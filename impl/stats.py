@@ -18,6 +18,7 @@ class Stats:
         self.count = 0
         self.simple_sum = 0
         self.squared_sum = 0
+        self.maximum = None
 
         self.multiplier = multiplier
         self.hist_resolution = hist_resolution
@@ -28,6 +29,8 @@ class Stats:
         """
         self.histogram[value // self.hist_resolution] += 1
         self.count += 1
+
+        self.maximum = max(self.maximum, value)
 
         value = value * self.multiplier
 

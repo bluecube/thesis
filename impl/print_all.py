@@ -21,8 +21,7 @@ logger = logging.getLogger('main')
 logger.setLevel(logging.DEBUG)
 
 arg_parser = argparse.ArgumentParser(
-    description="Calculate the UERE from recorded data.\n"
-    "Assumes that the receiver was stationary during whole recording.")
+    description="Print all messages from the gps.")
 
 arg_parser.add_argument('gps',
     help="Gps port or recording.")

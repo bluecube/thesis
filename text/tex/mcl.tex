@@ -4,8 +4,46 @@
 This chapter defines the localization problem and describes Monte Carlo Localization algorithm.
 
 \section{Localization}
+Localization of a mobile robot is a process that estimates position of the robot
+in a map based on sensor readings.
 
-\section{Bayes Filters}
+Localization can mean either position tracking, where the robot knows its initial
+position and the task is only to update the estimate and handle relatively small
+errors, or global localization, where the robot has to find its position from scratch.
+
+\section{Markov Localization}
+
+Markov localization is a probabilistic algorithm that estimates state of the
+robot based on sensor data.
+
+Markov localization assumes that the environment in which the robot moves
+doesn't contain any state (this is called the Markov assumption).
+This assumption means that only the last robot's state is necessary to predict
+future state.
+
+Markov localization periodically predicts next state of the robot and then
+corrects the estimation using the sensor data.
+
+Several variations of Markov localization exists differing in the
+representation of the current state estimation:
+
+\subsection{Kalman Filters}
+Kalman Filters are maybe the most commonly used variation of Markov localization.
+
+Current estimation is represented as a Multivariate Gaussian distribution.
+Basic Kalman Filters assume that the underlying system is linear and that
+all error terms have a Gaussian distrubution.
+
+Modifications, like Extended Kalman Filter, are capable of dealing with
+non-linear systems.
+
+\subsection{Grids}
+Another way of representing the state estimation is a grid.
+
+\subsection{Particle Filters}
+Particle Filters represent the estimation by keeping samples from the
+probablity distribution.
+Monte Carlo Localization is a particle filter.
 
 \section{MCL Algorithm}
 

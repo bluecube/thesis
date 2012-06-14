@@ -20,6 +20,7 @@ view: all
 
 %.pdf: %.tex
 	cd $(<D); pdflatex $(<F) -file-line-error
+	cd $(<D); pdflatex $(<F) -file-line-error
 
 %.dependencies: %.tex
 	echo -n "$*.pdf: " > $@

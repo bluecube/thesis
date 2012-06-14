@@ -102,8 +102,8 @@ class Measurement:
         time_of_transmission_sv = self.gps_sw_time - self.pseudorange / C
 
         # SV clock offset at the time of transmission.
-        self.clock_offset_sv = ((sv.clock_bias -
-            (sv.gps_time - time_of_transmission_sv) * sv.clock_drift) /
+        self.clock_offset_sv = ((sv.clock_bias +
+            (time_of_transmission_sv - sv.gps_time) * sv.clock_drift)) /
             (1 + sv.clock_drift))
         
         # Time of transmission in GPS system clock
@@ -281,7 +281,7 @@ def process_block(block):
     poly = numpy.ma.polyfit(masked_times, block['raw_clock_offset'], deg = FIT_DEGREE)
     clock_offsets = numpy.polyval(poly, block['time'])
 
-    errors = block['corrected_pseudorange'] - C * clock_offsets - block['geom_range']
+    errors = block['corrected_pseudorange'] - block['geom_range'] - C * clock_offsets
 
     plot_time = numpy.concatenate((plot_time, block['time']))
     plot_error = numpy.concatenate((plot_error, errors))

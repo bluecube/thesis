@@ -6,3 +6,14 @@ Creation-Date: 2012-03-28T20:09:26.479046
 Created Wednesday 28 March 2012
 
 Next experiment is basically a rewrite of the measurement code of number 03, 
+
+I need to monitor each individual satellite for signal quality.
+- use differences in pseudorange -- if the value is jumping too wildly then drop the whole satellite
+- Thread reading from the GPS keeps data current, callback when new data is ready
+  - Every SV? After the whole window is received? Sirf window is followed by sv state messages. How big error comes from using the older sv state?
+      => An experiment
+
+There needs to be a gps thread running that gives out the messages when they are ready.
+It should probably keep recently measured data, run some filtering on it and only report new _valid_ data.
+The idea with having the gps thread inside the correction class probably won't work.
+At least for `errors2.py` I will need to use it without the correction class.

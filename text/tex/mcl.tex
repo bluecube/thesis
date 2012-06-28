@@ -28,13 +28,15 @@ Several variations of Markov localization exists differing in the
 representation of the current state estimation:
 
 \subsection{Kalman Filters}
-Kalman Filters are maybe the most commonly used variation of Markov localization.
+\label{sec:kalman}
+
+Kalman Filters \cite{kalman60,welch95} are maybe the most commonly used variation of Markov localization.
 
 Current estimation is represented as a Multivariate Gaussian distribution.
 Basic Kalman Filters assume that the underlying system is linear and that
-all error terms have a Gaussian distrubution.
+all error terms have a Gaussian distribution.
 
-Modifications, like Extended Kalman Filter, are capable of dealing with
+Modifications, like the Extended Kalman Filter, are capable of dealing with
 non-linear systems.
 
 \subsection{Grids}
@@ -46,6 +48,8 @@ probablity distribution.
 Monte Carlo Localization is a particle filter.
 
 \section{MCL Algorithm}
+
+\cite{dellaert99}
 
 \subsection{Prediction}
 \subsection{Correction}

@@ -53,7 +53,4 @@ class GpsReplay(gps_operations.GpsOperations):
         """
         Replay will stop when we hit EOF.
         """
-        try:
-            return self.read_message()
-        except EOFError:
-            raise StopIteration
+        return self.read_message()

@@ -1,8 +1,8 @@
 This is my master's thesis, titled Exploiting GPS in Monte Carlo Localization.
 
-It is and will be very much work in progress.
+It is still work in progress.
 
-You might find some interesting experiments with GPS and later also with MCL
-in the /impl/ directory. In python of course.
+There are some some experiments with GPS and later also with MCL
+in the /impl/ directory.
 
-Don't look anywhere else, please.
+

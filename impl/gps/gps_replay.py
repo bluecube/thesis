@@ -17,7 +17,7 @@ class GpsReplay(gps_operations.GpsOperations):
     def _read_int(self):
         line = next(self._f).rstrip()
         return int(line)
-        
+
     def _read_float(self):
         line = next(self._f).rstrip()
         return float(line)
@@ -38,12 +38,14 @@ class GpsReplay(gps_operations.GpsOperations):
         """
         Return bytes with a single valid message read from the port.
         Tries to recover after less serious errors.
+        Raises StopIteration if there are no more messages to read.
         """
-        
+
         data = self._read_bytes()
         self.last_msg_time = self._read_float()
 
-        self._logger.debug("Replay message (id = {}) @ {}".format(data[0], str(self.last_msg_time)))
+        self._logger.debug("Replay message (id = {}) @ {}".format(
+            data[0], str(self.last_msg_time)))
 
         return data
 

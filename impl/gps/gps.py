@@ -50,7 +50,7 @@ class Gps(gps_operations.GpsOperations):
     ALL_BYTESIZES = (serial.EIGHTBITS, serial.SEVENBITS)
     ALL_PARITIES = (serial.PARITY_NONE, serial.PARITY_EVEN, serial.PARITY_ODD)
     ALL_STOPBITS = (serial.STOPBITS_ONE, serial.STOPBITS_TWO)
-    
+
     def __init__(self, port):
         self._logger = logging.getLogger('localization.gps')
 
@@ -67,7 +67,7 @@ class Gps(gps_operations.GpsOperations):
         self._get_chipset_sw_version()
         self.set_message_rate(sirf_messages.NavigationLibraryMeasurementData, 1)
         self.set_message_rate(sirf_messages.NavigationLibrarySVStateData, 1)
-       
+
     def _get_chipset_sw_version(self):
         self.send_message(sirf_messages.PollSoftwareVersion())
         self._sirf_version_string = self.read_specific_message(sirf_messages.SoftwareVersionString).string
@@ -96,7 +96,7 @@ class Gps(gps_operations.GpsOperations):
         protocol, speed, bytesize, parity, stopbits = mode
         return protocol + " " + str(speed) + " " + str(bytesize) + \
             str(parity) + str(stopbits)
-    
+
     def __del__(self):
         """
         Switch back to NMEA
@@ -131,7 +131,7 @@ class Gps(gps_operations.GpsOperations):
         self._logger.debug("Switching to " + self._mode_to_string(mode))
 
         time.sleep(0.5) # settle time for the gps chip
-        
+
         self._detect_mode((mode,))
 
         if self._mode != mode:
@@ -150,7 +150,7 @@ class Gps(gps_operations.GpsOperations):
         """
 
         self._logger.debug("Detecting port mode.");
-        
+
         if len(expected):
             i = 0
             for mode in expected:
@@ -162,7 +162,7 @@ class Gps(gps_operations.GpsOperations):
 
             self._logger.warning("None of the expected modes worked, "
                 "will go through all possible modes. This will take a while. Go take a nap.")
-        
+
         total = len(self.ALL_PROTOCOLS) * len(self.ALL_SPEEDS) * \
             len(self.ALL_BYTESIZES) * len(self.ALL_PARITIES) * \
             len(self.ALL_STOPBITS)
@@ -181,7 +181,7 @@ class Gps(gps_operations.GpsOperations):
     def _try_mode(self, mode, i, count):
         """
         Try a specific mode.
-        Returns True if a protocol was recognized on the port, 
+        Returns True if a protocol was recognized on the port,
         False otherwise.
         """
         self._logger.debug("Trying " + self._mode_to_string(mode) +
@@ -222,7 +222,7 @@ class Gps(gps_operations.GpsOperations):
 
         if self._mode[0] != 'SIRF':
             raise Exception("Sorry, I can only handle SIRF messages.")
-        
+
         data = None
 
         while not data:
@@ -238,5 +238,5 @@ class Gps(gps_operations.GpsOperations):
     def send_message(self, msg):
         if self._mode[0] != 'SIRF':
             raise Exception("Sorry, I can only handle SIRF messages.")
-        
+
         sirf.send_message(self._ser, msg.to_bytes())

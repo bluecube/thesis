@@ -34,7 +34,7 @@ def read_message(serial):
 
         if checksum != expected_checksum:
             raise SirfMessageError('Invalid checksum.')
-        
+
         message_ending = serial.read_with_timeout(2, end_time)
         if message_ending != serial_wrapper.to_bytes([0xB0, 0xB3]):
             raise SirfMessageError('Invalid message end sequence.')

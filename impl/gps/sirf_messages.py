@@ -7,7 +7,7 @@ class _SirfMessageBase(object):
     """
     Base class for all SIRF messages
     """
-    
+
     @classmethod
     def get_message_id(cls):
         """

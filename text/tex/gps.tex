@@ -3,16 +3,34 @@
 
 This chapter contains a overview of Global Positioning System,
 its history and basic operation.
-Next it describe metods of obtaining receiver position and velocity,
+Next it describes metods of obtaining receiver position and velocity,
 error sources of GPS measurements and methods of dealing with these errors.
 Lastly it discusses properties of consumer grade GPS receivers.
 
-%Global Positioning System is ...
-%
-%GPS consists of three segments: space segment, control segment and user segment.
-%
-%Space segment VERB! at least 24 satellites (space vehicles, SVs), orbiting
-%approximately \(20000 km\) above earth surface.
+Global Positioning System is a global navigation satellite system (GNSS)
+developed and operated by U.S. military.
+
+
+
+GPS provides three dimensional position and velocity measurements as well as
+precise time source.
+
+Two operation modes are available: Standard Positioning Service (SPS) and
+Precise Positioning Service (PPS).
+While the available precisions aren't too different, PPS signals are
+cryptographically protected and primarily intended for U.S. military.
+On the other hand SPS mode is available worldwide without any limitations
+and is probably the most widely used global navigation method.
+
+The unencrypted nature of SPS makes it susceptible to attacks
+\cite{tippenhauer11}, but in practice this doesn't seem to be a problem yet.
+\marginpar{I like that article, but this paragraph doesn't fit into the text}
+
+
+GPS consists of three segments: space segment, control segment and user segment.
+
+Space segment consists of at least 24 satellites (space vehicles, SVs), orbiting
+approximately \(20000 km\) above earth surface.
 %
 \section{History}
 %
@@ -117,7 +135,7 @@ Lastly it discusses properties of consumer grade GPS receivers.
 
 \subsection{Dilution of Precision}
 \begin{itemize}
-\item effect of sattelite geometry on position error
+\item effect of satellite geometry on position error
 \end{itemize}
 
 \section{Kalman Filters}
@@ -125,32 +143,27 @@ Kalman filters are often used in the GPS receivers to merge past
 data with incoming measurements or to combine the GPS position and velocity
 estimation with another source of measurements, for example acceleration data.
 
-More detailed description of how Kalman filters operate can be found in
+For more detailed description of how Kalman filters operate see section
 \ref{sec:kalman}.
 
 \section{Differential GPS}
 \begin{itemize}
 \item Very briefly; won't be used anywhere further
+\item SBAS ?
 \end{itemize}
 
 \section{Assisted GPS}
 
 \section{Precise Ephemeris}
-Precise ephemeris are satellite ephemeris data calculated by ground distributed separately
-from the GPS broadcast (download from \cite{orbit-data}).
+Precise ephemeris are satellite ephemeris data calculated by ground distributed
+separately from the GPS broadcast \cite{macdonald01}.
 
-Precise ephemeris mainly contains past data, but predictions for next several
-minutes are also available.
+One source of precise ephemeris is is \cite{orbit-data}.
+These datasets mainly contains post-processed past data, but predictions for
+next several hours are also available.
 While the quality of these predictions is lower than of the off-line data,
 they are still several times more precise than the broadcast ephemerides
 (\(5 cm\) RMS versus \(100 cm\) RMS, according to \cite{orbit-data}).
-
-
-\marginpar{
-Should I Use Precise Ephemeris?
-By David MacDonald
-Waypoint Consulting Inc.
-November 2001}
 
 
 \section{GPS Receivers}
@@ -164,5 +177,6 @@ November 2001}
 \begin{itemize}
 \item Galileo
 \item Glonass
+\item BeiDou
 \item Compass
 \end{itemize}

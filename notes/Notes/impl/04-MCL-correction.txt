@@ -12,6 +12,7 @@ I need to monitor each individual satellite for signal quality.
 - Thread reading from the GPS keeps data current, callback when new data is ready
   - Every SV? After the whole window is received? Sirf window is followed by sv state messages. How big error comes from using the older sv state?
       => An experiment .... old_sv_state.py => about 20cm. And that's a lot.
+	This could be elegantly solved using precise ephemeris
 
 There needs to be a gps thread running that gives out the messages when they are ready.
 It should probably keep recently measured data, run some filtering on it and only report new _valid_ data.

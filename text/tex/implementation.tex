@@ -20,6 +20,7 @@ specifics of the GPS receiver used, design and how to use the implementation.
 \subsection{Communication Wiht SiRF Chip}
 \begin{itemize}
 \item Detection / switching: SiRF binary <-> NMEA
+\item Parsing and building SiRF messages
 \end{itemize}
 
 \subsection{Obtaining the error model}
@@ -36,9 +37,9 @@ specifics of the GPS receiver used, design and how to use the implementation.
 \subsection{Package \lstinline=gps=}
 Python package \lstinline=gps= is a tool for communication with SiRF GPS receivers.
 It connects to the gps receiver and switches it between NMEA and binary SiRF protocol.
-Also the package provides higher level access to the already parsed SiRF messages.
+Also the package provides higher level access to SiRF messages.
 
-Recorded data stream may also be opened transparently.
+Other than that, the package alecorded data stream may also be opened transparently.
 
 \subsection{average\_position.py}
 \verb=average_position.py= is a script that calculates a mean position from recorded

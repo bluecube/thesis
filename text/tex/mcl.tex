@@ -2,57 +2,121 @@
 \label{chap:mcl}
 
 The following chapter defines the localization problem, provides quick overview
-of Markov localization methods and finally describes Monte Carlo Localization
-algorithm.
+of several probabilistic localization algorithms and finally describes
+Monte Carlo Localization algorithm.
 
 \section{Localization}
-Localization of a mobile robot is a process that estimates position of the robot
-in a map based on sensor readings.
+Localization of a mobile robot is a task of estimating position (and possibly
+also other state) of the robot based on performed actions and sensor readings.
 
 Localization can mean either position tracking, where the robot knows its initial
 position and the task is only to update the estimate and handle relatively small
 errors, or global localization, where the robot has to find its position from scratch.
 
+\begin{itemize}
+\item ...
+\end{itemize}
+
 \section{Markov Localization}
 
-Markov localization is a probabilistic algorithm that estimates state of the
-robot based on sensor data.
+\begin{itemize}
+\item \cite{fox98,diard}
+\item recursive probabilistic algorithm that estimates state of the robot based
+	on its actions and measured sensor data.
+\item \(X_i\) is the random variable representing robot's state,
+	\(s_i\) is the sensory input in time step \(i\) and \(a_i\) is the action the
+	robot performs in the time step \(i\), after it measures the values \(s_i\).
+\item Assumes independence of actions
+	\begin{equation}
+		P(X_i = x | X_1, \dotsc, X_{i - 1}, a_1, \dotsc, a_{i - 1},
+		s_1, \dotsc, s_{i - 1}) = 
+		P(X_i = x | X_{i - 1}, a_{i - 1})
+	\end{equation}
+\item Assumes independence of measurements
+	\begin{equation}
+		P(s_i | X_1, \dotsc, X_i, a_1, \dotsc, a_{i - 1},
+		s_1, \dotsc, s_{i - 1}) = 
+		P(s_i | X_i)
+	\end{equation}
+\item Prediction:
+Using action model \(P(X_i = x | X_{i-1} = x^\prime, a_{i - 1})\) to predict
+current position based on past state and action
+	\begin{equation}
+		\label{eq:markov-prediction}
+		P(X_i = x | X_{i - 1}, a_{i - 1}) =
+		\int
+		P(X_i = x | X_{i - 1} = x', a_{i - 1})
+		P(X_{i - 1} = x^\prime | s_{i - 1}, a_{i - 2})
+		\mathrm{d}x'
+	\end{equation}
 
-Markov localization assumes that the environment in which the robot moves
-doesn't contain any state (this is called the Markov assumption).
-This assumption means that only the last robot's state is necessary to predict
-future state.
+\item Correction:
+Using sensor model \(P(s_i | X_i = x)\) to correct the estimate from prediction phase
+and form a final state estimate for time frame \(i\).
+	\begin{equation}
+	\label{eq:markov-correction}
+	P(X_i = x | s_i, a_{i - 1}) =
+		\frac
+			{P(s_i | X_i = x) P(X_i = x | X_{i - 1}, a_{i - 1})}
+			{
+			\int
+			P(s_i | X_i = x') P(X_i = x' | X_{i - 1}, a_{i - 1})
+			\mathrm{d}x'
+			}
+	\end{equation}
+	Note that the denominator in \eqref{eq:markov-correction} is only a normalizer to
+	keep probabilities of all positions to sum to \(1\). 
+\item Several specialisations of Markov localization exists differing mainly in how the
+	current state estimation is represented.
+	Examples include Kalman filters, that represent the estimation as Gaussian,
+	%(together with other assumptions, see \ref{sec:kalman}),
+	grid based algorithms \cite{fox98}, or Monte Carlo localization
+	that is described in section \ref{sec:mcl-algorithm}.
+\end{itemize}
 
-Markov localization periodically predicts next state of the robot and then
-corrects the estimation using the sensor data.
+%\begin{compactitem}
+%\item Prediction phase updates the belief from the previous time step based
+%on the actions performed by the robot.
+%\item Correction phase then updates the belief based on sensor measurements.
+%\end{compactitem}
 
-Several variations of Markov localization exists differing in the
-representation of the current state estimation:
 
 \subsection{Kalman Filters}
 \label{sec:kalman}
 
-Kalman Filters \cite{kalman60,welch95} are maybe the most commonly used variation of Markov localization.
+\begin{itemize}
+\item \cite{kalman60,welch95}
+\item popular
+\item efficient
+\item Can be viewed as a closed form solution of Markov localization where both the
+	action model and measurement model are linear and Gaussian.
 
-Current estimation is represented as a Multivariate Gaussian distribution.
-Basic Kalman Filters assume that the underlying system is linear and that
-all error terms have a Gaussian distribution.
+	\begin{equation}
+	\label{eq:kalman-action-model}
+	P(X_i = x | X_{i-1} = x', a_{i - 1}) \sim N(A_{i - 1}x' + B_{i - 1}a_{i - 1}, Q_{i - 1})
+	\end{equation}
+	\begin{equation}
+	\label{eq:kalman-measurement-model}
+	P(s_{i} | X_i = x) \sim N(H_{i}x_{i}, R_i)
+	\end{equation}
+	
+	In equations \eqref{eq:kalman-action-model} and \eqref{eq:kalman-measurement-model}
+	the matrix \(A_i\) describes change of state if there was no control input and no noise,
+	matrix \(B_i\) contains the influence of action \(a_i\) and \(H_i\) relates state to measured
+	values.
+	\(Q_i\) and \(R_i\) are covariance matrices of action model and measurement model.
 
-Modifications, like the Extended Kalman Filter, are capable of dealing with
-non-linear systems.
-
-\subsection{Grids}
-Another way of representing the state estimation is a grid.
-
-\subsection{Particle Filters}
-Particle Filters represent the estimation by keeping samples from the
-probablity distribution.
-Monte Carlo Localization is a particle filter.
+\item Non linear motion and measurement models can be approximated 
+	using a first order Taylor expansion to form extended Kalman
+	filter (EKF) \cite{welch95}.
+\end{itemize}
 
 \section{MCL Algorithm}
+\label{sec:mcl-algorithm}
 
 \cite{dellaert99}
 
 \subsection{Prediction}
 \subsection{Correction}
+\subsection{Normalization}
 \subsection{Resampling}

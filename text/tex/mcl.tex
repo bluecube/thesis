@@ -114,9 +114,33 @@ errors, or global localization, where the robot has to find its position from sc
 \section{MCL Algorithm}
 \label{sec:mcl-algorithm}
 
-\cite{dellaert99}
+\begin{itemize}
+\item\cite{dellaert99}
+\item Informally the basic MCL algorithm can be described as follows:
+	\begin{compactitem}
+	\item Keep \(n\) samples of possible robot states.
+	\item Prediction: Move each sample according to the action performed + noise corresponding
+		to uncertainty on the action's result (e.g. wheel slip).
+	\item Correction: For each sample calculate how probable the incoming measurement is
+		in this state and multiply sample's weight by this probability.
+	\item Resampling: Throw away samples with low weights, and instead add copies of the
+		highly weighted samples.
+	\end{compactitem}
 
-\subsection{Prediction}
-\subsection{Correction}
-\subsection{Normalization}
-\subsection{Resampling}
+\item Uses a set of samples \(S_i = \{s^k_{i} | k = 1,\dotsc,n\} \) drawn from
+	\(P(X_i = x | X_{i-1}, m_i, a_{i - 1})\) to represent the belief.
+
+\item Prediction:\\
+	For every sample \(s^k_{i-1} \in S_{i-1}\) draw a new sample \(s'^k_{i}\)
+	from the action model \(P(X_i = x | X_{i-1} = s^k_{i-1}, a_{i - 1})\).
+	The new set \(S'_i = \{s'^k_{i}\} \) represents
+	\(P(X_i = x | X_{i - 1}, a_{i - 1})\) from 
+	\eqref{eq:markov-prediction}
+
+\item Correction:\\
+	Use the sensor model to calculate weight \(w^k_i = P(m_i | X_i = s^k_i)\)
+	for each sample in \(S'_i\).
+
+\item Resampling:\\
+	Draw \(n\) new samples \(s^k_{i+1}\) from weighted set \(\{s'^k_i, w^k_i\}\)
+\end{itemize}

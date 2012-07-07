@@ -38,9 +38,9 @@ errors, or global localization, where the robot has to find its position from sc
 		m_1, \dotsc, m_{i - 1}) = 
 		P(m_i | X_i)
 	\end{equation}
-\item Prediction:
-Using action model \(P(X_i = x | X_{i-1} = x^\prime, a_{i - 1})\) to predict
-current position based on past state and action
+\item Prediction:\\
+	Using action model \(P(X_i = x | X_{i-1} = x^\prime, a_{i - 1})\) to predict
+	current position based on past state and action
 	\begin{equation}
 		\label{eq:markov-prediction}
 		P(X_i = x | X_{i - 1}, a_{i - 1}) =
@@ -50,12 +50,12 @@ current position based on past state and action
 		\mathrm{d}x'
 	\end{equation}
 
-\item Correction:
-Using sensor model \(P(m_i | X_i = x)\) to correct the estimate from prediction phase
-and form a final state estimate for time frame \(i\).
+\item Correction:\\
+	Using sensor model \(P(m_i | X_i = x)\) to correct the estimate from prediction phase
+	and form a final state estimate for time frame \(i\).
 	\begin{equation}
-	\label{eq:markov-correction}
-	P(X_i = x | X_{i-1}. m_i, a_{i - 1}) =
+		\label{eq:markov-correction}
+		P(X_i = x | X_{i-1}. m_i, a_{i - 1}) =
 		\frac
 			{P(m_i | X_i = x) P(X_i = x | X_{i - 1}, a_{i - 1})}
 			{
@@ -87,9 +87,9 @@ and form a final state estimate for time frame \(i\).
 \begin{itemize}
 \item \cite{kalman60,welch95}
 \item popular
-\item efficient
+\item efficient -- mean and covariance matrix is sufficient to store the density.
 \item Can be viewed as a closed form solution of Markov localization where both the
-	action model and measurement model are linear and Gaussian.
+	action model and measurement model are linear and Gaussian \cite{diard}.
 
 	\begin{equation}
 	\label{eq:kalman-action-model}

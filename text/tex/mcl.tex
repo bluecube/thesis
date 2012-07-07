@@ -24,19 +24,19 @@ errors, or global localization, where the robot has to find its position from sc
 \item recursive probabilistic algorithm that estimates state of the robot based
 	on its actions and measured sensor data.
 \item \(X_i\) is the random variable representing robot's state,
-	\(s_i\) is the sensory input in time step \(i\) and \(a_i\) is the action the
-	robot performs in the time step \(i\), after it measures the values \(s_i\).
+	\(m_i\) is the sensory input in time step \(i\) and \(a_i\) is the action the
+	robot performs in the time step \(i\), after it measures the values \(m_i\).
 \item Assumes independence of actions
 	\begin{equation}
 		P(X_i = x | X_1, \dotsc, X_{i - 1}, a_1, \dotsc, a_{i - 1},
-		s_1, \dotsc, s_{i - 1}) = 
+		m_1, \dotsc, m_{i - 1}) = 
 		P(X_i = x | X_{i - 1}, a_{i - 1})
 	\end{equation}
 \item Assumes independence of measurements
 	\begin{equation}
-		P(s_i | X_1, \dotsc, X_i, a_1, \dotsc, a_{i - 1},
-		s_1, \dotsc, s_{i - 1}) = 
-		P(s_i | X_i)
+		P(m_i | X_1, \dotsc, X_i, a_1, \dotsc, a_{i - 1},
+		m_1, \dotsc, m_{i - 1}) = 
+		P(m_i | X_i)
 	\end{equation}
 \item Prediction:
 Using action model \(P(X_i = x | X_{i-1} = x^\prime, a_{i - 1})\) to predict
@@ -46,21 +46,21 @@ current position based on past state and action
 		P(X_i = x | X_{i - 1}, a_{i - 1}) =
 		\int
 		P(X_i = x | X_{i - 1} = x', a_{i - 1})
-		P(X_{i - 1} = x^\prime | s_{i - 1}, a_{i - 2})
+		P(X_{i - 1} = x^\prime | m_{i - 1}, a_{i - 2})
 		\mathrm{d}x'
 	\end{equation}
 
 \item Correction:
-Using sensor model \(P(s_i | X_i = x)\) to correct the estimate from prediction phase
+Using sensor model \(P(m_i | X_i = x)\) to correct the estimate from prediction phase
 and form a final state estimate for time frame \(i\).
 	\begin{equation}
 	\label{eq:markov-correction}
-	P(X_i = x | s_i, a_{i - 1}) =
+	P(X_i = x | X_{i-1}. m_i, a_{i - 1}) =
 		\frac
-			{P(s_i | X_i = x) P(X_i = x | X_{i - 1}, a_{i - 1})}
+			{P(m_i | X_i = x) P(X_i = x | X_{i - 1}, a_{i - 1})}
 			{
 			\int
-			P(s_i | X_i = x') P(X_i = x' | X_{i - 1}, a_{i - 1})
+			P(m_i | X_i = x') P(X_i = x' | X_{i - 1}, a_{i - 1})
 			\mathrm{d}x'
 			}
 	\end{equation}
@@ -97,7 +97,7 @@ and form a final state estimate for time frame \(i\).
 	\end{equation}
 	\begin{equation}
 	\label{eq:kalman-measurement-model}
-	P(s_{i} | X_i = x) \sim N(H_{i}x_{i}, R_i)
+	P(m_{i} | X_i = x) \sim N(H_{i}x_{i}, R_i)
 	\end{equation}
 	
 	In equations \eqref{eq:kalman-action-model} and \eqref{eq:kalman-measurement-model}

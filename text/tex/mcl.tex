@@ -23,7 +23,8 @@ errors, or global localization, where the robot has to find its position from sc
 \item \cite{fox98,diard}
 \item recursive probabilistic algorithm that estimates state of the robot based
 	on its actions and measured sensor data.
-\item \(X_i\) is the random variable representing robot's state,
+\item Computes density \(P(X_i = x | X_{i-1}, m_i, a_{i - 1})\),
+	where \(X_i\) is the random variable representing robot's state,
 	\(m_i\) is the sensory input in time step \(i\) and \(a_i\) is the action the
 	robot performs in the time step \(i\), after it measures the values \(m_i\).
 \item Assumes independence of actions
@@ -55,7 +56,7 @@ errors, or global localization, where the robot has to find its position from sc
 	and form a final state estimate for time frame \(i\).
 	\begin{equation}
 		\label{eq:markov-correction}
-		P(X_i = x | X_{i-1}. m_i, a_{i - 1}) =
+		P(X_i = x | X_{i-1}, m_i, a_{i - 1}) =
 		\frac
 			{P(m_i | X_i = x) P(X_i = x | X_{i - 1}, a_{i - 1})}
 			{
@@ -116,6 +117,8 @@ errors, or global localization, where the robot has to find its position from sc
 
 \begin{itemize}
 \item\cite{dellaert99}
+\item Variation of Markov localization that approximates probability densities using
+	samples drawn from them.
 \item Informally the basic MCL algorithm can be described as follows:
 	\begin{compactitem}
 	\item Keep \(n\) samples of possible robot states.
@@ -131,16 +134,51 @@ errors, or global localization, where the robot has to find its position from sc
 	\(P(X_i = x | X_{i-1}, m_i, a_{i - 1})\) to represent the belief.
 
 \item Prediction:\\
-	For every sample \(s^k_{i-1} \in S_{i-1}\) draw a new sample \(s'^k_{i}\)
-	from the action model \(P(X_i = x | X_{i-1} = s^k_{i-1}, a_{i - 1})\).
-	The new set \(S'_i = \{s'^k_{i}\} \) represents
-	\(P(X_i = x | X_{i - 1}, a_{i - 1})\) from 
-	\eqref{eq:markov-prediction}
+	\emph{
+	Draw a new sample \(s'^k_{i}\)
+	from the action model \(P(X_i = x | X_{i-1} = s^k_{i-1}, a_{i - 1})\)
+	for every sample in \(S_{i-1}\).
+	}
+
+	The resulting set \(S'_i = \{s'^k_{i}\} \) is sampled from
+	density defined in equation \eqref{eq:mcl-predictive-density} and approximates the predictive
+	density from \eqref{eq:markov-prediction}
+	
+	\begin{equation}
+		\label{eq:mcl-predictive-density}
+		\hat{P}(X_i = x | X_{i - 1}, a_{i - 1}) =
+		\sum_{k = 1}^n P(X_i = x | X_{i-1} = s^k_{i-1}, a_{i - 1})
+	\end{equation}
 
 \item Correction:\\
-	Use the sensor model to calculate weight \(w^k_i = P(m_i | X_i = s^k_i)\)
+	\emph{
+	Use the sensor model to calculate weight \(w^k_i = P(m_i | X_i = s'^k_i)\)
 	for each sample in \(S'_i\).
+	}
+
+	Ideally, the correction phase would draw samples directly from
+	\(P(m_i | X_i = x) P(X_i = x | X_{i - 1}, a_{i - 1})\),
+	however there is no easy way to achieve this.
+	Instead, Monte Carlo localization 
+	uses SIR (sampling / importance resampling, \cite{smith92})
+	to generate samples drawn from
+	\(P(m_i | X_i = x) \hat{P}(X_i = x | X_{i - 1}, a_{i - 1})\) from the set \(S'_i\).
+	This is achieved by weighting the samples as described earlier and resampling
+	according to these weights in the next phase.
+
+%	\begin{equation}
+%		w^k_i = 
+%		\frac{
+%			P(m_i | X_i = s'^k_i) \hat{P}(X_i = s'^k_i | X_{i - 1}, a_{i - 1})
+%		}{
+%			\hat{P}(X_i =  s'^k_i | X_{i - 1}, a_{i - 1})
+%		} = P(m_i | X_i = s'^k_i)
+%	\end{equation}
+
 
 \item Resampling:\\
-	Draw \(n\) new samples \(s^k_{i+1}\) from weighted set \(\{s'^k_i, w^k_i\}\)
+	\emph{
+	Draw \(n\) new samples \(s^k_{i+1}\) from \(S_i\) by placing
+	weight weighted by \(\{w^k_i\}\) on \(s^k_{i}\)
+	}
 \end{itemize}

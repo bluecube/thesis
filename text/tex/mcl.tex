@@ -19,26 +19,113 @@ errors, or global localization, where the robot has to find its position from sc
 
 \section{Markov Localization}
 
+Markov Localization \cite{fox98,diard} is a recursive probabilistic
+algorithm that estimates state of the robot based on its actions and measured sensor data.
+
+\subsection{Derivation}
+
+Markov localization assumes that the state of the robot only depends
+on state and action performed in the previous time frame.
+%	\begin{equation}
+%		\P(X_i = x | X_{1, \dotsc, i - 1}, a_{1, \dotsc, i - 1},
+%		o_{1, \dotsc, i - 1}) = 
+%		\P(X_i = x | X_{i - 1}, a_{i - 1})
+%	\end{equation}
+and that each observation only depends on the current state.
+%	\begin{equation}
+%		\P(o_i | X_1, \dotsc, X_i, a_1, \dotsc, a_{i - 1},
+%		o_1, \dotsc, o_{i - 1}) = 
+%		\P(o_i | X_i)
+%	\end{equation}
+
+It computes probability density of the robot state, called belief.
+\begin{equation}
+	\label{eq:markov-belief-def}
+	\Bel(X_i = x) = \P(X_i = x | o_{1, \dotsc, i}, a_{1,\dotsc,i - 1})
+\end{equation}
+
+Here \(X_i\) is the random variable representing robot's state,
+\(o_i\) is the observed sensor input in time step \(i\) and \(a_i\)
+is the action the robot performs in the time step \(i\), after it
+measures \(o_i\).
+
+Using Bayes rule, equation \eqref{eq:markov-belief-def} can be transformed to
+\begin{equation}
+	\label{eq:markov-derivation1}
+	\Bel(X_i = x) =
+	\frac{
+		\P(o_i | X_i = x, o_{1, \dotsc, i}, a_{1,\dotsc,i - 1})
+		\P(X_i = x | o_{1, \dotsc, i}, a_{1, \dotsc, i - 1})
+	}{
+		\P(o_i | o_{1, \dotsc, i-1}, a_{1, \dotsc, i-1})
+	}
+\end{equation}
+
+Note that denominator \(\P(o_i | o_{1, \dotsc, i-1}, a_{1, \dotsc, i-1})\) only
+serves as a normalization constant.
+In further equations it will be replaced by \(\eta^{-1}\).
+Other than that, we can use the independence assumptions made at the beginning
+of this section and simplify \eqref{eq:markov-derivation1} to
+
+\begin{equation}
+	\label{eq:markov-derivation2}
+	\Bel(X_i = x) =
+		\eta \P(o_i | X_i = x)
+		\P(X_i = x | o_{1, \dotsc, i}, a_{1, \dotsc, i - 1})
+\end{equation}
+
+%The equation \eqref{eq:markov-derivation1} has already been simplified using
+%the independence assumptions.
+
+By integrating over all possible states in time \(i - 1\), the rightmost term in
+equation \eqref{eq:markov-derivation1} can be expanded in a following way;
+
+\begin{equation}
+	\label{eq:markov-derivation3}
+	\P(X_i = x | o_{1, \dotsc, i}, a_{1, \dotsc, i - 1}) = \
+	\int
+	\P(X_i = x | X_{i - 1}=x', o_{1, \dotsc, i}, a_{1, \dotsc, i - 1})
+	\P(X_{i-1} = x' | o_{1, \dotsc, i-1}, a_{1, \dotsc, i-1})
+	\mathrm{d}x'
+\end{equation}
+
+After substituting definition of belief from equation \eqref{eq:markov-belief-def}
+and another use the independence assumptions we get
+\begin{equation}
+	\label{eq:markov-derivation4}
+	\P(X_i = x | o_{1, \dotsc, i}, a_{1, \dotsc, i - 1}) = \
+	\int
+	\P(X_i = x | X_{i - 1}=x', a_{i - 1})
+	\Bel(X_{i-1} = x')
+	\mathrm{d}x'
+\end{equation}
+
+Finally, substituting into \eqref{eq:markov-derivation2} gives us the recursive
+equation
+
+\begin{equation}
+	\label{eq:markov-derivation5}
+	\Bel(X_i = x) =
+	\eta \P(o_i | X_i = x)
+		\int
+		\P(X_i = x' | a_{i - 1})
+		\Bel(X_{i-1} = x')
+		\mathrm{d}x'
+\end{equation}
+
+
+We will call the conditional density \(\P(o_i | X_i = x)\) \emph{sensor model} and
+the density \(\P(X_i = x' | X_{i - 1}=x', a_{i - 1})\) \emph{motion model}.
+Sensor model describes the probability of observing \(o_i\) at given time.
+It implicitly contains map of the environment and models interactions of sensors with
+the map.
+Action model contains information about how the robot's actions relate to changes in its state.
+
+
+
+
+
 \begin{itemize}
-\item \cite{fox98,diard}
-\item recursive probabilistic algorithm that estimates state of the robot based
-	on its actions and measured sensor data.
-\item Computes density \(P(X_i = x | X_{i-1}, m_i, a_{i - 1})\),
-	where \(X_i\) is the random variable representing robot's state,
-	\(m_i\) is the sensory input in time step \(i\) and \(a_i\) is the action the
-	robot performs in the time step \(i\), after it measures the values \(m_i\).
-\item Assumes independence of actions
-	\begin{equation}
-		P(X_i = x | X_1, \dotsc, X_{i - 1}, a_1, \dotsc, a_{i - 1},
-		m_1, \dotsc, m_{i - 1}) = 
-		P(X_i = x | X_{i - 1}, a_{i - 1})
-	\end{equation}
-\item Assumes independence of measurements
-	\begin{equation}
-		P(m_i | X_1, \dotsc, X_i, a_1, \dotsc, a_{i - 1},
-		m_1, \dotsc, m_{i - 1}) = 
-		P(m_i | X_i)
-	\end{equation}
 \item Prediction:\\
 	Using action model \(P(X_i = x | X_{i-1} = x^\prime, a_{i - 1})\) to predict
 	current position based on past state and action
@@ -47,23 +134,17 @@ errors, or global localization, where the robot has to find its position from sc
 		P(X_i = x | X_{i - 1}, a_{i - 1}) =
 		\int
 		P(X_i = x | X_{i - 1} = x', a_{i - 1})
-		P(X_{i - 1} = x^\prime | m_{i - 1}, a_{i - 2})
+		P(X_{i - 1} = x^\prime | o_{i - 1}, a_{i - 2})
 		\mathrm{d}x'
 	\end{equation}
 
 \item Correction:\\
-	Using sensor model \(P(m_i | X_i = x)\) to correct the estimate from prediction phase
+	Using sensor model \(P(o_i | X_i = x)\) to correct the estimate from prediction phase
 	and form a final state estimate for time frame \(i\).
 	\begin{equation}
 		\label{eq:markov-correction}
-		P(X_i = x | X_{i-1}, m_i, a_{i - 1}) =
-		\frac
-			{P(m_i | X_i = x) P(X_i = x | X_{i - 1}, a_{i - 1})}
-			{
-			\int
-			P(m_i | X_i = x') P(X_i = x' | X_{i - 1}, a_{i - 1})
-			\mathrm{d}x'
-			}
+		P(X_i = x | X_{i-1}, o_i, a_{i - 1}) =
+		\nu P(o_i | X_i = x) P(X_i = x | X_{i - 1}, a_{i - 1})
 	\end{equation}
 	Note that the denominator in \eqref{eq:markov-correction} is only a normalizer to
 	keep probabilities of all positions to sum to \(1\). 
@@ -98,7 +179,7 @@ errors, or global localization, where the robot has to find its position from sc
 	\end{equation}
 	\begin{equation}
 	\label{eq:kalman-measurement-model}
-	P(m_{i} | X_i = x) \sim N(H_{i}x_{i}, R_i)
+	P(o_{i} | X_i = x) \sim N(H_{i}x_{i}, R_i)
 	\end{equation}
 	
 	In equations \eqref{eq:kalman-action-model} and \eqref{eq:kalman-measurement-model}
@@ -131,7 +212,7 @@ errors, or global localization, where the robot has to find its position from sc
 	\end{compactitem}
 
 \item Uses a set of samples \(S_i = \{s^k_{i} | k = 1,\dotsc,n\} \) drawn from
-	\(P(X_i = x | X_{i-1}, m_i, a_{i - 1})\) to represent the belief.
+	\(P(X_i = x | X_{i-1}, o_i, a_{i - 1})\) to represent the belief.
 
 \item Prediction:\\
 	\emph{
@@ -152,33 +233,33 @@ errors, or global localization, where the robot has to find its position from sc
 
 \item Correction:\\
 	\emph{
-	Use the sensor model to calculate weight \(w^k_i = P(m_i | X_i = s'^k_i)\)
+	Use the sensor model to calculate weight \(w^k_i = P(o_i | X_i = s'^k_i)\)
 	for each sample in \(S'_i\).
 	}
 
 	Ideally, the correction phase would draw samples directly from
-	\(P(m_i | X_i = x) P(X_i = x | X_{i - 1}, a_{i - 1})\),
+	\(P(o_i | X_i = x) P(X_i = x | X_{i - 1}, a_{i - 1})\),
 	however there is no easy way to achieve this.
 	Instead, Monte Carlo localization 
 	uses SIR (sampling / importance resampling, \cite{smith92})
 	to generate samples drawn from
-	\(P(m_i | X_i = x) \hat{P}(X_i = x | X_{i - 1}, a_{i - 1})\) from the set \(S'_i\).
+	\(P(o_i | X_i = x) \hat{P}(X_i = x | X_{i - 1}, a_{i - 1})\) from the set \(S'_i\).
 	This is achieved by weighting the samples as described earlier and resampling
 	according to these weights in the next phase.
 
 %	\begin{equation}
 %		w^k_i = 
 %		\frac{
-%			P(m_i | X_i = s'^k_i) \hat{P}(X_i = s'^k_i | X_{i - 1}, a_{i - 1})
+%			P(o_i | X_i = s'^k_i) \hat{P}(X_i = s'^k_i | X_{i - 1}, a_{i - 1})
 %		}{
 %			\hat{P}(X_i =  s'^k_i | X_{i - 1}, a_{i - 1})
-%		} = P(m_i | X_i = s'^k_i)
+%		} = P(o_i | X_i = s'^k_i)
 %	\end{equation}
 
 
 \item Resampling:\\
 	\emph{
 	Draw \(n\) new samples \(s^k_{i+1}\) from \(S_i\) by placing
-	weight weighted by \(\{w^k_i\}\) on \(s^k_{i}\)
+	weight \(\{w^k_i\}\) on \(s^k_{i}\)
 	}
 \end{itemize}

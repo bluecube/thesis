@@ -11,7 +11,7 @@ IMAGEFILES = $(MPFILES:.mp=.pdf) $(EPSFILES:.eps=.pdf) \
 .PHONY: all
 .PHONY: clean
 
-RMEVERYTHING = rm -f *.1 *.log *.aux *.out *.pdf *.toc mperr.tex mptextmp.mp *.mpx *.mpo *-temp.* *-temp-* *.dependencies
+RMEVERYTHING = rm -f *.1 *.log *.aux *.out *.pdf *.toc *.bbl *.blg *-blx.bib *.run.xml mperr.tex mptextmp.mp *.mpx *.mpo *-temp.* *-temp-* *.dependencies 
 
 all: $(FILENAME).pdf todo.txt
 
@@ -20,6 +20,7 @@ view: all
 
 %.pdf: %.tex
 	cd $(<D); pdflatex $(<F) -file-line-error
+	bibtex8 $(basename $<).aux
 	cd $(<D); pdflatex $(<F) -file-line-error
 
 %.dependencies: %.tex

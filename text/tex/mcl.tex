@@ -19,7 +19,7 @@ errors, or global localization, where the robot has to find its position from sc
 
 \section{Markov Localization}
 
-Markov Localization \cite{fox98,diard} is a recursive probabilistic
+Markov Localization \cite{fox98,diard03} is a recursive probabilistic
 algorithm that estimates state of the robot based on its actions and measured sensor data.
 
 \subsection{Derivation}
@@ -171,7 +171,7 @@ Action model contains information about how the robot's actions relate to change
 \item popular
 \item efficient -- mean and covariance matrix is sufficient to store the density.
 \item Can be viewed as a closed form solution of Markov localization where both the
-	action model and measurement model are linear and Gaussian \cite{diard}.
+	action model and measurement model are linear and Gaussian \cite{diard03}.
 
 	\begin{equation}
 	\label{eq:kalman-action-model}

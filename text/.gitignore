@@ -3,5 +3,9 @@
 *.out
 *.pdf
 *.toc
+*.bbl
+*.blg
+*-blx.bib
+*.run.xml
 *.dependencies
 /todo.txt

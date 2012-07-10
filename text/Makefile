@@ -13,7 +13,7 @@ IMAGEFILES = $(MPFILES:.mp=.pdf) $(EPSFILES:.eps=.pdf) \
 
 RMEVERYTHING = rm -f *.1 *.log *.aux *.out *.pdf *.toc *.bbl *.blg *-blx.bib *.run.xml mperr.tex mptextmp.mp *.mpx *.mpo *-temp.* *-temp-* *.dependencies 
 
-all: $(FILENAME).pdf todo.txt
+all: $(FILENAME).pdf
 
 view: all
 	evince $(FILENAME).pdf &
@@ -39,8 +39,5 @@ clean:
 	$(RMEVERYTHING)
 	cd img ; $(RMEVERYTHING)
 	rm todo.txt
-
-todo.txt: $(TEXFILES)
-	./todo.sh $(TEXFILES) > todo.txt
 
 include $(FILENAME).dependencies

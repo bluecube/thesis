@@ -18,7 +18,7 @@ all: $(FILENAME).pdf
 view: all
 	evince $(FILENAME).pdf &
 
-%.pdf: %.tex
+%.pdf: %.tex %.bib
 	cd $(<D); pdflatex $(<F) -file-line-error
 	bibtex8 $(basename $<).aux
 	cd $(<D); pdflatex $(<F) -file-line-error

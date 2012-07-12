@@ -5,6 +5,8 @@ This chapter discusses two approaches to using GPS receiver as a correction inpu
 to Monte Carlo localization. One based on pseudorange measurements and one based on
 WGS84 pre-calculated data.
 
+
+
 \section{Position Domain Integration}
 \begin{itemize}
 \item Using complete fixes from receiver
@@ -21,6 +23,12 @@ WGS84 pre-calculated data.
 \item Using each pseudorange measurement
 \item Maybe better localization, no assumptions about vehicle properties
 \end{itemize}
+
+\subsection{Static Environment Assumption}
+\label{sec:gps-mcl-static-env}
+Monte Carlo Localization assumes that the environment is static, but we need to
+localize according to moving satellites.
+To avoid this problem we will hide satellite motion into the robot state and sensor model.
 
 \subsection{Error distribution}
 \begin{itemize}

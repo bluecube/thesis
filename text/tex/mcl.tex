@@ -1,24 +1,33 @@
 \chapter{Monte Carlo Localization}
 \label{chap:mcl}
 
-The following chapter defines the localization problem, provides quick overview
-of several probabilistic localization algorithms and finally describes
+The following chapter defines the localization problem, provides overview
+of Markov Localization and Kalman Filters and finally describes
 Monte Carlo Localization algorithm.
 
 \section{Localization}
 Localization of a mobile robot is a task of estimating position (and possibly
 also other state) of the robot based on performed actions and sensor readings.
+To reliably navigate its environment autonomous mobile robot needs
+a relatively precise estimate of its position.
 
-Localization can mean either position tracking, where the robot knows its initial
+Localization methods can be categorized according to many different criteria.
+One of the possibilities is categorization based on whether the environment is static
+or dynamic.
+
+Another dimension along which the localization algorithms can be grouped
+is the ability of the localization algorithm to modify behavior of the robot
+in order to find the current position faster or with more precision.
+
+Next, localization can mean either position tracking, where the robot knows its initial
 position and the task is only to update the estimate and handle relatively small
-errors, or global localization, where the robot has to find its position from scratch.
+errors, or global localization, where the robot has to find its position from scratch
+and recover from serious localization errors.
 
-\begin{itemize}
-\item passive vs active
-\item Since both technologies chosen as a topic of this thesis support inherently
-	support global localization (although the term "global" has a slightly
-	different meaning for either of them), we will focus on 
-\end{itemize}
+In this work we will focus only on passive localization in static environment and
+since Monte Carlo Localization is a topic of this thesis we will be favoring
+global localization, although typically GPS is used with Kalman filters
+which are only capable of tracking the estimate locally.
 
 \section{Markov Localization}
 
@@ -193,10 +202,10 @@ Kalman filter very efficient, requiring only several matrix operations in each s
 
 Non linear motion and measurement models can be approximated
 using a first order Taylor expansion to form extended Kalman
-filter (EKF).
+filter (EKF) \cite{welch95}.
 
 For illustration of Kalman filter operation, the update rules are included,
-however for more detailed description see \cite{welch95}.
+for more detailed description see \cite{welch95}.
 
 \begin{description}
 \item[Prediction] \hfill \\
@@ -318,3 +327,25 @@ MCL keeps a set of samples \(S_i = \{s^k_{i} | k = 1,\dotsc,n\} \) drawn from
 \end{description}
 
 \subsection{Modifications}
+
+\subsubsection{Adaptive Sample Size}
+During global localization, or tracking failure MCL needs a relatively large number
+of samples to localize correctly, however when the robot is successfully localized
+a much less samples is necessary.
+
+An improvement of the MCL algorithm is to vary the sample size dynamically.
+This can be done using likehood sampling \cite{fox99}, that works by 
+resampling not until a fixed number of samples is
+generated, but until the sum of unnormalized weights exceeds a given threshold.
+Another more involved approach, using KLD-sampling algorithm
+(KLD stands for Kullback-Leibler distance) is described in \cite{fox03}.
+
+%\subsubsection{Delayed Resampling}
+
+\subsubsection{Mixture MCL}
+
+Mixture MCL \cite{thrun99} is a modification of Monte Carlo Localization that
+solves the problem with too precise observations.
+The modified algorithm uses a dual algorithm to MCL -- sampling from
+observation model and correction from motion model -- and combines it with
+regular Monte Carlo Localization.

@@ -1,9 +1,9 @@
-__all__ = ['gps', 'gps_operations', 'gps_replay',
-    'nmea', 'sirf', 'sirf_messages']
-    # serial_wrapper is intentionally missing.
-
 from . import gps
 from . import gps_replay
+from . import sirf
+from . import sirf_messages
+from . import nmea
+
 
 def open_gps(file):
     """

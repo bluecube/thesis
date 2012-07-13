@@ -265,7 +265,7 @@ class SoftwareVersionString(_SirfReceivedMessageBase):
     @classmethod
     def from_bytes(cls, data):
         s = data[1:].decode('ascii').rstrip('\x00').strip()
-        return cls({message_id: data[0], string: s}, data)
+        return cls({'message_id': data[0], 'string': s}, data)
 
 
 class SwitchToNmeaProtocol(_SirfSentMessageBase):

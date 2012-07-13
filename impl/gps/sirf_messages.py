@@ -256,6 +256,67 @@ class NavigationLibrarySVStateData(_SirfReceivedMessageBase):
         
         return cls(fields, data)
 
+class GeodeticNavigationData(_SirfReceivedMessageBase):
+    packer = _NamedUnpacker('>', [
+        ('B', 'message_id'),
+        ('H', 'nav_valid'),
+        ('H', 'nav_type'),
+        ('H', 'extended_gps_week'),
+        ('I', 'gps_tow', 1e3),
+        ('H', 'utc_year'),
+        ('B', 'utc_month'),
+        ('B', 'utc_day'),
+        ('B', 'utc_hour'),
+        ('B', 'utc_minute'),
+        ('H', 'utc_second', 1e3),
+        ('I', 'sat_ids'),
+        ('i', 'latitude', 1e7),
+        ('i', 'longitude', 1e7),
+        ('i', 'altitude_ellipsoid', 1e2),
+        ('i', 'altitude_msl', 1e2),
+        ('b', 'map_datum'),
+        ('H', 'speed_over_ground', 1e2),
+        ('H', 'course_over_ground', 1e2),
+        ('xx',),
+        ('h', 'climb_rate', 1e2),
+        ('h', 'heading_rate', 1e2),
+        ('I', 'ehpe', 1e2),
+        ('I', 'evpe', 1e2),
+        ('I', 'ete', 1e2),
+        ('H', 'ehve', 1e2),
+        ('i', 'clock_bias', 1e2),
+        ('I', 'clock_bias_error', 1e2),
+        ('i', 'clock_drift', 1e2),
+        ('I', 'clock_drift_error', 1e2),
+        ('I', 'distance'),
+        ('H', 'distance_error'),
+        ('H', 'heading_error'),
+        ('x',),
+        ('B', 'hdop', 5),
+        ('B', 'additional_mode_info')])
+
+    @classmethod
+    def get_message_id(cls):
+        return 41
+
+    @classmethod
+    def from_bytes(cls, data):
+        fields = cls.packer.unpack(data)
+
+        bit = 0
+        num = fields['sat_ids']
+        sat_ids = set()
+        while num:
+            if num & 1:
+                sat_ids.add(bit)
+            bit += 1
+            num >>= 1
+
+        fields['sat_ids'] = frozenset(sat_ids)
+        
+        return cls(fields, data)
+
+
 class SbasParameters(_SirfReceivedMessageBase):
     packer = struct.Struct('>BBBBB8x')
 

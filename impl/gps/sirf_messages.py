@@ -3,6 +3,7 @@ from __future__ import division
 import struct
 import numpy
 
+from . import serial_wrapper
 class _SirfMessageBase(object):
     """
     Base class for all SIRF messages
@@ -333,7 +334,7 @@ class PollSoftwareVersion(_SirfSentMessageBase):
         return 132
 
     def to_bytes(self):
-        return bytes([self.get_message_id(), 0])
+        return serial_wrapper.to_bytes([self.get_message_id(), 0])
 
 
 class SetMessageRate(_SirfSentMessageBase):
@@ -364,5 +365,5 @@ class SetMessageRate(_SirfSentMessageBase):
         return self.packer.pack(
             self.get_message_id(),
             self.mode,
-            self.msg.get_message_id(),
+            self.get_message_id(),
             self.update_rate)

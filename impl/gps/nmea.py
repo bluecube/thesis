@@ -29,7 +29,7 @@ def read_sentence(serial):
         if line[-2:] != b'\r\n':
             raise NmeaMessageError("Wrong line ending.")
 
-        checksum = functools.reduce(operator.__xor__, line[0:-5])
+        checksum = _checksum(line[0:-5])
         expected_checksum = int(line[-4:-2].decode('ascii'), 16)
 
         if checksum != expected_checksum:
@@ -39,7 +39,7 @@ def read_sentence(serial):
     except serial_wrapper.SerialWrapperTimeout:
         raise NmeaMessageError("Timed out.")
     finally:
-        serial.timeout = old_timeout
+        serial.timeout = old_timeout      
 
 def send_sentence(serial, fields):
     """
@@ -63,7 +63,14 @@ def _build_sentence(fields):
 
     line = ",".join(fields).encode()
 
-    checksum = functools.reduce(operator.__xor__, line)
+    checksum = _checksum(line)
 
     return "$".encode('ascii') + line + \
         "*{0:02X}\r\n".format(checksum).encode()
+
+if bytes == str:
+    def _checksum(string):
+        return functools.reduce(operator.__xor__, (ord(x) for x in string))
+else:
+    def _checksum(string):
+        return functools.reduce(operator.__xor__, string)

@@ -28,7 +28,7 @@ def read_message(serial):
         length = struct.unpack('>H', serial.read_with_timeout(2, end_time))[0]
 
         data = serial.read_with_timeout(length, end_time)
-        checksum = sum(data) & 0x7FFF
+        checksum = _checksum(data)
         expected_checksum = struct.unpack('>H',
             serial.read_with_timeout(2, end_time))[0]
 
@@ -54,7 +54,7 @@ def send_message(serial, data):
     if len(data) > 0x7FFF:
         raise Exception("Message too long.")
 
-    checksum = sum(data) & 0x7FFF
+    checksum = _checksum(data)
 
     serial.write(serial_wrapper.to_bytes([0xA0, 0xA2, len(data) >> 8, len(data) & 0xFF]))
     serial.write(data)
@@ -62,10 +62,16 @@ def send_message(serial, data):
     serial.flush()
 
 
-if isinstance(b'0'[0], str):
+if bytes == str:
+    def _checksum(string):
+        return sum((ord(x) for x in string))  & 0x7FFF
+        
     def bytes_to_message_id(data):
         return ord(data[0])
 else:
+    def _checksum(string):
+        return sum(string) & 0x7FFF
+
     def bytes_to_message_id(data):
         return data[0]
     

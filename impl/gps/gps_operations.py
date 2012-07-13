@@ -1,9 +1,11 @@
 from __future__ import unicode_literals
 
+import collections
+
 from . import sirf
 from . import sirf_messages
 
-class GpsOperations(object):
+class GpsOperations(collections.Iterator):
     """
     Operations common to both real gps and recording.
     """
@@ -23,20 +25,23 @@ class GpsOperations(object):
         """
         pass
 
+    def try_read_message(self):
+        """
+        Try to read one SIRF message from the gps.
+        Raises UnrecognizedMessageException.
+        """
+        return sirf.from_bytes(self._read_binary_sirf_msg())
+
     def read_message(self):
         """
         Read one recognized SIRF message from the gps.
         """
 
-        msg = None
-        
-        while not msg:
+        while True:
             try:
-                msg = sirf.from_bytes(self._read_binary_sirf_msg())
+                return sirf.from_bytes(self._read_binary_sirf_msg())
             except sirf.UnrecognizedMessageException:
                 pass
-                
-        return msg
 
     def read_specific_message(self, msg_type):
         """
@@ -51,14 +56,9 @@ class GpsOperations(object):
         
         while not isinstance(msg, msg_type):
             msg = self.read_message()
+            #print(msg)
                 
         return msg
-
-    def __iter__(self):
-        """
-        We want to support iterator protocol.
-        """
-        return self
 
     def __next__(self):
         """
@@ -71,4 +71,4 @@ class GpsOperations(object):
         Iterator protocol for python 2.x
         """
         return self.read_message()
-        
+

@@ -33,13 +33,20 @@ arguments = arg_parser.parse_args()
 
 x = gps.open_gps(arguments.gps)
 
-if arguments.filter is not None:
-    x.set_message_rate(arguments.filter, 1)
+#if arguments.filter is not None:
+#    x.set_message_rate(arguments.filter, 1)
 
 last_time = float("nan")
 
 try:
-    for msg in x:
+    while True:
+        try:
+            msg = x.try_read_message()
+        except gps.sirf.UnrecognizedMessageException as e:
+            msg = e
+        except StopIteration:
+            break
+
         if arguments.filter is not None and msg.message_id != arguments.filter:
             continue
 

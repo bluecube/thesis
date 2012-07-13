@@ -11,7 +11,10 @@ class SirfMessageError(Exception):
     pass
 
 class UnrecognizedMessageException(Exception):
-    pass
+    def __init__(self, message_id):
+        super(UnrecognizedMessageException, self).__init__(
+            "Unrecognized message " + str(message_id) + ".")
+        self.message_id = message_id
 
 def read_message(serial):
     """
@@ -74,7 +77,6 @@ else:
 
     def bytes_to_message_id(data):
         return data[0]
-    
 
 def from_bytes(data):
     """
@@ -87,8 +89,7 @@ def from_bytes(data):
 
 
     if not message_id in message_types:
-        raise UnrecognizedMessageException("Unrecognized message " +
-            str(message_id) + ".")
+        raise UnrecognizedMessageException(message_id)
 
     _logger.debug("Found message, ID = " + str(message_id) + ".")
 

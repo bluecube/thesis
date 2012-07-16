@@ -47,6 +47,10 @@ x = stats.Stats(arguments.precision)
 y = stats.Stats(arguments.precision)
 z = stats.Stats(arguments.precision)
 
+geod_count = 0
+lat = stats.Stats(arguments.precision)
+lon = stats.Stats(arguments.precision)
+
 try:
     for msg in gps_dev:
         if isinstance(msg, MeasureNavigationDataOut):
@@ -54,12 +58,22 @@ try:
             x.add(msg.pos[0, 0])
             y.add(msg.pos[0, 1])
             z.add(msg.pos[0, 2])
+        elif isinstance(msg, GeodeticNavigationData):
+            geod_count += 1
+            lat.add(msg.latitude)
+            lon.add(msg.longitude)
+            
 except KeyboardInterrupt:
     logger.info("Ok, that should be enough.")
 
-logger.info("Found " + str(count) + " messages.")
+logger.info("Found " + str(count) + " MeasureNavigationDataOut messages.")
 
 if count != 0:
     receiver_pos = (x.mean(), y.mean(), z.mean())
 
     print("{0[0]!r},{0[1]!r},{0[2]!r}".format(receiver_pos))
+
+logger.info("Found " + str(geod_count) + " GeodeticNavigationData messages.")
+
+if geod_count != 0:
+    print("latitude: {0!r} longitude: {1!r}".format(lat.mean(), lon.mean()))

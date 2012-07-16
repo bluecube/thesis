@@ -113,7 +113,7 @@ Also speeds should be handled somehow.
 
 Averaged receiver position for the "month" dataset:
 3960414.8872512225,1243097.6094489514,4826752.3188620238
-
+latitude: 49.49499958746887 longitude: 17.42591309978853
 
 
 Age of SV state data doesn't cause too much of an error: commit 09261af525b21a18c0c48139ccafa117baa54632

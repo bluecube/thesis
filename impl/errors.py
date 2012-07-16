@@ -303,8 +303,6 @@ arg_parser = argparse.ArgumentParser(
 arg_parser.add_argument('recording')
 arg_parser.add_argument('--receiver-pos', type=numpy.matrix, default=None, required=True,
     help="Ground truth receiver position.")
-arg_parser.add_argument('--precision', default=1000, type=int,
-    help="Multiplier for fixed point arithmetic.")
 arg_parser.add_argument('--hist-resolution', default=1, type=float,
     help="Width of the histogram bin.")
 arg_parser.add_argument('--sirf-clock-offsets', default=False, action='store_true',

@@ -7,6 +7,7 @@ import gps
 import pyproj
 import numpy
 import matplotlib.pyplot as plt
+import mpl_toolkits.mplot3d
 
 logging.basicConfig(
     format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -17,7 +18,7 @@ arg_parser = argparse.ArgumentParser(
     description="Calculate the UERE from recorded data.\n"
     "Assumes that the receiver was stationary during whole recording.")
 arg_parser.add_argument('gps')
-arg_parser.add_argument('--hist-resolution', default=0.1, type=float,
+arg_parser.add_argument('--hist-resolution', default=0.5, type=float,
     help="Width of the histogram bin.")
 arguments = arg_parser.parse_args()
 
@@ -50,8 +51,15 @@ hdop_rms = numpy.empty_like(used_hdop)
 
 for i, current_hdop in enumerate(used_hdop):
     masked_dist = numpy.ma.array(dist, mask = (hdop == current_hdop))
-    hdop_rms[i] = math.sqrt(numpy.mean(masked_dist * masked_dist))
+    hdop_rms[i] = numpy.mean(masked_dist)
 
+hist, error_bins, hdop_bins = numpy.histogram2d(
+    dist, hdop,
+    (
+        (numpy.max(dist) - numpy.min(dist)) / arguments.hist_resolution,
+        (numpy.max(hdop) - numpy.min(hdop)) / 0.2
+    )
+    )
 logging.info("Done")
 
 
@@ -67,8 +75,20 @@ fig2 = plt.figure()
 hdop_plot = fig2.add_subplot(1, 1, 1)
 hdop_plot.scatter(used_hdop, hdop_rms)
 hdop_plot.set_xlabel('HDOP [m]')
-hdop_plot.set_ylabel('Error RMS [m]')
+hdop_plot.set_ylabel('Mean Error [m]')
 
+fig3 = plt.figure()
+hist_plot = fig3.add_subplot(1, 1, 1, projection='3d')
+
+max_hdop = numpy.max(hdop)
+for i, current_hdop in enumerate(hdop_bins[:-1]):
+    c = 'red' if i % 2 else 'blue'
+    hist_plot.bar(error_bins[:-1], hist[:,i], current_hdop, zdir='y', color = c, 
+        width = arguments.hist_resolution, alpha=0.75)
+
+hist_plot.set_xlabel('Error [m]')
+hist_plot.set_ylabel('HDOP')
+hist_plot.set_zlabel('Count')
 
 plt.show()
 

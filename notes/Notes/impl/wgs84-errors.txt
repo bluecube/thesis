@@ -1,0 +1,10 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2012-07-16T22:53:49.701248
+
+====== wgs84-errors ======
+Created Monday 16 July 2012
+
+Reading the complete wgs84 fixes, projecing to 2D and calculating stats & graphs,
+
+[ ] Add curve fitting of mean error on hdop.

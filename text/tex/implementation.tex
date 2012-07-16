@@ -58,6 +58,16 @@ The script \verb=record.py= records stores SiRF binary messages from a GPS (or f
 The recording can then be opened by the \lstinline=gps= package in the same way as a real GPS
 device.
 
+\subsection{wgs84\_errors.py}
+\verb=wgs84_errors.py= calculates error models of pre-processed WGS84 data.
+It takes a recording calculates center of weight from them, and projects all the fixes to plane
+using orthogonal projection.
+
+Then positions of the fixes, histogram of errors depending on HDOP (see
+\ref{sec:gps-dop}), and dependency of mean error on HDOP are ploted, 
+
+
+
 \subsection{old\_sv\_state.py}
 Calculates position errors obtained by using older SV state received from
 the GPS rather than the latest value.

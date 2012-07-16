@@ -27,8 +27,7 @@ logging.info("Retrieving fixes")
 fixes = numpy.fromiter(
     (
         (msg.latitude, msg.longitude, msg.hdop)
-        for msg in source
-        if isinstance(msg, gps.sirf_messages.GeodeticNavigationData)
+        for msg in source.filtered_messages([gps.sirf_messages.GeodeticNavigationData])
     ),
     dtype=[('lat', numpy.float), ('lon', numpy.float), ('hdop', numpy.float)])
 hdop = fixes['hdop']

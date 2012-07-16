@@ -60,6 +60,20 @@ class GpsOperations(collections.Iterator):
                 
         return msg
 
+    def filtered_messages(self, msg_type_set):
+        """
+        Returns iterator of messages of types in msg_type_set.
+        Faster than filtering using isinstance.
+        """
+        ids = {msg_type.get_message_id() for msg_type in msg_type_set}
+        
+        while True:
+            data = self._read_binary_sirf_msg()
+            while sirf.bytes_to_message_id(data) not in ids:
+                data = self._read_binary_sirf_msg()
+            
+            yield sirf.from_bytes(data)
+
     def __next__(self):
         """
         We want to support iterator protocol.

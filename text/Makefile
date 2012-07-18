@@ -24,8 +24,8 @@ view: all
 	cd $(<D); pdflatex $(<F) -file-line-error
 
 %.dependencies: %.tex
-	echo -n "$*.pdf: " > $@
-	./dependencies.pl $^ >> $@
+	echo -n "$*.dependencies $*.pdf: " > $@
+	./dependencies.pl $(FILENAME).tex >> $@
 
 %.pdf: %.eps
 	ps2pdf -dEPSCrop $^ $@

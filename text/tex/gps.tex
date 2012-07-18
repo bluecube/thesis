@@ -42,64 +42,65 @@ however they are also susceptible to spoofing attacks, however complicated these
 %Doppler shifts of the satellite signal \cite{transit-www}.
 
 
-%
 \section{Operation Principles}
-%
-\subsection{Time of Arival measurements}
 
-%
-%GPS calculates position by measuring the time it takes for a signal
-%emitted from a known position to reach reach the receiver.
-%
-%Each GPS satellite transmits a timed pseudo random sequence.
-%The receiver is able to replicate and match this sequence, and therefore
-%is able to determine the transmission time of the signal.
-%
-%Because the position of satellites is known, the position of the receiver
-%can be calculated as an intersection of spheres centered around the satellites
-%and with radius corresponding to signal time of flight.
-%
-%The previous paragraph assumes, that clock in the satellites and in the receiver 
-%are perfectly synchronized, in reality, however, this is not true.
-%
+\subsection{Time of Arrival measurements}
+
+GPS calculates position by measuring the time it takes for a signal
+emitted from a known position to reach reach the receiver.
+
+Each GPS satellite transmits a pseudo random sequence (PRN signal),
+containing timing information.
+The receiver is able to replicate and match this sequence and therefore
+is able to determine the transmission time of the signal.
+
+If the position of satellites is known and all clock in the system are
+synchronized, the position of the receiver
+can be calculated as an intersection of at least three spheres centered around the satellites
+and with radius corresponding to signal time of flight.
+
+In reality, receiver clock offset needs to be calculated
+during localization witch adds a new dimension to position determination.
+
 \subsection{Time and GPS}
-\begin{itemize}
-\item GPS System Time
-\item SV Time
-\item Receiver Time
-\end{itemize}
-%There are three basic time frames appearing in the GPS system.
-%
+
+One of the functions of GPS system is a dissemination of precise time.
+%This is necessary to calculate position
+
+There are three basic time frames appearing in the GPS system.
+
+\subsubsection{GPS System Time}
+
+GPS System Time is a paper time scale based on atomic clock standards in GPS
+satellites and on the ground.
+This time standard is not directly available neither in SVs or in user receivers.
+
+GPS system time is related to UTC.
+It is a continuous time scale, not adjusted for leap seconds
+and it is required to be within \SI{1}{\micro\second} from UTC modulo \SI{1}{\second}.
+
+\subsubsection{SV Time}
+SV Time is a value that satellites transmit in their ranging signals,
+obtained from the satellite's atomic clock.
+Although the atomic clock standards are highly stable, the offset between SV
+Time and GPS System Time may reach up to \(1 ms\) (~ \(300 km\)).
+Corrections for this offset are periodically calculated by the control segment
+and uploaded to the satellites for broadcast (and therefore known to the
+receiver).
+
+\subsubsection{Receiver Time}
+Receiver Time is a time that is kept by the GPS receiver clock.
+
+Receivers are usually equipped only with simple crystal oscillators
+and aren't capable of keeping precise time.
+This is solved by adding the clock offset as a fourth dimension of the receiver position.
+
+
+%\subsection{PRN signals}
 %\begin{itemize}
-%\item
-%GPS System Time
-%GPS System Time is a paper time scale based on atomic clock standards in GPS
-%satellites and on the ground. This time standard is not directly available
-%neither in SVs or in user receivers.
-%
-%\item
-%SV Time
-%SV Time is a value obtained from the satellite's atomic clock.
-%Although the atomic clock standards are highly stable, the offset between SV
-%Time and GPS System Time may reach up to \(1 ms\) (~ \(300 km\)).
-%Corrections for this offset are periodically calculated by the control segment
-%and uploaded to the satellites for broadcast (and therefore known to the
-%receiver).
-%
-%\item
-%Receiver Time
-%Receiver Time is a time reading in the GPS receiver.
-%Low cost receivers are usually equipped only with simple crystal oscillators
-%and aren't capable of keeping precise time.
-%
-
-\subsection{PRN signals}
-\begin{itemize}
-\item How it works
-\item Codes: C/A, P(Y), M
-\end{itemize}
-
-\subsection{Ephemeris}
+%\item How it works
+%\item Codes: C/A, P(Y), M
+%\end{itemize}
 
 \subsection{Reference Frames}
 
@@ -109,9 +110,24 @@ however they are also susceptible to spoofing attacks, however complicated these
 	\caption{Diagram of ECEF reference frame.}
 \end{figure}
 
+
 \begin{itemize}
 \item ECEF, ECI, WGS84
 \end{itemize}
+
+\subsection{Ephemeris}
+
+\subsubsection{Precise Ephemeris}
+Precise ephemeris are satellite ephemeris data calculated by ground distributed
+separately from the GPS broadcast \cite{macdonald01}.
+
+One source of precise ephemeris is is \cite{orbit-data}.
+These datasets mainly contains post-processed past data, but predictions for
+next several hours are also available.
+While the quality of these predictions is lower than of the off-line data,
+they are still several times more precise than the broadcast ephemerides
+(\(5 cm\) RMS versus \(100 cm\) RMS, according to \cite{orbit-data}).
+
 
 \section{Obtaining Position and Velocity}
 
@@ -171,17 +187,6 @@ For more detailed description of how Kalman filters operate see section
 \end{itemize}
 
 \section{Assisted GPS}
-
-\section{Precise Ephemeris}
-Precise ephemeris are satellite ephemeris data calculated by ground distributed
-separately from the GPS broadcast \cite{macdonald01}.
-
-One source of precise ephemeris is is \cite{orbit-data}.
-These datasets mainly contains post-processed past data, but predictions for
-next several hours are also available.
-While the quality of these predictions is lower than of the off-line data,
-they are still several times more precise than the broadcast ephemerides
-(\(5 cm\) RMS versus \(100 cm\) RMS, according to \cite{orbit-data}).
 
 
 \section{GPS Receivers}

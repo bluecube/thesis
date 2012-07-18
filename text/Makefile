@@ -11,7 +11,7 @@ IMAGEFILES = $(MPFILES:.mp=.pdf) $(EPSFILES:.eps=.pdf) \
 .PHONY: all
 .PHONY: clean
 
-RMEVERYTHING = rm -f *.1 *.log *.aux *.out *.pdf *.toc *.bbl *.blg *-blx.bib *.run.xml mperr.tex mptextmp.mp *.mpx *.mpo *-temp.* *-temp-* *.dependencies 
+RMEVERYTHING = rm -f *.1 *.log *.aux *.out *.pdf *.toc *.bbl *.blg *-blx.bib *.run.xml mperr.tex mptextmp.mp *.mpx *.mpo *-temp.* *-temp-* *.dependencies *.pdf_tex
 
 all: $(FILENAME).pdf
 
@@ -29,6 +29,9 @@ view: all
 
 %.pdf: %.eps
 	ps2pdf -dEPSCrop $^ $@
+
+%.pdf_tex: %.svg
+	inkscape -f$^ --export-pdf=$*.pdf --export-latex
 
 .INTERMEDIATE: %.1
 

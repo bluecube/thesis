@@ -25,10 +25,11 @@ while(<>){
 
 	s(\\input\{([^}]*)\})(
 #		my $fn = "$dir$1.tex";
-		my $fn = "$1.tex";
+		my $fn = $1;
+		$fn .= ".tex" unless $fn =~ /\.pdf_tex$/;
 		if(!defined($checked{$fn})){
 			push @dependencies, $fn;
-			push @ARGV, $fn;
+			push @ARGV, $fn unless $fn =~ /\.pdf_tex$/;
 			$checked{$fn} = 1;
 		}
 	)e;

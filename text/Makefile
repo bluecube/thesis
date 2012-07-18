@@ -41,6 +41,5 @@ view: all
 clean:
 	$(RMEVERYTHING)
 	cd img ; $(RMEVERYTHING)
-	rm todo.txt
 
 include $(FILENAME).dependencies

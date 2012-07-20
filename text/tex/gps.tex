@@ -83,7 +83,8 @@ and it is required to be within \SI{1}{\micro\second} from UTC modulo \SI{1}{\se
 SV Time is a value that satellites transmit in their ranging signals,
 obtained from the satellite's atomic clock.
 Although the atomic clock standards are highly stable, the offset between SV
-Time and GPS System Time may reach up to \(1 ms\) (~ \(300 km\)).
+Time and GPS System Time may reach up to \SI{1}{\milli\second} (equivalent to
+\SI{300}{\kilo\meter}).
 Corrections for this offset are periodically calculated by the control segment
 and uploaded to the satellites for broadcast (and therefore known to the
 receiver).
@@ -94,7 +95,8 @@ Receiver Time is a time that is kept by the GPS receiver clock.
 Receivers are usually equipped only with simple crystal oscillators
 and aren't capable of keeping precise time.
 This is solved by adding the clock offset as a fourth dimension of the receiver position.
-
+Having clock offset as a part of the navigation solution makes it easy to calculate
+precise time after a fix is obtained by adding the offset to the receiver clock.
 
 %\subsection{PRN signals}
 %\begin{itemize}
@@ -104,30 +106,71 @@ This is solved by adding the clock offset as a fourth dimension of the receiver 
 
 \subsection{Reference Frames}
 
-\begin{figure}[h!]
+\subsubsection{ECEF}
+Earth-centered Earth-fixed is a Cartesian reference frame widely used in the GPS system.
+As the name suggests, origin of ECEF is in the Earth's center of mass, the \(XY\) plane coincident
+with equatorial plane, \(X\) axis in the direction of
+\ang{0} longitude, \(Y\) axis in direction of \ang{0} East and \(Z\) axis going
+the direction of geographical North pole.
+%Figure \ref{fig:ecef} illustrates 
+
+\begin{figure}[h]
+	\label{fig:ecef}
 	\centering
 	\input{img/ecef.pdf_tex}
 	\caption{Diagram of ECEF reference frame.}
 \end{figure}
 
+Results of ephemeris calculations are in ECEF coordinates
+(see section \ref{sec:gps-ephemeris}) and receiver positions are calculated
+in ECEF as well.
+All later GPS calculations in this work will be in ECEF reference frame.
 
-\begin{itemize}
-\item ECEF, ECI, WGS84
-\end{itemize}
+\subsubsection{WGS84}
+World Geodetic System 1984, defined in \cite{nima04}
+serves as Earth model for GPS.
+Exact values of the model have been updated several times in the past,
+but these changes have been too small to be problematic for most practical
+applications.
+
+The WGS84 reference ellipsoid is used to convert between ECEF coordinates and
+Latitude/Longitude geodetic coordinates.
+Procedure for this conversion can be found in \cite{nima04}.
+Height measured from the ellipsoid can be obtained during the conversion,
+however historically heights should be measured from sea level.
+Sea level roughly corresponds to geoid -- a surface with constant gravity
+potential -- also defined in WGS84.
+
+%with semi major axis \(a = \SI{6378137.0}{\meter}\)
+%and inverse flattening \(\frac{1}{f} = \frac{a}{a - b} = 298.257223563\).
+
 
 \subsection{Ephemeris}
+\label{sec:gps-ephemeris}
+
+Ephemeris in the context of GPS means data describing satellite positions
+at given time.
+
+GPS satellites transmit messages containing ephemeris together with the ranging data.
+These messages describe the satellite orbit using a set of Keplerian orbital parameters.
+
+\marginpar{Keplerian parameters? They are unimportant for the thesis, and it takes three
+pages to define them properly ... think of something better to write}
 
 \subsubsection{Precise Ephemeris}
-Precise ephemeris are satellite ephemeris data calculated by ground distributed
-separately from the GPS broadcast \cite{macdonald01}.
+Precise ephemeris are satellite ephemeris data calculated by ground stations
+and distributed separately from the GPS broadcast.
 
-One source of precise ephemeris is is \cite{orbit-data}.
+Source of precise ephemeris is is \cite{orbit-data}
 These datasets mainly contains post-processed past data, but predictions for
 next several hours are also available.
 While the quality of these predictions is lower than of the off-line data,
 they are still several times more precise than the broadcast ephemerides
-(\(5 cm\) RMS versus \(100 cm\) RMS, according to \cite{orbit-data}).
+(\(5 cm\) RMS versus \(100 cm\) RMS, according to \cite{orbit-data, macdonald01}).
 
+Precise ephemeris files contain satellite positions in ECEF
+coordinates and clock offsets in 15 minutes intervals and must be interpolated
+before using them for navigation \cite{schenewerk03}.
 
 \section{Obtaining Position and Velocity}
 

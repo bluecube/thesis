@@ -216,6 +216,13 @@ In context of pseudoranges, GPS literature often treats distance and time
 interchangeably, converting between them using the speed of light \(\speedoflight\).
 In this work, we will occasionally follow this convention as well.
 
+\begin{figure}[tb]
+	\label{fig:pseudorange}
+	\centering
+	\input{img/pseudorange.pdf_tex}
+	\caption{Times in pseudorange measurements.}
+\end{figure}
+
 In \eqref{eq:pseudorange}, the definition of pseudorange, the SV and receiver clocks can be
 converted to system time by subtracting their clock offsets:
 \begin{equation}
@@ -236,19 +243,32 @@ And this can be substituted into \eqref{eq:pseudorange2}, giving us
 %		\speedoflight \geomrangedelays + \speedoflight \svclockoffset
 %\end{equation}
 
-\begin{figure}[htb]
-	\label{fig:pseudorange}
-	\centering
-	\input{img/pseudorange.pdf_tex}
-	\caption{Times in pseudorange measurements.}
-\end{figure}
-
 Figure \ref{fig:pseudorange} summarizes relations between times in a single pseudorange measurement.
 
 \section{Position}
-\begin{itemize}
-\item Some math goes in here
-\end{itemize}
+
+If the position of satellites \(\coord{x_{\mathrm{SV}i}}{y_{\mathrm{SV}i}}{z_{\mathrm{SV}i}}\) and satellite
+clock offsets \(\svclockoffset_i\) are known,
+calculating receiver position from the pseudorange measurements means solving a set of non-linear equations
+\begin{equation}
+	\sqrt{(x_\mathrm{R} - x_{\mathrm{SV}i})^2 + (y_\mathrm{R} - y_{\mathrm{SV}i})^2 +(z_\mathrm{R} - z_{\mathrm{SV}i})^2} +
+	\speedoflight (\recclockoffset - \svclockoffset_i)
+	=
+	\rho_i - \speedoflight\geomrangedelays_i
+\end{equation}
+for receiver position \(\coord{x_\mathrm{R}}{y_\mathrm{R}}{z_\mathrm{R}}\) and receiver clock offset \(\recclockoffset\).
+
+These equations can be solved using various methods, including closed form solutions
+(for example \cite{leva96}), iterative solutions, linearization of the equations around
+previous position estimates, using Kalman filters (see \ref{sec:kalman}) or,
+as we will discuss in section \ref{sec:measurement_domain}, Monte Carlo localization.
+The last two approaches also have the advantage of being able to fuse other sensor data
+into the solution.
+
+\marginpar{Should I add example of iterative solution for four satellites?
+It would be two pages of copypasta math, mostly unrelated to the rest of the work
+(and useless in reality as well)}
+
 
 \subsection{Carrier phase}
 \begin{itemize}
@@ -283,7 +303,7 @@ Figure \ref{fig:pseudorange} summarizes relations between times in a single pseu
 \section{Kalman Filters}
 Kalman filters are often used in the GPS receivers to merge past
 data with incoming measurements or to combine the GPS position and velocity
-estimation with another source of measurements, for example acceleration data.
+estimation with another source of measurements, for example inertial data.
 
 For more detailed description of how Kalman filters operate see section
 \ref{sec:kalman}.
@@ -299,10 +319,9 @@ For more detailed description of how Kalman filters operate see section
 
 \section{GPS Receivers}
 \subsection{Protocols}
-\begin{itemize}
-\item NMEA
-\item Proprietary protocols (especially SiRF)
-\end{itemize}
+\subsubsection{NMEA}
+\subsection{RINEX}
+\subsubsection{Proprietary Protocols}
 
 \section{Similar Systems}
 

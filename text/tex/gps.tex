@@ -102,11 +102,26 @@ Having clock offset as a part of the navigation solution makes it easy to calcul
 precise time after a fix is obtained by adding the offset to the receiver clock.
 
 \subsection{PRN signals}
-\marginpar{!!!!!!!}
-\begin{itemize}
-\item How it works
-\item Codes: C/A, P(Y), M
-\end{itemize}
+GPS signals utilize CDMA to transmit its navigation messages.
+
+Each signal at each satellite is assigned a unique pseudo random sequence, called PRN
+code.
+Receivers then typically employ a number of specialised hardware correlators, 
+that attempt to duplicate the PRN codes and match them to the received signal.
+Result of successful matching is an identification of the transmitting satellite
+and the clock difference appearing in pseudorange definition \eqref{eq:pseudorange}.
+
+Legacy GPS signals are tramsited on two frequencies, primary L1 and secondary L2.
+Unencrypted C/A code on L1, and encrypted P(Y) on both L1 and L2, because the dual
+frequencies enable the receiver to calculate corrections for ionospheric delays.
+The L1 C/A code and one of the P(Y) codes are additionally modulated with
+\SI{50}{\bit\per\second} navigation messages.
+
+Modernized GPS satellites provide two additional civilian signals --
+L2C, L5 and planned L1C, that will be compatible with European navigation system Galileo
+(see \ref{sec:galileo}) -- and modernized military signal M.
+At the time of this writing, the signals L2C and L5 are partially supported and L1C is still only
+planned \cite{gps-modernization-www}.
 
 \subsection{Reference Frames}
 
@@ -186,7 +201,7 @@ Pseudorange (\(\rho\)) is a distance corresponding to the time it took the rangi
 signal to travel from SV to the receiver, including the clock offsets:
 
 \begin{equation}
-	\label{eqn:pseudorange}
+	\label{eq:pseudorange}
 	\rho = \speedoflight (\recrxtime - \svtxtime)
 \end{equation}
 
@@ -202,7 +217,7 @@ In context of pseudoranges, GPS literature often treats distance and time
 interchangeably, converting between them using the speed of light \(\speedoflight\).
 In this work, we will occasionally follow this convention as well.
 
-In \eqref{eqn:pseudorange}, the definition of pseudorange, the SV and receiver clocks can be
+In \eqref{eq:pseudorange}, the definition of pseudorange, the SV and receiver clocks can be
 converted to system time by subtracting their clock offsets:
 
 \begin{equation}
@@ -225,7 +240,6 @@ And this can be substituted into \eqref{eq:pseudorange2}, giving us
 	\geomrange - \speedoflight \recclockoffset = \rho -
 		\speedoflight \geomrangedelays + \speedoflight \svclockoffset
 \end{equation}
-
 
 \begin{figure}[tb]
 	\label{fig:pseudorange}
@@ -297,9 +311,12 @@ For more detailed description of how Kalman filters operate see section
 \end{itemize}
 
 \section{Similar Systems}
+
 \begin{itemize}
-\item Galileo
 \item Glonass
 \item BeiDou
 \item Compass
 \end{itemize}
+
+\subsection{Galileo}
+\label{sec:galileo}

@@ -56,7 +56,6 @@ It computes probability density of the robot state, called belief.
 	\label{eq:markov-belief-def}
 	\Bel(X_i = x) = \P(X_i = x | o_{1, \dotsc, i}, a_{1,\dotsc,i - 1})
 \end{equation}
-
 Here \(X_i\) is the random variable representing robot's state,
 \(o_i\) is the observed sensor input in time step \(i\) and \(a_i\)
 is the action the robot performs in the time step \(i\), after it
@@ -79,20 +78,16 @@ serves as a normalization constant.
 In further equations it will be replaced by \(\eta^{-1}\).
 Other than that, we can use the independence assumptions made at the beginning
 of this section and simplify \eqref{eq:markov-derivation1} to
-
 \begin{equation}
 	\label{eq:markov-derivation2}
 	\Bel(X_i = x) =
 		\eta \P(o_i | X_i = x)
 		\P(X_i = x | o_{1, \dotsc, i}, a_{1, \dotsc, i - 1})
 \end{equation}
-
 %The equation \eqref{eq:markov-derivation1} has already been simplified using
 %the independence assumptions.
-
 By integrating over all possible states in time \(i - 1\), the rightmost term in
 equation \eqref{eq:markov-derivation1} can be expanded in a following way:
-
 \begin{multline}
 	\label{eq:markov-derivation3}
 	\P(X_i = x | o_{1, \dotsc, i}, a_{1, \dotsc, i - 1}) = \\
@@ -101,7 +96,6 @@ equation \eqref{eq:markov-derivation1} can be expanded in a following way:
 	\P(X_{i-1} = x' | o_{1, \dotsc, i-1}, a_{1, \dotsc, i-1})
 	\,\mathrm{d}x'
 \end{multline}
-
 After substituting definition of belief from equation \eqref{eq:markov-belief-def}
 and another use the independence assumptions we get
 \begin{equation}
@@ -112,10 +106,8 @@ and another use the independence assumptions we get
 	\Bel(X_{i-1} = x')
 	\,\mathrm{d}x'
 \end{equation}
-
 Finally, substituting into \eqref{eq:markov-derivation2} gives us the recursive
 equation
-
 \begin{equation}
 	\label{eq:markov-final}
 	\Bel(X_i = x) =
@@ -188,7 +180,6 @@ action model and measurement model are linear and Gaussian \cite{diard03}.
 	\label{eq:kalman-measurement-model}
 	\P(o_{i} | X_i = x) \sim \mathrm{N}(H_{i}x, R_i)
 \end{gather}
-
 In equations \eqref{eq:kalman-action-model} and \eqref{eq:kalman-measurement-model}
 the matrix \(A_i\) describes change of state if there was no control input and no noise,
 matrix \(B_i\) contains the influence of action \(a_i\) and \(H_i\) relates state to measured
@@ -279,13 +270,11 @@ MCL keeps a set of samples \(S_i = \{s^k_{i} | k = 1,\dotsc,n\} \) drawn from
 	}
 
 	This effectively is stratified sampling from the empirical predictive density
-
 	\begin{equation}
 		\label{eq:mcl-predictive-density}
 		\hat{\P}(X_i = x | X_{i - 1}, a_{i - 1}) =
 		\sum_{k = 1}^n \P(X_i = x | X_{i-1} = s^k_{i-1}, a_{i - 1})
 	\end{equation}
-	
 	which is used instead of the predictive density from \eqref{eq:markov-prediction}.
 
 \item[Correction] \hfill \\

@@ -109,7 +109,8 @@ code.
 Receivers then typically employ a number of specialised hardware correlators, 
 that attempt to duplicate the PRN codes and match them to the received signal.
 Result of successful matching is an identification of the transmitting satellite
-and the clock difference appearing in pseudorange definition \eqref{eq:pseudorange}.
+and the transmission time \(\svtxtime\) (appearing in pseudorange definition \eqref{eq:pseudorange})
+modulo PRN code length.
 
 Legacy GPS signals are tramsited on two frequencies, primary L1 and secondary L2.
 Unencrypted C/A code on L1, and encrypted P(Y) on both L1 and L2, because the dual
@@ -199,12 +200,10 @@ before using them for navigation \cite{schenewerk03}.
 
 Pseudorange (\(\rho\)) is a distance corresponding to the time it took the ranging
 signal to travel from SV to the receiver, including the clock offsets:
-
 \begin{equation}
 	\label{eq:pseudorange}
 	\rho = \speedoflight (\recrxtime - \svtxtime)
 \end{equation}
-
 Here \(\speedoflight\) is the speed of light, with value \SI{299792458}{\meter\per\second} used in GPS,
 \(\systxtime\) and \(\sysrxtime\) are transmission and receive times referenced to GPS system time.
 Similarly \(\svtxtime\) is transmit time according to satellite clock and
@@ -219,29 +218,25 @@ In this work, we will occasionally follow this convention as well.
 
 In \eqref{eq:pseudorange}, the definition of pseudorange, the SV and receiver clocks can be
 converted to system time by subtracting their clock offsets:
-
 \begin{equation}
 	\label{eq:pseudorange2}
 	\rho = \speedoflight (\sysrxtime - \systxtime) + \speedoflight (\recclockoffset - \svclockoffset)
 \end{equation}
-
-Here we can substitute the real range with 
-
-
 The real range can be described using the transmit and receive times:
-
 \begin{equation}
 	\geomrange + \speedoflight\geomrangedelays = \speedoflight (\sysrxtime - \systxtime)
 \end{equation}
-
 And this can be substituted into \eqref{eq:pseudorange2}, giving us
-
 \begin{equation}
-	\geomrange - \speedoflight \recclockoffset = \rho -
-		\speedoflight \geomrangedelays + \speedoflight \svclockoffset
+	\rho = \geomrange + \speedoflight\geomrangedelays + \speedoflight (\recclockoffset - \svclockoffset)
 \end{equation}
 
-\begin{figure}[tb]
+%\begin{equation}
+%	\geomrange - \speedoflight \recclockoffset = \rho -
+%		\speedoflight \geomrangedelays + \speedoflight \svclockoffset
+%\end{equation}
+
+\begin{figure}[htb]
 	\label{fig:pseudorange}
 	\centering
 	\input{img/pseudorange.pdf_tex}
@@ -249,7 +244,6 @@ And this can be substituted into \eqref{eq:pseudorange2}, giving us
 \end{figure}
 
 Figure \ref{fig:pseudorange} summarizes relations between times in a single pseudorange measurement.
-
 
 \section{Position}
 \begin{itemize}

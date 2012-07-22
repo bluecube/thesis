@@ -62,19 +62,28 @@
 \urlstyle{smaller}
 
 % Macros for maths stuff
+
+% hack to make subscripted macros subscriptable
+% http://tex.stackexchange.com/questions/33261/defining-a-newcommand-with-sub-or-superscript-and-avoiding-double-subscript-e
+\makeatletter
+\newcommand\newsubcommand[3]{\newcommand#1{#2\sc@sub{#3}}}
+\def\sc@sub#1{\def\sc@thesub{#1}\@ifnextchar_{\sc@mergesubs}{_{\sc@thesub}}}
+\def\sc@mergesubs_#1{_{\sc@thesub#1}}
+\makeatother
+
 \def\Bel{\mathrm{Bel}}
 \def\P{\mathrm{P}}
 \def\speedoflight{\mathrm{c}}
-\def\sysrxtime{t'_\mathrm{SYS}}
-\def\systxtime{t_\mathrm{SYS}}
-\def\svtxtime{t_\mathrm{SV}}
-\def\svrxtime{t'_\mathrm{SV}}
-\def\svclockoffset{\delta{t}_\mathrm{SV}}
-\def\rectxtime{t_\mathrm{R}}
-\def\recrxtime{t'_\mathrm{R}}
-\def\recclockoffset{\delta{t}_\mathrm{R}}
-\def\geomrange{r}
-\def\geomrangedelays{\delta{t}}
+\newsubcommand{\sysrxtime}{\tau'}{\mathrm{SYS}}
+\newsubcommand{\systxtime}{\tau}{\mathrm{SYS}}
+\newsubcommand{\svtxtime}{\tau}{\mathrm{SV}}
+\newsubcommand{\svrxtime}{\tau'}{\mathrm{SV}}
+\newsubcommand{\svclockoffset}{t}{\mathrm{SV}}
+\newsubcommand{\rectxtime}{\tau}{\mathrm{R}}
+\newsubcommand{\recrxtime}{\tau'}{\mathrm{R}}
+\newsubcommand{\recclockoffset}{t}{\mathrm{R}}
+\newcommand{\geomrange}{r}
+\newcommand{\geomrangedelays}{\delta{t}}
 
 \usepackage{tgpagella} % Gyre pagella -- based on palatino
 

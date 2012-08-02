@@ -32,6 +32,10 @@ arg_parser.add_argument('--save-hdop-plot', default=None, type=str,
     help="Where to save the HDOP plot.")
 arg_parser.add_argument('--no-show', action='store_true',
     help="Don't show the plots, only save them.")
+arg_parser.add_argument('--max-plot-hdop', type=float,
+    help="Don't plot hdops larger than this.")
+arg_parser.add_argument('--max-plot-error', type=float,
+    help="Don't plot hdop errors larger than this.")
 arguments = arg_parser.parse_args()
 
 source = gps.open_gps(arguments.gps)
@@ -92,19 +96,36 @@ fixes_plot.set_aspect(1)
 fixes_plot.autoscale(tight=True)
 
 fig2 = plt.figure()
+if 'max_plot_hdop' in arguments:
+    max_plot_hdop = arguments.max_plot_hdop
+else:
+    max_plot_hdop = numpy.max(hdop)
+
+if 'max_plot_error' in arguments:
+    max_plot_error = arguments.max_plot_error
+else:
+    max_plot_error = numpy.max(dist)
+
 hdop_plot = fig2.add_subplot(1, 1, 1)
 hdop_plot.scatter(hdop[::plot_step], dist[::plot_step], marker='.',
     s=40, alpha=0.5, edgecolors='none', label="Measured data", rasterized=True)
 hdop_plot.scatter(used_hdop, hdop_mean_error, c='y', label="Mean error for HDOP")
 
-x = numpy.linspace(numpy.min(used_hdop), numpy.max(used_hdop))
+x = numpy.linspace(0, numpy.max(used_hdop))
 hdop_plot.plot(x, hdop_error_poly(x), c='r', label="Fitted polynomial")
 hdop_plot.plot(x, hdop_error_linear * x, c='g', label="Fitted linear model")
 hdop_plot.set_xlabel('HDOP')
-hdop_plot.set_ylabel('Error [\si{\meter}]')
-hdop_plot.legend()
+hdop_plot.set_ylabel('Error [m]')
+hdop_plot.legend().get_frame().set_alpha(0.75)
 
-hdop_plot.autoscale(tight=True)
+xmargin, ymargin = hdop_plot.margins()
+margin = max_plot_hdop * xmargin
+hdop_plot.set_xlim([- margin, max_plot_hdop + margin])
+margin = max_plot_error * xmargin
+hdop_plot.set_ylim([- margin, max_plot_error + margin])
+
+count_inside = sum((hdop <= max_plot_hdop) & (dist <= max_plot_error))
+print("{:.2%} % is in the area {}x{}".format(count_inside / len(dist), max_plot_hdop, max_plot_error))
 
 if arguments.save_hdop_plot is not None:
     fig2.savefig(arguments.save_hdop_plot)

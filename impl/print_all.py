@@ -38,6 +38,8 @@ x = gps.open_gps(arguments.gps)
 
 last_time = float("nan")
 
+count = 0
+
 try:
     while True:
         try:
@@ -57,5 +59,8 @@ try:
 
         print(msg)
         print()
+        count += 1
 except KeyboardInterrupt:
     logger.info("Terminating.")
+
+logger.info("Printed %i messages", count)

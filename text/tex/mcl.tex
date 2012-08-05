@@ -40,21 +40,21 @@ actions and possibly noisy measured sensor data.
 Markov localization assumes that the state of the robot only depends
 on state and action performed in the previous time frame
 %	\begin{equation}
-%		\Prob(X_i = x | X_{1, \dotsc, i - 1}, a_{1, \dotsc, i - 1},
+%		\Prob(X_i = x \mid X_{1, \dotsc, i - 1}, a_{1, \dotsc, i - 1},
 %		o_{1, \dotsc, i - 1}) = 
-%		\Prob(X_i = x | X_{i - 1}, a_{i - 1})
+%		\Prob(X_i = x \mid X_{i - 1}, a_{i - 1})
 %	\end{equation}
 and that each observation only depends on the current state.
 %	\begin{equation}
-%		\Prob(o_i | X_1, \dotsc, X_i, a_1, \dotsc, a_{i - 1},
+%		\Prob(o_i \mid X_1, \dotsc, X_i, a_1, \dotsc, a_{i - 1},
 %		o_1, \dotsc, o_{i - 1}) = 
-%		\Prob(o_i | X_i)
+%		\Prob(o_i \mid X_i)
 %	\end{equation}
 
 It computes probability density of the robot state, called belief.
 \begin{equation}
 	\label{eq:markov-belief-def}
-	\Bel(X_i = x) = \Prob(X_i = x | o_{1, \dotsc, i}, a_{1,\dotsc,i - 1})
+	\Bel(X_i = x) = \Prob(X_i = x \mid o_{1, \dotsc, i}, a_{1,\dotsc,i - 1})
 \end{equation}
 Here \(X_i\) is the random variable representing robot's state,
 \(o_i\) is the observed sensor input in time step \(i\) and \(a_i\)
@@ -66,14 +66,14 @@ Using Bayes rule, equation \eqref{eq:markov-belief-def} can be transformed to
 	\label{eq:markov-derivation1}
 	\Bel(X_i = x) =
 	\frac{
-		\Prob(o_i | X_i = x, o_{1, \dotsc, i}, a_{1,\dotsc,i - 1})
-		\Prob(X_i = x | o_{1, \dotsc, i}, a_{1, \dotsc, i - 1})
+		\Prob(o_i \mid X_i = x, o_{1, \dotsc, i}, a_{1,\dotsc,i - 1})
+		\Prob(X_i = x \mid o_{1, \dotsc, i}, a_{1, \dotsc, i - 1})
 	}{
-		\Prob(o_i | o_{1, \dotsc, i-1}, a_{1, \dotsc, i-1})
+		\Prob(o_i \mid o_{1, \dotsc, i-1}, a_{1, \dotsc, i-1})
 	}
 \end{equation}
 
-Note that denominator \(\Prob(o_i | o_{1, \dotsc, i-1}, a_{1, \dotsc, i-1})\) only
+Note that denominator \(\Prob(o_i \mid o_{1, \dotsc, i-1}, a_{1, \dotsc, i-1})\) only
 serves as a normalization constant.
 In further equations it will be replaced by \(\eta^{-1}\).
 Other than that, we can use the independence assumptions made at the beginning
@@ -81,8 +81,8 @@ of this section and simplify \eqref{eq:markov-derivation1} to
 \begin{equation}
 	\label{eq:markov-derivation2}
 	\Bel(X_i = x) =
-		\eta \Prob(o_i | X_i = x)
-		\Prob(X_i = x | o_{1, \dotsc, i}, a_{1, \dotsc, i - 1})
+		\eta \Prob(o_i \mid X_i = x)
+		\Prob(X_i = x \mid o_{1, \dotsc, i}, a_{1, \dotsc, i - 1})
 \end{equation}
 %The equation \eqref{eq:markov-derivation1} has already been simplified using
 %the independence assumptions.
@@ -90,19 +90,19 @@ By integrating over all possible states in time \(i - 1\), the rightmost term in
 equation \eqref{eq:markov-derivation1} can be expanded in a following way:
 \begin{multline}
 	\label{eq:markov-derivation3}
-	\Prob(X_i = x | o_{1, \dotsc, i}, a_{1, \dotsc, i - 1}) = \\
+	\Prob(X_i = x \mid o_{1, \dotsc, i}, a_{1, \dotsc, i - 1}) = \\
 	\int
-	\Prob(X_i = x | X_{i - 1}=x', o_{1, \dotsc, i}, a_{1, \dotsc, i - 1})
-	\Prob(X_{i-1} = x' | o_{1, \dotsc, i-1}, a_{1, \dotsc, i-1})
+	\Prob(X_i = x \mid X_{i - 1}=x', o_{1, \dotsc, i}, a_{1, \dotsc, i - 1})
+	\Prob(X_{i-1} = x' \mid o_{1, \dotsc, i-1}, a_{1, \dotsc, i-1})
 	\,\mathrm{d}x'
 \end{multline}
 After substituting definition of belief from equation \eqref{eq:markov-belief-def}
 and another use the independence assumptions we get
 \begin{equation}
 	\label{eq:markov-derivation4}
-	\Prob(X_i = x | o_{1, \dotsc, i}, a_{1, \dotsc, i - 1}) = 
+	\Prob(X_i = x \mid o_{1, \dotsc, i}, a_{1, \dotsc, i - 1}) =
 	\int
-	\Prob(X_i = x | X_{i - 1}=x', a_{i - 1})
+	\Prob(X_i = x \mid X_{i - 1}=x', a_{i - 1})
 	\Bel(X_{i-1} = x')
 	\,\mathrm{d}x'
 \end{equation}
@@ -111,15 +111,15 @@ equation
 \begin{equation}
 	\label{eq:markov-final}
 	\Bel(X_i = x) =
-	\eta \Prob(o_i | X_i = x)
+	\eta \Prob(o_i \mid X_i = x)
 		\int
-		\Prob(X_i = x' | X_{i - 1}=x', a_{i - 1})
+		\Prob(X_i = x' \mid X_{i - 1}=x', a_{i - 1})
 		\Bel(X_{i-1} = x')
 		\,\mathrm{d}x'
 \end{equation}
 
-We will call the conditional density \(\Prob(o_i | X_i = x)\) \emph{sensor model} and
-the density \(\Prob(X_i = x | X_{i - 1}=x', a_{i - 1})\) \emph{motion model}.
+We will call the conditional density \(\Prob(o_i \mid X_i = x)\) \emph{sensor model} and
+the density \(\Prob(X_i = x \mid X_{i - 1}=x', a_{i - 1})\) \emph{motion model}.
 Sensor model describes the probability of observing \(o_i\) at given time.
 It implicitly contains map of the environment and models interactions of sensors with
 the map.
@@ -138,9 +138,9 @@ the measurements based on the observed sensor measurements.
 	The following equation is an exact copy of \eqref{eq:markov-derivation4}, included here for completeness.
 	\begin{equation}
 		\label{eq:markov-prediction}
-		\Prob(X_i = x | o_{1, \dotsc, i}, a_{1, \dotsc, i - 1}) = 
+		\Prob(X_i = x \mid o_{1, \dotsc, i}, a_{1, \dotsc, i - 1}) =
 		\int
-		\Prob(X_i = x | X_{i - 1}=x', a_{i - 1})
+		\Prob(X_i = x \mid X_{i - 1}=x', a_{i - 1})
 		\Bel(X_{i-1} = x')
 		\,\mathrm{d}x'
 	\end{equation}
@@ -151,8 +151,8 @@ the measurements based on the observed sensor measurements.
 	\begin{equation}
 		\label{eq:markov-correction}
 		\Bel(X_i = x) =
-		\eta \Prob(o_i | X_i = x)
-		\Prob(X_i = x | o_{1, \dotsc, i}, a_{1, \dotsc, i - 1})
+		\eta \Prob(o_i \mid X_i = x)
+		\Prob(X_i = x \mid o_{1, \dotsc, i}, a_{1, \dotsc, i - 1})
 	\end{equation}
 \end{description}
 
@@ -175,10 +175,10 @@ action model and measurement model are linear and Gaussian \cite{diard03}.
 
 \begin{gather}
 	\label{eq:kalman-action-model}
-	\Prob(X_i = x | X_{i-1} = x', a_{i - 1}) \sim \mathrm{N}(A_{i - 1}x' + B_{i - 1}a_{i - 1}, Q_{i - 1})
+	\Prob(X_i = x \mid X_{i-1} = x', a_{i - 1}) \sim \mathrm{N}(A_{i - 1}x' + B_{i - 1}a_{i - 1}, Q_{i - 1})
 	\\
 	\label{eq:kalman-measurement-model}
-	\Prob(o_{i} | X_i = x) \sim \mathrm{N}(H_{i}x, R_i)
+	\Prob(o_{i} \mid X_i = x) \sim \mathrm{N}(H_{i}x, R_i)
 \end{gather}
 In equations \eqref{eq:kalman-action-model} and \eqref{eq:kalman-measurement-model}
 the matrix \(A_i\) describes change of state if there was no control input and no noise,
@@ -208,7 +208,7 @@ for more detailed description see \cite{welch95}.
 
 Here \(\bar{x}_i\) and \(P_i\) are mean and covariance describing \(\Bel(X_i)\).
 \(\bar{x}^{-}_i\) and \(P^{-}_i\) are mean and covariance of the predictive density
-\(\Prob(X_i | o_{1, \dotsc, i}, a_{1, \dotsc, i - 1})\)
+\(\Prob(X_i \mid o_{1, \dotsc, i}, a_{1, \dotsc, i - 1})\)
 
 \item[Correction] \hfill \\
 \begin{gather}
@@ -265,31 +265,31 @@ MCL keeps a set of samples \(S_i = \{s^k_{i} | k = 1,\dotsc,n\} \) drawn from
 	\emph{
 	Create a new set \(S'_i = \{s'^k_{i}\} \)
 	by drawing a new sample \(s'^k_{i}\)
-	from the action model \(\Prob(X_i = x | X_{i-1} = s^k_{i-1}, a_{i - 1})\)
+	from the action model \(\Prob(X_i = x \mid X_{i-1} = s^k_{i-1}, a_{i - 1})\)
 	for every sample in \(S_{i-1}\).
 	}
 
 	This effectively is stratified sampling from the empirical predictive density
 	\begin{equation}
 		\label{eq:mcl-predictive-density}
-		\hat{\Prob}(X_i = x | X_{i - 1}, a_{i - 1}) =
-		\sum_{k = 1}^n \Prob(X_i = x | X_{i-1} = s^k_{i-1}, a_{i - 1})
+		\hat{\Prob}(X_i = x \mid X_{i - 1}, a_{i - 1}) =
+		\sum_{k = 1}^n \Prob(X_i = x \mid X_{i-1} = s^k_{i-1}, a_{i - 1})
 	\end{equation}
 	which is used instead of the predictive density from \eqref{eq:markov-prediction}.
 
 \item[Correction] \hfill \\
 	\emph{
-	Use the sensor model to calculate weight \(w^k_i = \Prob(o_i | X_i = s'^k_i)\)
+	Use the sensor model to calculate weight \(w^k_i = \Prob(o_i \mid X_i = s'^k_i)\)
 	for each sample in \(S'_i\).
 	}
 
 	Ideally in the correction phase the algorithm would draw samples directly from
-	\(\Prob(o_i | X_i = x) \Prob(X_i = x | X_{i - 1}, a_{i - 1})\),
+	\(\Prob(o_i \mid X_i = x) \Prob(X_i = x \mid X_{i - 1}, a_{i - 1})\),
 	however there is no easy way to achieve this.
 	Instead, Monte Carlo localization 
 	uses SIR (sampling / importance resampling, \cite{smith92})
 	to approximate sampling from
-	\(P(o_i | X_i = x) \hat{P}(X_i = x | X_{i - 1}, a_{i - 1})\) using the set \(S'_i\).
+	\(\Prob(o_i \mid X_i = x) \hat{\Prob}(X_i = x \mid X_{i - 1}, a_{i - 1})\) using the set \(S'_i\).
 	This is achieved by weighting the samples as described earlier and resampling
 	according to these weights in the next phase.
 
@@ -297,10 +297,10 @@ MCL keeps a set of samples \(S_i = \{s^k_{i} | k = 1,\dotsc,n\} \) drawn from
 	\begin{equation}
 		w^k_i = 
 		\frac{
-			\Prob(o_i | X_i = s'^k_i) \hat{\Prob}(X_i = s'^k_i | X_{i - 1}, a_{i - 1})
+			\Prob(o_i \mid X_i = s'^k_i) \hat{\Prob}(X_i = s'^k_i \mid X_{i - 1}, a_{i - 1})
 		}{
-			\hat{\Prob}(X_i =  s'^k_i | X_{i - 1}, a_{i - 1})
-		} = \Prob(o_i | X_i = s'^k_i)
+			\hat{\Prob}(X_i =  s'^k_i \mid X_{i - 1}, a_{i - 1})
+		} = \Prob(o_i \mid X_i = s'^k_i)
 	\end{equation}
 
 

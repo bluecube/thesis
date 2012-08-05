@@ -11,7 +11,6 @@
 \usepackage[T1]{fontenc}
 \usepackage[czech,english]{babel}
 
-\usepackage{a4wide}
 \usepackage{graphicx}
 \usepackage{microtype}
 \usepackage{paralist}
@@ -71,9 +70,9 @@
 \def\sc@mergesubs_#1{_{\sc@thesub#1}}
 \makeatother
 
-\def\Bel{\mathrm{Bel}}
-\def\P{\mathrm{P}}
-\def\speedoflight{\mathrm{c}}
+\DeclareMathOperator{\Bel}{\mathrm{Bel}}
+\DeclareMathOperator{\Prob}{\mathrm{P}}
+\newcommand{\speedoflight}{\mathrm{c}}
 \newsubcommand{\sysrxtime}{\tau'}{\mathrm{SYS}}
 \newsubcommand{\systxtime}{\tau}{\mathrm{SYS}}
 \newsubcommand{\svtxtime}{\tau}{\mathrm{SV}}

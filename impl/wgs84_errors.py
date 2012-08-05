@@ -19,17 +19,22 @@ logging.basicConfig(
 )
 
 arg_parser = argparse.ArgumentParser(
-    description="Calculate the UERE from recorded data.\n"
+    description="Calculate WGS84 errors.\n"
     "Assumes that the receiver was stationary during whole recording.")
-arg_parser.add_argument('gps')
-arg_parser.add_argument('--polynomial-degree', default=3, type=int,
-    help="Number of samples that will be plotted in the scatter plots.")
+arg_parser.add_argument('gps',
+    help="A recording of SiRF messages.")
+arg_parser.add_argument('--polynomial-degree', default=4, type=int,
+    help="Degree of interpolation polynomial.")
 arg_parser.add_argument('--hist-resolution', default=0.5, type=float,
     help="Width of the histogram bin.")
 arg_parser.add_argument('--plotted-sample-count', default=5000, type=int,
     help="Number of samples that will be plotted in the scatter plots.")
 arg_parser.add_argument('--save-hdop-plot', default=None, type=str,
     help="Where to save the HDOP plot.")
+arg_parser.add_argument('--save-fixes-plot', default=None, type=str,
+    help="Where to save the fixes plot.")
+arg_parser.add_argument('--save-hist-plot', default=None, type=str,
+    help="Where to save the histogram plot.")
 arg_parser.add_argument('--no-show', action='store_true',
     help="Don't show the plots, only save them.")
 arg_parser.add_argument('--max-plot-hdop', type=float,
@@ -90,8 +95,8 @@ print("Scatter plots will only use 1/{} samples".format(plot_step))
 fig1 = plt.figure()
 fixes_plot = fig1.add_subplot(1, 1, 1)
 fixes_plot.scatter(x, y, c=hdop, marker='.', s=40, alpha=0.5, edgecolors='none', rasterized=True)
-fixes_plot.set_xlabel('Easting [\si{\meter}]')
-fixes_plot.set_ylabel('Northing [\si{\meter}]')
+fixes_plot.set_xlabel('Easting [m]')
+fixes_plot.set_ylabel('Northing [m]')
 fixes_plot.set_aspect(1)
 fixes_plot.autoscale(tight=True)
 

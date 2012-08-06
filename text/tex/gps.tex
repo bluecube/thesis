@@ -75,6 +75,9 @@ GPS System Time is a paper time scale based on atomic clock standards in GPS
 satellites and on the ground.
 This time standard is not directly available neither in SVs or in user receivers.
 
+It is specified by a week number -- number of Saturday/Sunday midnights since week 0
+that started on January, 6th 1980 -- and time of week in seconds.
+
 GPS system time is related to UTC.
 It is a continuous time scale, not adjusted for leap seconds
 and it is required to be within \SI{1}{\micro\second} from UTC modulo \SI{1}{\second}.
@@ -245,8 +248,6 @@ And this can be substituted into \eqref{eq:pseudorange2}, giving us
 
 Figure \ref{fig:pseudorange} summarizes relations between times in a single pseudorange measurement.
 
-\subsection{Carrier phase}
-
 \subsection{Position}
 
 If the position of satellites \(\coord{x_{\mathrm{SV}i}}{y_{\mathrm{SV}i}}{z_{\mathrm{SV}i}}\) and satellite
@@ -307,6 +308,10 @@ For more detailed description of how Kalman filters operate see section
 \item Very briefly; won't be used anywhere further
 \item SBAS ?
 \end{itemize}
+
+\subsection{Carrier phase}
+\url{http://www.colorado.edu/geography/gcraft/notes/gps/gps_f.html}
+
 
 \section{Assisted GPS}
 

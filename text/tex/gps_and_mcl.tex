@@ -51,7 +51,7 @@ For modelling the error we basically follow \cite{www-wilson}.
 Distance between the real receiver position is modelled using Rayleigh distribution
 parameterized with HDOP of the measurement:
 \begin{equation}
-	\Prob(\|\vect{p_\mathrm{R}} - \vect{p'_\mathrm{R}}\| < x \mid \HDOP) =
+	\Prob(\norm{\vect{p_\mathrm{R}} - \vect{p'_\mathrm{R}}} < x \mid \HDOP) =
 		1 - e^{-x^2/2\sigma(\HDOP)^2}
 \end{equation}
 Here \(\vect{p_\mathrm{R}}\) is the real receiver position and \(\vect{p'_\mathrm{R}}\)

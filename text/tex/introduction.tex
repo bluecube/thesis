@@ -1,10 +1,14 @@
 \chapter{Introduction}
 
-Localization is an important task for autonomous or semi-autonomous robots.
+% Autonomous outdoor robots are fun, although kinda hard.
+
+The ability to know its position is important for autonomous or semi-autonomous robots.
+This knowledge is necessary not only for completing the robot's task, but also for a basic
+safe navigation though the environment.
+
 Outdoor robots may navigate large areas without detailed maps available, thus limits
 the usefulness of some sensors used for indoor localization, like laser range finders.
 This leaves a robot designer looking for alternative sensors.
-
 
 Global positioning system (GPS) is a satellite navigation system that
 provides position, velocity and time information for receivers at any place on Earth with direct
@@ -21,8 +25,9 @@ by itself isn't good enough for the robot to navigate safely.
 Monte Carlo localization (MCL) is an algorithm that estimates position of a robot
 based on noisy measurements, possibly from multiple sensors.
 MCL is a type of Markov localization that represents the position estimation as
-a set of weighted samples.
-This estimate is periodically updated and corrected based on sensor input.
+a set of samples.
+This estimate is periodically updated in prediction and correction steps based on
+actions the robot on measured sensor data.
 
 
 \vspace{1.5em}
@@ -32,11 +37,29 @@ The goal of this work is to acquire as much precision as possible from low cost
 GPS receivers by using it as an correction input to MCL and to make it possible to use
 GPS as one of the primary sensors for robot localization.
 
-I will show two methods of integrating GPS measurements into Monte Carlo Localization,
-one of them based on low level GPS measurements and one based on easily accessed WGS84 data
-and compare their performance on a real robot.
+A relatively straightforward way of integrating the GPS data to any localization algorithm is
+to use WGS84 geodetic coordinates from the standard NMEA protocol.
+With this approach, however, Kalman filters, position smoothing and other filters typically
+employed in  consumer grade receivers assume that the receiver is mounted in a car or carried on foot
+and modify the data based on these assumptions.
+Examples of these assumptions include minimum speed threshold or vertical speed limits.
+Additionally, based on NMEA data, measurement errors can only be characterized very roughly.
+
+A different approach that will be explored in this work, uses raw
+pseudorange measurements from the GPS receiver.
+This is similar in principle to how IR/ultrasound ranging beacons are used.
+\todo{Reference something}
+When using pseudorange measurements, localization algorithm can work with motion model closely
+matching the real hardware, each pseudorange measurement can have an
+independent error model and further modifications to improve precision like precise
+ephemeris can be used.
 
 
+\vspace{1.5em}
+
+
+This work shows the two mentioned  methods of integrating GPS measurements
+into Monte Carlo Localization and compares their performance on a real robot.
 
 The reset of this text is organized as follows:
 Chapter \ref{chap:gps} describes the GPS system and its operating principles.
@@ -44,5 +67,5 @@ Chapter \ref{chap:mcl} describes Monte Carlo Localization.
 Chapter \ref{chap:gps_and_mcl} proposes fusing of GPS data into MCL.
 Chapter \ref{chap:implementation} describes implementation of experiments with GPS and
 Monte Carlo localization,
-and chapter \ref{chap:performance} compares performance of the implemented algorithms.
+and chapter \ref{chap:performance} compares performance of the implemented methods.
 Chapter \ref{chap:conclusion} concludes and evaluates the work.

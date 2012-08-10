@@ -215,7 +215,7 @@ Here \(\bar{x}_i\) and \(P_i\) are mean and covariance describing \(\Bel(X_i)\).
 	\label{eq:kalman-gain}
 	K_i = P^{-}_{i}H^\mathrm{T}_{i}(H_{i}P^{-}_{i}H^\mathrm{T}_{i} + R_{i})^{-1}
 	\\
-	\bar{x}_i = \bar{x}^{-}_i + K (o_i - H_{i}\bar{x}^{-}_i)
+	\bar{x}_i = \bar{x}^{-}_i + K_i (o_i - H_{i}\bar{x}^{-}_i)
 	\\
 	P_i = (I - K_{i}H_{i})P^{-}_i
 \end{gather}

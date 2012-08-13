@@ -1,8 +1,19 @@
 \chapter{Implementation}
 \label{chap:implementation}
 
-In this chapter describes my implementation of GPS input to Monte Carlo localization,
-specifics of the GPS receiver used, design and how to use the implementation.
+A proof of concept implementation of both approaches from \autoref{chap:gps_and_mcl}
+was created with this work.
+The following chapter describes this implementation, its design and
+specifics of the GPS receiver used.
+Detailed usage information for the tools described in this chapter are located in
+\autoref{chap:usage}.
+
+Python programming language was chosen for the implementation,
+because of the speed of development and large number of available libraries.
+As mentioned above, it is intended only as a proof of
+concept and for further experimenting; a \enquote{real world} implementation
+would probably be written in C or C++, for increased performance and better portability
+to embedded systems, using libraries like GPSTk \cite{tolman04} for the low level GPS access.
 
 \section{What's specific to SiRF}
 \begin{itemize}

@@ -69,10 +69,36 @@ class GpsOperations(collections.Iterator):
         
         while True:
             data = self._read_binary_sirf_msg()
-            while sirf.bytes_to_message_id(data) not in ids:
-                data = self._read_binary_sirf_msg()
+            if sirf.bytes_to_message_id(data) in ids:
+                yield sirf.from_bytes(data)
+
+    def split_to_cycles(self, msg_type_filter = None, separation = 0.5):
+        """
+        Returns iterator of messages grouped by the measurement cycles
+        and optionally filtered only to message types contained in msg_type_filter.
+        """
+
+        ids = {msg_type.get_message_id() for msg_type in msg_type_filter}
+
+        if not len(ids):
+            class _Everything:
+                def __contains__(self, x):
+                    return True
+            ids = _Everything()
+
+        out = []
+        last_msg_time = float("nan")
+        while True:
+            data = self._read_binary_sirf_msg()
             
-            yield sirf.from_bytes(data)
+            if sirf.bytes_to_message_id(data) in ids:
+                out.append(sirf.from_bytes(data))
+
+            if self.last_msg_time - last_msg_time > 0.3:
+                yield out
+                out = []
+
+            last_msg_time = self.last_msg_time
 
     def __next__(self):
         """

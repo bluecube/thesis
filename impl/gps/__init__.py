@@ -3,6 +3,7 @@ from . import gps_replay
 from . import sirf
 from . import sirf_messages
 from . import nmea
+from . import precise_ephemeris
 
 
 def open_gps(file):

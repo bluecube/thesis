@@ -66,7 +66,14 @@ red curve is the fitted polynomial \(\num{21.61432911}x^3 + \num{11.82821964}x^2
 \num{4.19552521}x + \num{1.80325531}\).
 Measured data are represented by blue dots and yellow dots show the mean for each HDOP value.
 
-TODO: Correlated!
+A problem that is hard to avoid with this approach is that position errors of the
+receiver output are correlated.
+This is in part because errors of the individual satellite measurements are correlated
+(which is discussed in \ref{sec:measurement_domain_correlation}), but another major reason
+is the \enquote{inertia} added by the Kalman filter.
+This kind of correlation obviously breaks the independence assumptions of Markov
+localization defined in \ref{sec:markov_assumptions}, but in this case we chose to ignore
+the problem. \todo{Or not.}
 
 \section{Measurement Domain Integration}
 \label{sec:measurement_domain}
@@ -82,10 +89,11 @@ localize according to moving satellites.
 To avoid this problem we will hide satellite motion into the robot state and sensor model.
 
 \subsection{Error distribution}
-\begin{itemize}
-\item Normal distribution (???)
-\item Keep atmospheric delays as part of the localization state?
-\end{itemize}
+Normal distribution (???)
+
+\subsubsection{Error correlation}
+\label{sec:measurement_domain_correlation}
+Keep atmospheric delays as part of the localization state?
 
 \subsection{Preprocessing}
 \begin{itemize}

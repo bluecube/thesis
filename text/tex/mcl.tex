@@ -35,8 +35,8 @@ Markov Localization \cite{fox98,diard03} is a recursive probabilistic
 algorithm that estimates state of the robot based on its
 actions and possibly noisy measured sensor data.
 
-\subsection{Derivation}
-
+\subsection{Assumptions}
+\label{sec:markov_assumptions}
 Markov localization assumes that the state of the robot only depends
 on state and action performed in the previous time frame
 %	\begin{equation}
@@ -51,7 +51,10 @@ and that each observation only depends on the current state.
 %		\Prob(o_i \mid X_i)
 %	\end{equation}
 
-It computes probability density of the robot state, called belief.
+
+\subsection{Derivation}
+
+The algorithm computes probability density of the robot state, called belief.
 \begin{equation}
 	\label{eq:markov-belief-def}
 	\Bel(X_i = x) = \Prob(X_i = x \mid o_{1, \dotsc, i}, a_{1,\dotsc,i - 1})

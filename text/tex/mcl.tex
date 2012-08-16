@@ -326,6 +326,49 @@ MCL keeps a set of samples \(S_i = \{s^k_{i} \mid k = 1,\dotsc,n\} \) drawn from
 	resampling algorithm described in \cite{arulampalam01}.
 \end{description}
 
+\begin{lstlisting}[float=b, label=lst:mcl-algo, caption={Pseudocode of prediction and correction
+steps of Monte Carlo localization}]
+def prediction(S, action):
+	for s in S:
+		old_weight = s.weight
+		s = draw_from_action_model(s, action)
+		s.weight = old_weight
+
+def correction(S, observed):
+	for s in S:
+		s.weight *= observation_probability(s, observed)
+
+	normalize_weights(S)
+\end{lstlisting}
+
+%\begin{lstlisting}
+%def initialize(sample_count):
+%	S = list()
+%	for i in range(sample_count):
+%		s = new_sample_from_map()
+%		s.weight = 1 / sample_count
+%		S.append(1)
+%	return S
+
+%def resampling(S):
+%	cdf = list()
+%	cdf.append(0)
+%	for i in range(len(S) - 1):
+%		cdf.append(cdf[i] + S[i].weight)
+%
+%
+%	original_S = deepcopy(S)
+%	it = iter(original_S)
+%	offset = random(0, 1 / len(S))
+%
+%	for i in range(len(S)):
+%\end{lstlisting}
+
+\autoref{lst:mcl-algo} contains a simple pseudocode implementation of the algorithm.
+Function \lstinline=draw_from_action_model()= represents drawing a new sample from density
+the action model and the function \lstinline=observation_probability()=
+contains the observation model and returns \(\Prob(o_i \mid X_i = s'^k_i)\).
+
 \subsection{Modifications}
 
 \subsubsection{Adaptive Sample Size}
@@ -340,7 +383,14 @@ generated, but until the sum of unnormalized weights exceeds a given threshold.
 Another more involved approach, using KLD-sampling algorithm
 (KLD stands for Kullback-Leibler distance) is described in \cite{fox03}.
 
-%\subsubsection{Delayed Resampling}
+\subsubsection{Delayed Resampling}
+Pseudocode in \autoref{lst:mcl-algo} extends the basic MCL algorithm by keeping sample weights during the
+whole operation.
+This means that resampling phase can be performed only once for several prediction and correction steps
+for example to save computing power.
+Criterion for starting resampling may be chosen as a fixed number of prediction / correction steps,
+or when the effective number of particles drops under a predefined threshold.
+This is explained in detail in \cite{arulampalam01}.
 
 \subsubsection{Mixture MCL}
 

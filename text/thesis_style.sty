@@ -50,6 +50,7 @@
 	frame=tblr,
 	mathescape=true
 }
+
 \usepackage{todonotes}
 \usepackage[backend=bibtex8]{biblatex}
 \addbibresource{thesis.bib}
@@ -93,6 +94,35 @@
 \newcommand{\vect}{\mathbf}
 \providecommand{\abs}[1]{\lvert#1\rvert}
 \providecommand{\norm}[1]{\lVert#1\rVert}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Algorithms
+
+\usepackage[boxed]{algorithm2e}
+\DontPrintSemicolon
+\SetKw{assign}{\(\leftarrow\)}
+\SetKwFor{function}{function}{:}{end} % Fuuuuuuj
+\SetKwFunction{initialize}{initialize}
+\SetKwFunction{predict}{predict}
+\SetKwFunction{correct}{correct}
+\SetKwFunction{resample}{resample}
+\SetKwFunction{getAction}{getAction}
+\SetKwFunction{getObservation}{getObservation}
+\SetKwFunction{randomSample}{randomSample}
+\SetKwFunction{sampleFromActionModel}{sampleFromActionModel}
+\SetKwFunction{observationProbability}{observationProbability}
+\SetKwFunction{outputPosition}{outputPosition}
+\SetKwFunction{append}{append}
+\SetKwFunction{emptyList}{emptyList}
+\SetKwFor{Forever}{repeat}{}{end}
+\SetKwData{weights}{weights}
+\SetKwData{samples}{samples}
+\SetKwData{sample}{s}
+\SetKwData{ii}{i}
+\SetKwData{nn}{n}
+\SetKwData{action}{action}
+\SetKwData{observation}{observation}
+\renewcommand{\algorithmautorefname}{Algorithm}
 
 
 \usepackage{tgpagella} % Gyre pagella -- based on palatino

@@ -243,12 +243,13 @@ robot localization.
 It is a version of Markov localization, that approximates the belief
 using a set of samples drawn from it.
 
-Advantages of MCL include ability to localize the robot globally and the related
+Advantages of MCL include 
 possibility to represent arbitrary shapes of probability densities as opposed to
-Gaussian distribution in the widespread Kalman filters.
-Compares to the grid based methods MCL automatically focuses most of the
+Gaussian distribution in the widespread Kalman filters
+and the related ability to localize the robot globally.
+Compared to the grid based methods MCL automatically focuses most of the
 computing power to the highly probable regions.
-This algorithm is also relatively easy to implement and the action and sensor models
+This algorithm is also fairly easy to implement and the action and sensor models
 in sampling and probability forms are simpler than covariance matrices in
 Kalman filters.
 
@@ -257,7 +258,7 @@ and the particle approximation doesn't work well with too precise sensors,
 because if the observation model PDF becomes too "sharp" peaks, it has a high probability
 of missing all samples during the correction phase and effectively ignoring the measurement.
 
-Informally the basic MCL algorithm can be described as follows:
+Informally the basic MCL can be described as follows:
 Keep \(n\) samples of hypothetical robot states.
 In prediction phase move each sample according to the action performed + noise corresponding
 to uncertainty on the action's result (e.g. wheel slip).
@@ -268,11 +269,77 @@ instead add copies of the highly weighted samples.
 
 \subsection{Algorithm}
 
-MCL keeps a set of samples \(S_i = \{s^k_{i} \mid k = 1,\dotsc,n\} \) drawn from
-\(P(X_i = x \mid X_{i-1}, o_i, a_{i - 1})\) to represent the belief.
+\begin{algorithm}[tp]
+	\samples \assign \initialize{}\;
+	\Forever{}{
+		\samples \assign \predict{\samples, \getAction{}}\;
+		\weights \assign \correct{\samples, \getObservation{}}\;
+		\samples \assign \resample{\samples, \weights}\;
+		\BlankLine
+		\outputPosition{\samples}
+	}
+	\caption{Basic Monte Carlo localization}
+	\label{algo:mcl}
+\end{algorithm}
 
-\begin{description}
-\item[Prediction] \hfill \\
+
+\begin{algorithm}[tp]
+	\function{init}{
+		\KwIn{nothing}
+		\KwOut{list of samples}
+		\BlankLine
+		\samples \assign \emptyList\;
+		\For{\ii \assign \(1\) \KwTo \nn}{
+			\append{\samples, \randomSample{}}\;
+		}
+		\Return{\samples}\;
+	}
+	\caption{MCL initialization -- global localization}
+	\label{algo:mcl-init}
+\end{algorithm}
+
+
+\begin{algorithm}[tp]
+	\function{predict}{
+		\KwIn{list of samples, performed action}
+		\KwOut{modified list of samples}
+		\BlankLine
+		\ForEach{\sample \(\in\) \samples}{
+			\sample \assign \sampleFromActionModel{\sample, \action}\;
+		}
+		\Return{\samples}\;
+	}
+	\caption{MCL prediction step}
+	\label{algo:mcl-predict}
+\end{algorithm}
+
+
+\begin{algorithm}[tp]
+	\function{correct}{
+		\KwIn{list of samples, observation}
+		\KwOut{list of weights}
+		\BlankLine
+		\weights \assign \emptyList\;
+		\ForEach{\sample \(\in\) \samples}{
+			\append{\weights, \observationProbability{\sample, \observation}}\;
+		}
+		\Return{\weights}\;
+	}
+	\caption{MCL correction step}
+	\label{algo:mcl-correct}
+\end{algorithm}
+
+MCL keeps a set of samples \(S_i = \{s^k_{i} \mid k = 1,\dotsc,n\} \) drawn from
+\(P(X_i = x \mid X_{i-1}, o_i, a_{i - 1})\) to represent the belief and performs
+prediction, correction and resampling phases every frame.
+
+This top level structure is shown in \autoref{algo:mcl}.
+Inputs of the algorithm are represented by the functions
+\getAction{} and \getObservation{}, that return the last performed action and the
+last measured observation.
+Output is made available to the rest of the robot's software in function \outputPosition{}.
+
+\subsubsection{Prediction}
 	\emph{
 	Create a new set \(S'_i = \{s'^k_{i}\} \)
 	by drawing a new sample \(s'^k_{i}\)
@@ -288,7 +355,10 @@ MCL keeps a set of samples \(S_i = \{s^k_{i} \mid k = 1,\dotsc,n\} \) drawn from
 	\end{equation}
 	which is used instead of the predictive density from \eqref{eq:markov-prediction}.
 
-\item[Correction] \hfill \\
+	\autoref{algo:mcl-predict} contains definition of \predict{}, utilizing the motion
+	model through \sampleFromActionModel{}.
+
+\subsubsection{Correction}
 	\emph{
 	Use the sensor model to calculate weight \(w^k_i = \Prob(o_i \mid X_i = s'^k_i)\)
 	for each sample in \(S'_i\).
@@ -314,8 +384,11 @@ MCL keeps a set of samples \(S_i = \{s^k_{i} \mid k = 1,\dotsc,n\} \) drawn from
 		} = \Prob(o_i \mid X_i = s'^k_i)
 	\end{equation}
 
+	Pseudocode for the prediction step is illustrated in \autoref{algo:mcl-correct},
+	with function \observationProbability{} returning the probability of the observation
+	according to the motion model.
 
-\item[Resampling] \hfill \\
+\subsubsection{Resampling}
 	\emph{
 	Draw \(n\) new samples \(s^k_{i+1}\) from \(S_i\) by placing
 	weight \(\{w^k_i\}\) on \(s'^k_{i}\).
@@ -324,50 +397,6 @@ MCL keeps a set of samples \(S_i = \{s^k_{i} \mid k = 1,\dotsc,n\} \) drawn from
 	Resampling phase is necessary to finalize the SIR procedure from the correction phase.
 	Resampling of the sample set can be done in \(\mathrm{O}(n)\), using the systematic
 	resampling algorithm described in \cite{arulampalam01}.
-\end{description}
-
-\begin{lstlisting}[float=b, label=lst:mcl-algo, caption={Pseudocode of prediction and correction
-steps of Monte Carlo localization}]
-def prediction(S, action):
-	for s in S:
-		old_weight = s.weight
-		s = draw_from_action_model(s, action)
-		s.weight = old_weight
-
-def correction(S, observed):
-	for s in S:
-		s.weight *= observation_probability(s, observed)
-
-	normalize_weights(S)
-\end{lstlisting}
-
-%\begin{lstlisting}
-%def initialize(sample_count):
-%	S = list()
-%	for i in range(sample_count):
-%		s = new_sample_from_map()
-%		s.weight = 1 / sample_count
-%		S.append(1)
-%	return S
-
-%def resampling(S):
-%	cdf = list()
-%	cdf.append(0)
-%	for i in range(len(S) - 1):
-%		cdf.append(cdf[i] + S[i].weight)
-%
-%
-%	original_S = deepcopy(S)
-%	it = iter(original_S)
-%	offset = random(0, 1 / len(S))
-%
-%	for i in range(len(S)):
-%\end{lstlisting}
-
-\autoref{lst:mcl-algo} contains a simple pseudocode implementation of the algorithm.
-Function \lstinline=draw_from_action_model()= represents drawing a new sample from density
-the action model and the function \lstinline=observation_probability()=
-contains the observation model and returns \(\Prob(o_i \mid X_i = s'^k_i)\).
 
 \subsection{Modifications}
 
@@ -384,12 +413,11 @@ Another more involved approach, using KLD-sampling algorithm
 (KLD stands for Kullback-Leibler distance) is described in \cite{fox03}.
 
 \subsubsection{Delayed Resampling}
-Pseudocode in \autoref{lst:mcl-algo} extends the basic MCL algorithm by keeping sample weights during the
-whole operation.
+It is possible to keep sample weights during the whole operation of the algorithm.
 This means that resampling phase can be performed only once for several prediction and correction steps
 for example to save computing power.
-Criterion for starting resampling may be chosen as a fixed number of prediction / correction steps,
-or when the effective number of particles drops under a predefined threshold.
+Various criteria for starting resampling may be chosen, examples include a fixed number of
+prediction / correction steps, or when the effective number of particles drops under a predefined threshold.
 This is explained in detail in \cite{arulampalam01}.
 
 \subsubsection{Mixture MCL}

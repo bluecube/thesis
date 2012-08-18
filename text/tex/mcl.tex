@@ -38,18 +38,19 @@ actions and possibly noisy measured sensor data.
 \subsection{Assumptions}
 \label{sec:markov_assumptions}
 Markov localization assumes that the state of the robot only depends
-on state and action performed in the previous time frame
-%	\begin{equation}
-%		\Prob(X_i = x \mid X_{1, \dotsc, i - 1}, a_{1, \dotsc, i - 1},
-%		o_{1, \dotsc, i - 1}) = 
-%		\Prob(X_i = x \mid X_{i - 1}, a_{i - 1})
-%	\end{equation}
-and that each observation only depends on the current state.
-%	\begin{equation}
-%		\Prob(o_i \mid X_1, \dotsc, X_i, a_1, \dotsc, a_{i - 1},
-%		o_1, \dotsc, o_{i - 1}) = 
-%		\Prob(o_i \mid X_i)
-%	\end{equation}
+on state and action performed in the previous time frame:
+	\begin{equation}
+		\Prob(X_i = x \mid X_{1, \dotsc, i - 1}, a_{1, \dotsc, i - 1},
+		o_{1, \dotsc, i - 1}) =
+		\Prob(X_i = x \mid X_{i - 1}, a_{i - 1})
+	\end{equation}
+and that each observation only depends on the current state:
+	\begin{equation}
+		\label{eq:markov-observation-independence}
+		\Prob(o_i \mid X_{1, \dotsc, i}, a_{1, \dotsc, i - 1},
+		o_{1, \dotsc, i - 1}) =
+		\Prob(o_i \mid X_i)
+	\end{equation}
 
 
 \subsection{Derivation}

@@ -340,12 +340,13 @@ last measured observation.
 Output is made available to the rest of the robot's software in function \outputPosition{}.
 
 \subsubsection{Prediction}
-	\emph{
-	Create a new set \(S'_i = \{s'^k_{i}\} \)
+	\begin{itemize}
+	\item
+	Create a new sample set \(S'_i = \{s'^k_{i}\} \)
 	by drawing a new sample \(s'^k_{i}\)
 	from the action model \(\Prob(X_i = x \mid X_{i-1} = s^k_{i-1}, a_{i - 1})\)
 	for every sample in \(S_{i-1}\).
-	}
+	\end{itemize}
 
 	This effectively is stratified sampling from the empirical predictive density
 	\begin{equation}
@@ -359,10 +360,11 @@ Output is made available to the rest of the robot's software in function \output
 	model through \sampleFromActionModel{}.
 
 \subsubsection{Correction}
-	\emph{
-	Use the sensor model to calculate weight \(w^k_i = \Prob(o_i \mid X_i = s'^k_i)\)
-	for each sample in \(S'_i\).
-	}
+	\begin{itemize}
+	\item
+	Using the sensor model, calculate weight \(w^k_i = \Prob(o_i \mid X_i = s'^k_i)\)
+	for each sample \(s'^k_i\) in the predictive sample set \(S'_i\).
+	\end{itemize}
 
 	Ideally in the correction phase the algorithm would draw samples directly from
 	\(\Prob(o_i \mid X_i = x) \Prob(X_i = x \mid X_{i - 1}, a_{i - 1})\),
@@ -389,10 +391,11 @@ Output is made available to the rest of the robot's software in function \output
 	according to the motion model.
 
 \subsubsection{Resampling}
-	\emph{
-	Draw \(n\) new samples \(s^k_{i+1}\) from \(S_i\) by placing
+	\begin{itemize}
+	\item
+	Draw \(n\) new samples \(s^k_{i+1}\) from \(S'_i\) by placing
 	weight \(\{w^k_i\}\) on \(s'^k_{i}\).
-	}
+	\end{itemize}
 
 	Resampling phase is necessary to finalize the SIR procedure from the correction phase.
 	Resampling of the sample set can be done in \(\mathrm{O}(n)\), using the systematic

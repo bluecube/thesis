@@ -135,8 +135,7 @@ prediction phase, in witch the algorithm incorporate a performed action into the
 (and therefore predicts the state after the action and correction phase which updates
 the measurements based on the observed sensor measurements.
 
-\begin{description}
-\item[Prediction] \hfill \\
+\subsubsection{Prediction}
 	Prediction phase uses the action model to obtain predictive density based on the action performed
 	and previous belief, by integrating over all possible states at time \(i - 1\).
 	The following equation is an exact copy of \eqref{eq:markov-derivation4}, included here for completeness.
@@ -149,7 +148,7 @@ the measurements based on the observed sensor measurements.
 		\,\mathrm{d}x'
 	\end{equation}
 
-\item[Correction] \hfill \\
+\subsubsection{Correction}
 	Correction regenerates the belief based on the predictive density
 	and sensor model.
 	\begin{equation}
@@ -158,7 +157,6 @@ the measurements based on the observed sensor measurements.
 		\eta \Prob(o_i \mid X_i = x)
 		\Prob(X_i = x \mid o_{1, \dotsc, i}, a_{1, \dotsc, i - 1})
 	\end{equation}
-\end{description}
 
 \subsection{Density Representations}
 The algorithm as described above doesn't tell us how to represent the probability
@@ -202,8 +200,7 @@ filter (EKF) \cite{welch95}.
 For illustration of Kalman filter operation, the update rules are included,
 for more detailed description see \cite{welch95}.
 
-\begin{description}
-\item[Prediction] \hfill \\
+\subsubsection{Prediction}
 \begin{gather}
 	\bar{x}^{-}_i = A_{i - 1}\bar{x}_{i-1} + B_{i - 1}a_{i - 1}
 	\\
@@ -214,7 +211,7 @@ Here \(\bar{x}_i\) and \(P_i\) are mean and covariance describing \(\Bel(X_i)\).
 \(\bar{x}^{-}_i\) and \(P^{-}_i\) are mean and covariance of the predictive density
 \(\Prob(X_i \mid o_{1, \dotsc, i}, a_{1, \dotsc, i - 1})\)
 
-\item[Correction] \hfill \\
+\subsubsection{Correction}
 \begin{gather}
 	\label{eq:kalman-gain}
 	K_i = P^{-}_{i}H^\mathrm{T}_{i}(H_{i}P^{-}_{i}H^\mathrm{T}_{i} + R_{i})^{-1}
@@ -223,7 +220,6 @@ Here \(\bar{x}_i\) and \(P_i\) are mean and covariance describing \(\Bel(X_i)\).
 	\\
 	P_i = (I - K_{i}H_{i})P^{-}_i
 \end{gather}
-\end{description}
 
 
 \section{Monte Carlo Localization}
@@ -327,7 +323,7 @@ instead add copies of the highly weighted samples.
 	\label{algo:mcl}
 \end{algorithm}
 
-MCL keeps a set of samples \(S_i = \{s^k_{i} \mid k = 1,\dotsc,n\} \) drawn from
+MCL keeps a set of samples \(S_i = \{s^k_{i} \mid k = 1,\dotsc,n\} \) drawn from the distribution
 \(P(X_i = x \mid X_{i-1}, o_i, a_{i - 1})\) to represent the belief and performs
 prediction, correction and resampling phases every frame.
 
@@ -336,10 +332,12 @@ Inputs of the algorithm are represented by functions
 \getAction{} and \getObservation{}, that return the last performed action and the
 last measured observation.
 Output is made available to the rest of the robot's software in function \outputPosition{}.
+
 Prediction and correction steps in the algorithm, utilize the motion
-model through \sampleFromActionModel{} and sensor model through function \observationProbability{}.
-\sampleFromActionModel{} returns a random predicted sample based on a previous sample and an action,
+model through \sampleFromActionModel{} and sensor model using \observationProbability{}.
+The function \sampleFromActionModel{} returns a random predicted sample based on a previous sample and an action,
 \observationProbability{} gives the probability of an observation in a given state.
+
 The initialization pseudocode in \autoref{algo:mcl} shows how MCL can be used to localize
 a robot without knowledge of its previous location by starting with samples distributed
 uniformly through the environment.

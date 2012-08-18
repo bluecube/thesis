@@ -2,8 +2,8 @@
 
 % Autonomous outdoor robots are fun, although kinda hard.
 
-The ability to know its position is important for autonomous or semi-autonomous robots.
-This knowledge is necessary not only for completing the robot's task, but also for a basic
+The ability to determine its position is important for autonomous or semi-autonomous robots.
+Not only for completing the robot's task, but also for a basic
 safe navigation though the environment.
 
 Outdoor robots may navigate large areas without detailed maps available, thus limits
@@ -24,7 +24,7 @@ by itself isn't good enough for the robot to navigate safely.
 
 Monte Carlo localization (MCL) is an algorithm that estimates position of a robot
 based on noisy measurements, possibly from multiple sensors.
-MCL is a type of Markov localization that represents the position estimation as
+Monte Carlo localization is a type of Markov localization that represents the position estimation as
 a set of samples.
 This estimate is periodically updated in prediction and correction steps based on
 actions the robot on measured sensor data.
@@ -32,8 +32,7 @@ actions the robot on measured sensor data.
 
 \vspace{1.5em}
 
-
-The goal of this work is to acquire as much precision as possible from low cost
+Goal of this work is to acquire as much precision as possible from low cost
 GPS receivers by using it as an correction input to MCL and to make it possible to use
 GPS as one of the primary sensors for robot localization.
 

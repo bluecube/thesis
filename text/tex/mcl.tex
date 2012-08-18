@@ -340,7 +340,9 @@ Prediction and correction steps in the algorithm, utilize the motion
 model through \sampleFromActionModel{} and sensor model through function \observationProbability{}.
 \sampleFromActionModel{} returns a random predicted sample based on a previous sample and an action,
 \observationProbability{} gives the probability of an observation in a given state.
-
+The initialization pseudocode in \autoref{algo:mcl} shows how MCL can be used to localize
+a robot without knowledge of its previous location by starting with samples distributed
+uniformly through the environment.
 
 \subsubsection{Prediction}
 	\begin{itemize}

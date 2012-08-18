@@ -270,7 +270,7 @@ instead add copies of the highly weighted samples.
 
 \subsection{Algorithm}
 
-\begin{algorithm}[tp]
+\begin{algorithm}[p]
 	\samples \assign \initialize{}\;
 	\Forever{}{
 		\samples \assign \predict{\samples, \getAction{}}\;
@@ -279,13 +279,11 @@ instead add copies of the highly weighted samples.
 		\BlankLine
 		\outputPosition{\samples}
 	}
-	\caption{Basic Monte Carlo localization}
-	\label{algo:mcl}
-\end{algorithm}
 
-
-\begin{algorithm}[tp]
-	\function{init}{
+	\BlankLine
+	\BlankLine
+	\BlankLine
+	\function{initialize}{
 		\KwIn{nothing}
 		\KwOut{list of samples}
 		\BlankLine
@@ -293,14 +291,13 @@ instead add copies of the highly weighted samples.
 		\For{\ii \assign \(1\) \KwTo \nn}{
 			\append{\samples, \randomSample{}}\;
 		}
+		\BlankLine
 		\Return{\samples}\;
 	}
-	\caption{MCL initialization -- global localization}
-	\label{algo:mcl-init}
-\end{algorithm}
 
-
-\begin{algorithm}[tp]
+	\BlankLine
+	\BlankLine
+	\BlankLine
 	\function{predict}{
 		\KwIn{list of samples, performed action}
 		\KwOut{modified list of samples}
@@ -308,14 +305,13 @@ instead add copies of the highly weighted samples.
 		\ForEach{\sample \(\in\) \samples}{
 			\sample \assign \sampleFromActionModel{\sample, \action}\;
 		}
+		\BlankLine
 		\Return{\samples}\;
 	}
-	\caption{MCL prediction step}
-	\label{algo:mcl-predict}
-\end{algorithm}
 
-
-\begin{algorithm}[tp]
+	\BlankLine
+	\BlankLine
+	\BlankLine
 	\function{correct}{
 		\KwIn{list of samples, observation}
 		\KwOut{list of weights}
@@ -324,21 +320,27 @@ instead add copies of the highly weighted samples.
 		\ForEach{\sample \(\in\) \samples}{
 			\append{\weights, \observationProbability{\sample, \observation}}\;
 		}
+		\BlankLine
 		\Return{\weights}\;
 	}
-	\caption{MCL correction step}
-	\label{algo:mcl-correct}
+	\caption{Monte Carlo localization}
+	\label{algo:mcl}
 \end{algorithm}
 
 MCL keeps a set of samples \(S_i = \{s^k_{i} \mid k = 1,\dotsc,n\} \) drawn from
 \(P(X_i = x \mid X_{i-1}, o_i, a_{i - 1})\) to represent the belief and performs
 prediction, correction and resampling phases every frame.
 
-This top level structure is shown in \autoref{algo:mcl}.
-Inputs of the algorithm are represented by the functions
+\autoref{algo:mcl} shows the basic structure of Monte Carlo localization.
+Inputs of the algorithm are represented by functions
 \getAction{} and \getObservation{}, that return the last performed action and the
 last measured observation.
 Output is made available to the rest of the robot's software in function \outputPosition{}.
+Prediction and correction steps in the algorithm, utilize the motion
+model through \sampleFromActionModel{} and sensor model through function \observationProbability{}.
+\sampleFromActionModel{} returns a random predicted sample based on a previous sample and an action,
+\observationProbability{} gives the probability of an observation in a given state.
+
 
 \subsubsection{Prediction}
 	\begin{itemize}
@@ -356,9 +358,6 @@ Output is made available to the rest of the robot's software in function \output
 		\sum_{k = 1}^n \Prob(X_i = x \mid X_{i-1} = s^k_{i-1}, a_{i - 1})
 	\end{equation}
 	which is used instead of the predictive density from \eqref{eq:markov-prediction}.
-
-	\autoref{algo:mcl-predict} contains definition of \predict{}, utilizing the motion
-	model through \sampleFromActionModel{}.
 
 \subsubsection{Correction}
 	\begin{itemize}
@@ -386,10 +385,6 @@ Output is made available to the rest of the robot's software in function \output
 			\hat{\Prob}(X_i =  s'^k_i \mid X_{i - 1}, a_{i - 1})
 		} = \Prob(o_i \mid X_i = s'^k_i)
 	\end{equation}
-
-	Pseudocode for the prediction step is illustrated in \autoref{algo:mcl-correct},
-	with function \observationProbability{} returning the probability of the observation
-	according to the motion model.
 
 \subsubsection{Resampling}
 	\begin{itemize}

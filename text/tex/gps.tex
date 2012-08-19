@@ -172,13 +172,13 @@ potential -- also defined in WGS84.
 \subsection{Ephemeris}
 \label{sec:gps-ephemeris}
 
-Ephemeris in the context of GPS means data describing satellite positions
+Ephemeris in the context of GPS means data describing satellite positions and velocities
 at given time.
+Ephemeris data are transmitted in the \SI{50}{\bit\per\second} messages along with the ranging signals.
+Along with than ephemeris, these messages also contain clock offsets and clocks drifts of the satellites,
+and possibly other data.
 
-Along with the ranging signals, GPS satellites transmit messages containing ephemeris and
-clock offsets.
-These messages describe the satellite orbit using a set of Keplerian orbital parameters.
-
+Satellite orbits in the ephemeris messages are described using a set of Keplerian orbital parameters.
 \todo{Keplerian parameters? They are unimportant for the thesis, and it takes three
 pages to define them properly ... think of something better to write}
 
@@ -186,8 +186,8 @@ pages to define them properly ... think of something better to write}
 Precise ephemeris are satellite ephemeris data calculated by ground stations
 and distributed separately from the GPS broadcast.
 
-Source of precise ephemeris is \cite{orbit-data}, providing datasets with
-post-processed data and also wiyh predictions for next several hours.
+One of sources of precise ephemeris is for example \cite{orbit-data}, providing datasets with
+ost-processed data and also with predictions for next several hours.
 While the quality of these predictions is lower than of the off-line data,
 they are still several times more precise than the broadcast ephemerides
 (\SI{5}{\centi\meter} RMS versus \SI{100}{\centi\meter} RMS, according to \cite{orbit-data}).

@@ -251,7 +251,7 @@ Figure \ref{fig:pseudorange} summarizes relations between times in a single pseu
 
 \subsection{Position}
 
-If the position of satellites \(\coord{x_{\mathrm{SV}i}}{y_{\mathrm{SV}i}}{z_{\mathrm{SV}i}}\) and satellite
+If the position of satellites \(\svpos_i = \coord{x_{\mathrm{SV}i}}{y_{\mathrm{SV}i}}{z_{\mathrm{SV}i}}\) and satellite
 clock offsets \(\svclockoffset_i\) are known,
 calculating receiver position from the pseudorange measurements means solving a set of non-linear equations
 \begin{equation}
@@ -260,7 +260,7 @@ calculating receiver position from the pseudorange measurements means solving a 
 	=
 	\rho_i - \speedoflight\geomrangedelays_i
 \end{equation}
-for receiver position \(\coord{x_\mathrm{R}}{y_\mathrm{R}}{z_\mathrm{R}}\) and receiver clock offset \(\recclockoffset\).
+for receiver position \(\recpos = \coord{x_\mathrm{R}}{y_\mathrm{R}}{z_\mathrm{R}}\) and receiver clock offset \(\recclockoffset\).
 
 These equations can be solved using various methods, including closed form solutions
 (for example \cite{leva96}), iterative solutions, linearization of the equations around

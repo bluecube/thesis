@@ -255,12 +255,12 @@ If the position of satellites \(\svpos_i = \coord{x_{\mathrm{SV}i}}{y_{\mathrm{S
 clock offsets \(\svclockoffset_i\) are known,
 calculating receiver position from the pseudorange measurements means solving a set of non-linear equations
 \begin{equation}
-	\sqrt{(x_\mathrm{R} - x_{\mathrm{SV}i})^2 + (y_\mathrm{R} - y_{\mathrm{SV}i})^2 +(z_\mathrm{R} - z_{\mathrm{SV}i})^2} +
+	\sqrt{(x_\REC - x_{{\SV}i})^2 + (y_\REC - y_{{\SV}i})^2 +(z_\REC - z_{{\SV}i})^2} +
 	\speedoflight (\recclockoffset - \svclockoffset_i)
 	=
 	\rho_i - \speedoflight\geomrangedelays_i
 \end{equation}
-for receiver position \(\recpos = \coord{x_\mathrm{R}}{y_\mathrm{R}}{z_\mathrm{R}}\) and receiver clock offset \(\recclockoffset\).
+for receiver position \(\recpos = \coord{x_\REC}{y_\REC}{z_\REC}\) and receiver clock offset \(\recclockoffset\).
 
 These equations can be solved using various methods, including closed form solutions
 (for example \cite{leva96}), iterative solutions, linearization of the equations around

@@ -18,8 +18,13 @@ I'm concentrating on measurement domain integration, but should say something ab
 
 
 ===== Things to try: =====
-Use something better than just linear extrapolation when calculating the SV position at given time. We know that it's going at almost circular path. This could bring the errors to less than [[~20cm/sec]]
+Use something better than just linear extrapolation when calculating the SV position at given time. We know that it's going at almost circular path. This could bring the errors to less than ~20cm/sec
 
 Use precise ephemeris
 
 Elevation angle cutoff (10deg ?)
+
+
+
+===== SiRF carrier frequency =====
+Corrected Carrier Frequency (m/s) = Reported Carrier Frequency (m/s) – Clock Drift (Hz)*C / 1575420000 Hz.

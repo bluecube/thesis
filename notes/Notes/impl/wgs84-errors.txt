@@ -7,4 +7,4 @@ Created Monday 16 July 2012
 
 Reading the complete wgs84 fixes, projecing to 2D and calculating stats & graphs,
 
-[ ] Add curve fitting of mean error on hdop.
+[*] Add curve fitting of mean error on hdop.

@@ -48,7 +48,7 @@ This approach has the advantage of being very simple
 
 For modelling the error we basically follow \cite{www-wilson}.
 
-Distance between the real receiver position is modelled using Rayleigh distribution
+Distance between the real receiver position and the reported position is modelled using Rayleigh distribution
 parameterized with HDOP of the measurement:
 \begin{equation}
 	\Prob(\norm{\vect{p_\mathrm{R}} - \vect{p'_\mathrm{R}}} < x \mid \HDOP) =
@@ -59,9 +59,9 @@ the noisy reported position.
 
 The parameter \(\sigma(\HDOP)\) of the Rayleigh distribution is chosen to make the
 mean value of the distribution fit mean value of experimental data.
-Theoretically, mean error should be equal to \(\HDOP\) times \(\UERE\) (see \ref{sec:gps-errors}),
+Theoretically, mean error should be equal to \(\HDOP\) times \(\UERE\) (see \autoref{sec:gps-errors}),
 but in practice it is not linear.
-In figure \ref{fig:wgs84_hdop_error} green line shows fitting of the theoretical linear model,
+In figure \ref{fig:wgs84_hdop_error} green line shows fitting of the theoretical linear model and
 red curve is the fitted polynomial \(\num{21.61432911}x^3 + \num{11.82821964}x^2 - 
 \num{4.19552521}x + \num{1.80325531}\).
 Measured data are represented by blue dots and yellow dots show the mean for each HDOP value.

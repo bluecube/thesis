@@ -252,7 +252,7 @@ Kalman filters.
 
 On the other hand, Monte Carlo Localization is more CPU intensive than Kalman filters
 and the particle approximation doesn't work well with too precise sensors,
-because if the observation model PDF becomes too "sharp" peaks, it has a high probability
+because if the observation model PDF becomes too \enquote{sharp} peaks, it has a high probability
 of missing all samples during the correction phase and effectively ignoring the measurement.
 
 Informally the basic MCL can be described as follows:
@@ -266,7 +266,19 @@ instead add copies of the highly weighted samples.
 
 \subsection{Algorithm}
 
-\begin{algorithm}[p]
+\begin{figure}[p]
+\begin{algorithm}[H]
+	\SetKwFunction{append}{append}
+	\SetKwFunction{emptyList}{emptyList}
+	\SetKwFor{Forever}{repeat}{}{end}
+	\SetKwData{weights}{weights}
+	\SetKwData{samples}{samples}
+	\SetKwData{sample}{s}
+	\SetKwData{ii}{i}
+	\SetKwData{nn}{n}
+	\SetKwData{action}{action}
+	\SetKwData{observation}{observation}
+
 	\samples \assign \initialize{}\;
 	\Forever{}{
 		\samples \assign \predict{\samples, \getAction{}}\;
@@ -319,16 +331,17 @@ instead add copies of the highly weighted samples.
 		\BlankLine
 		\Return{\weights}\;
 	}
-	\caption{Monte Carlo localization}
-	\label{algo:mcl}
 \end{algorithm}
+\caption{Monte Carlo localization algorithm}
+\label{algo:mcl}
+\end{figure}
 
 MCL keeps a set of samples \(S_i = \{s^k_{i} \mid k = 1,\dotsc,n\} \) drawn from the distribution
 \(P(X_i = x \mid X_{i-1}, o_i, a_{i - 1})\) to represent the belief and performs
 prediction, correction and resampling phases every frame.
 
-\autoref{algo:mcl} shows the basic structure of Monte Carlo localization.
-Inputs of the algorithm are represented by functions
+Pseudocode in \autoref{algo:mcl} contains the basic structure of Monte Carlo localization.
+The algorithm reads inputs from the environment by calling functions
 \getAction{} and \getObservation{}, that return the last performed action and the
 last measured observation.
 Output is made available to the rest of the robot's software in function \outputPosition{}.
@@ -338,7 +351,7 @@ model through \sampleFromActionModel{} and sensor model using \observationProbab
 The function \sampleFromActionModel{} returns a random predicted sample based on a previous sample and an action,
 \observationProbability{} gives the probability of an observation in a given state.
 
-The initialization pseudocode in \autoref{algo:mcl} shows how MCL can be used to localize
+The \initialize{} function is an example of how MCL can be used to localize
 a robot without knowledge of its previous location by starting with samples distributed
 uniformly through the environment.
 

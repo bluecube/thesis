@@ -28,3 +28,5 @@ Elevation angle cutoff (10deg ?)
 
 ===== SiRF carrier frequency =====
 Corrected Carrier Frequency (m/s) = Reported Carrier Frequency (m/s) – Clock Drift (Hz)*C / 1575420000 Hz.
+
+**http://www.gpspassion.com/forumsen/topic.asp?TOPIC_ID=7685#70279   !!!! important**

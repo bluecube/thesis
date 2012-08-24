@@ -272,9 +272,58 @@ into the solution.
 \todo{Expand, maybe}
 
 \subsection{Velocity}
-\begin{itemize}
-\item More math
-\end{itemize}
+The simplest way of obtaining receiver velocity is as a derivation of
+position, which is in turn obtained using one of the methods described in preceding paragraphs.
+This has the advantage of requiring only minimum of additional processing.
+
+When the receiver position is known, its velocity can also be obtained from Doppler shift of
+the received signal and known velocities of satellites.
+Received frequency can be approximated as
+\begin{equation}
+	f = f_\SV \left(1 - \frac{\recsvvel}{\speedoflight}\right)
+	\label{eq:doppler}
+\end{equation}
+where \(f_\SV\) is the transmitted frequency and \(\recsvvel\) is the relative velocity
+between the satellite and the receiver.
+The relative velocity can be written as a dot product of unit vector pointing
+from user to the satellite and velocity difference between the user and the satellite:
+\begin{equation}
+	\recsvvel = \frac{
+		(\svpos - \recpos)
+	}{
+		\norm{\svpos - \recpos}
+	} \cdot (\svvel - \recvel)
+	\label{eq:doppler-velocity}
+\end{equation}
+
+When calculating receiver velocities, the measured values also have to be corrected for
+clock drifts, both in satellite and in receiver.
+Clock drifts are specified in seconds per second and determine the rate of change of clock offset.
+Satellite clock drifts are transmitted together with their clock corrections, so we can ignore
+them in a similar fashion as satellite clock offsets, but receiver clock drifts must be determined
+together with receiver velocity.
+
+The physically received frequency \(f\) is related to the frequency \(f_\REC\) reported by the receiver
+using the receiver clock drift \(\recclockdrift\):
+\begin{equation}
+	f = f_\REC ( 1 + \recclockdrift)
+	\label{eq:doppler-clock-drift}
+\end{equation}
+
+By putting the equations \eqref{eq:doppler} and \eqref{eq:doppler-clock-drift}
+together we obtain
+\begin{equation}
+	\recsvvel
+	=
+	\speedoflight \left(1 - \frac{f_\REC}{f_\SV}\right) -
+	\speedoflight \frac{f_\REC}{f_\SV} \recclockdrift
+\end{equation}
+
+This equation arises for every satellite in view and
+as with pseudoranges and positions, there are several ways to obtain the receiver velocity
+from them.
+In this work we will only use this Doppler measurements as an input to Monte Carlo localisation
+and we will not discuss the other methods.\todo{Maybe we won't even use the velocity measurements at all.}
 
 \section{Measurement errors}
 \label{sec:gps-errors}

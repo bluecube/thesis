@@ -105,28 +105,32 @@ This is solved by adding the clock offset as a fourth dimension of the receiver 
 Having clock offset as a part of the navigation solution makes it easy to calculate
 precise time after a fix is obtained by adding the offset to the receiver clock.
 
-\subsection{PRN signals}
-GPS signals utilize CDMA to transmit its navigation messages.
+\subsection{GPS Signals}
+GPS signals are transmitted using CDMA.
+Each signal at each satellite is assigned a unique pseudo random sequence, called PRN code and the carrier frequency is
+modulated using this sequence, possibly mixed with \SI{50}{\bit\per\second} navigation messages, for transmitting
+ephemeris and other data.
 
-Each signal at each satellite is assigned a unique pseudo random sequence, called PRN
-code.
-Receivers then typically employ a number of specialised hardware correlators, 
+Legacy GPS satellites work on two frequencies, primary L1 (\SI{1575.42}{\mega\hertz}) and secondary L2 (\SI{1227.6}{\mega\hertz}).
+Unencrypted \SI{1}{\mega\hertz} C/A code is transmitted on L1, and encrypted military \SI{10}{\mega\hertz} P(Y) code is transmitted
+on both L1 and L2.
+
+One of the advantages of multiple frequencies is the ability to calculate corrections for ionospheric delays from the received signals.
+
+Modernized GPS satellites provide three additional civilian signals:
+L2C, L5 and a military signal M. A fourth civilian signal and L1C is planned, that will be compatible with
+European navigation system Galileo (see \ref{sec:galileo}).
+At the time of this writing, the signals L2C and L5 are partially supported and L1C is still only
+planned \cite{gps-modernization-www}.
+
+\subsubsection{PRN Sequences}
+As mentioned above, PRN sequences are unique to every signal and every satellite.
+
+Receivers typically employ a number of specialised hardware correlators
 that attempt to duplicate the PRN codes and match them to the received signal.
 Result of successful matching is an identification of the transmitting satellite,
 the transmission time \(\svtxtime\) (appearing in pseudorange definition \eqref{eq:pseudorange})
-modulo PRN code length possibly also phase and Doppler shift of the carrier wave.
-
-Legacy GPS signals are transmitted on two frequencies, primary L1 (\SI{1575.42}{\mega\hertz}) and secondary L2 (\SI{1227.6}{\mega\hertz}).
-Unencrypted C/A code on L1, and encrypted P(Y) on both L1 and L2, because the dual
-frequencies enable the receiver to calculate corrections for ionospheric delays.
-The L1 C/A code and one of the P(Y) codes are additionally modulated with
-\SI{50}{\bit\per\second} navigation messages.
-
-Modernized GPS satellites provide two additional civilian signals --
-L2C, L5 and planned L1C, that will be compatible with European navigation system Galileo
-(see \ref{sec:galileo}) -- and modernized military signal M.
-At the time of this writing, the signals L2C and L5 are partially supported and L1C is still only
-planned \cite{gps-modernization-www}.
+modulo PRN code length and possibly also phase and Doppler shift of the carrier wave.
 
 \subsection{Reference Frames}
 

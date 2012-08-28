@@ -331,22 +331,61 @@ and we will not discuss the other methods.\todo{Maybe we won't even use the velo
 
 \section{Measurement errors}
 \label{sec:gps-errors}
-\begin{itemize}
-\item Describe UERE
-\item describe DOP
-\label{sec:gps-dop}
-\end{itemize}
 
-\begin{itemize}
-\item Multipath
-\item Ionospheric \& tropospheric delays
-\item Ephemeris errors (+ precise ephemeris web sources)
-\item SV clock errors
-\end{itemize}
+Previous text assumed that all measurements in the GPS system can be made exactly,
+but practically all the segments of the GPS system introduce errors.
+
+\subsection{User Equivalent Range Error}
+\label{sec:gps-uere}
+User equivalent range error (UERE) characterizes effective accuracy of a pseudorange measurement.
+UERE characterized as a sum of errors caused by different parts of the GPS system.
+
+UERE and its components are usually assumed to be zero mean Gaussian variables,
+mutually independent both between the error components of a single measurement and between satellites.
+
+\subsection{Error sources}
+
+The following text describes major sources of the measurement errors and when possible
+also how to remove the error.
+
+Table \ref{tab:error-budget} contains example of error sizes, that are taken from
+\cite{kaplan06}.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{lS}
+\toprule
+	Error Source			& \(1\sigma\) Error (\si{\meter}) \\
+\midrule
+	Broadcast clock			& 1.1 \\
+	L1 P(Y)-L1 C/A group delay	& 0.3 \\
+	Broadcast ephemeris		& 0.8 \\
+	Ionospheric delay		& 7.0 \\
+	Tropospheric delay		& 0.1 \\
+	Receiver noise and resolution	& 0.1 \\
+	Multipath			& 0.2 \\
+\midrule
+	Total				& 7.1 \\
+\bottomrule
+\end{tabular}
+\caption{Example GPS error budget.}
+\footnotesize Taken from \cite{kaplan06}
+\label{tab:error-budget}
+\end{table}
+
+\subsubsection{Multipath}
+\subsubsection{Atmospheric Delays}
+Ionospheric \& tropospheric delays
+
+\subsubsection{Ephemeris Errors and Clock Errors}
+\subsubsection{SV clock errors}
 
 \subsection{Dilution of Precision}
+\label{sec:gps-dop}
 \begin{itemize}
+\item DOP, PDOP, VDOP
 \item effect of satellite geometry on position error
+\item applicable only for complete fixes
 \end{itemize}
 
 \section{Kalman Filters}
@@ -363,9 +402,11 @@ For more detailed description of how Kalman filters operate see section
 \item SBAS ?
 \end{itemize}
 
+
 \subsection{Carrier phase}
 \url{http://www.colorado.edu/geography/gcraft/notes/gps/gps_f.html}
 
+\subsection{Real Time Kinematics}
 
 \section{Assisted GPS}
 

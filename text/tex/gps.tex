@@ -271,9 +271,20 @@ These equations can be solved using various methods, including closed form solut
 previous position estimates, using Kalman filters (see \ref{sec:kalman}) or,
 as we will discuss in section \ref{sec:measurement_domain}, Monte Carlo localization.
 The last two approaches also have the advantage of being able to fuse other sensor data
-into the solution.
+into the solution.\todo{Expand, maybe}
 
-\todo{Expand, maybe}
+\subsubsection{Carrier Phase Tracking}
+Carrier phase tracking is a technique that depends on measuring the phase of carrier wave.
+L1 frequency has a wavelength of approximately \SI{19}{\centi\meter}.
+When the receiver can match the L1 with \SI{1}{\percent} accuracy, then the available precision
+is around \SI{2}{\milli\meter} compared to about \SI{3}{\meter} for code phase (pseudorange)
+tracking. More detailed description of the code phase tracking errors is in \autoref{sec:gps-errors}.
+
+One of the main problems with the carrier phase tracking is integer ambiguity of the carrier wave,
+that arises because the carrier wave doesn't contain any code designed to resolve it.
+
+Carrier phase measurements can be used to smooth pseudorange data.
+Details about this method can be found in section \enquote{Smooth} in \cite{sam-www}.
 
 \subsection{Velocity}
 The simplest way of obtaining receiver velocity is as a derivation of

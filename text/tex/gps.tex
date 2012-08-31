@@ -348,6 +348,29 @@ but practically all the segments of the GPS system introduce errors.
 
 \subsection{User Equivalent Range Error}
 \label{sec:gps-uere}
+
+\begin{table}[t]
+\centering
+\begin{tabular}{lS}
+\toprule
+	Error Source			& \(1\sigma\) error (\si{\meter}) \\
+\midrule
+	Broadcast clock			& 1.1 \\
+	L1 P(Y)-L1 C/A group delay	& 0.3 \\
+	Broadcast ephemeris		& 0.8 \\
+	Ionospheric delay		& 7.0 \\
+	Tropospheric delay		& 0.1 \\
+	Receiver noise and resolution	& 0.1 \\
+	Multipath			& 0.2 \\
+\midrule
+	Total UERE			& 7.1 \\
+\bottomrule
+\end{tabular}
+\caption{Example GPS error budget.}
+\footnotesize Taken from \cite{kaplan06}
+\label{tab:error-budget}
+\end{table}
+
 User equivalent range error (UERE) characterizes effective accuracy of a pseudorange measurement.
 UERE characterized as a sum of errors caused by different parts of the GPS system.
 
@@ -361,33 +384,15 @@ also how to remove the error.
 
 Table \ref{tab:error-budget} contains example of error sizes, that are taken from
 \cite{kaplan06}.
+\todo{wtf is group delay?}
 
-\begin{table}[ht]
-\centering
-\begin{tabular}{lS}
-\toprule
-	Error Source			& \(1\sigma\) Error (\si{\meter}) \\
-\midrule
-	Broadcast clock			& 1.1 \\
-	L1 P(Y)-L1 C/A group delay	& 0.3 \\
-	Broadcast ephemeris		& 0.8 \\
-	Ionospheric delay		& 7.0 \\
-	Tropospheric delay		& 0.1 \\
-	Receiver noise and resolution	& 0.1 \\
-	Multipath			& 0.2 \\
-\midrule
-	Total				& 7.1 \\
-\bottomrule
-\end{tabular}
-\caption{Example GPS error budget.}
-\footnotesize Taken from \cite{kaplan06}
-\label{tab:error-budget}
-\end{table}
+Values in this table are a little bit outdated due to development in both GPS space
+segment and user receivers, but breakdown of error values is otherwise hard to measure
+without survey hardware.
 
 \subsubsection{Multipath}
 
-
-\begin{figure}[ht]
+\begin{figure}[t]
 	\centering
 	\input{img/multipath.pdf_tex}
 	\caption{Schematic of multipath error.}

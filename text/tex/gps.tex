@@ -421,7 +421,21 @@ by multipath error.
 
 
 \subsubsection{Atmospheric Delays}
-Ionospheric \& tropospheric delays
+
+When the GPS signals are travelling through the atmosphere, they are delayed in troposphere and ionosphere.
+
+Tropospheric delays are relatively small and can be relatively easily estimated based on satellite elevation
+angle\todo{Citation needed. And some equations.}, but ionospheric errors are much larger and harder to predict.
+
+Multi frequency receivers can calculate ionospheric delays by comparing the two received signals.
+Delay models for for ionosphere that can be used in a single frequency receiver also exist,
+but they are not very reliable.
+
+An interesting property of ionospheric delays is, that they are correlated,
+both in measurements from different satellite to a single receiver and in measurements
+from a single satellite to multiple receivers.
+The later property is utilized in differential GPS (\autoref{sec:dgps}).\todo{Add citations, expand}
+
 
 \subsubsection{Ephemeris Errors and Clock Errors}
 \subsubsection{SV clock errors}
@@ -443,6 +457,7 @@ For more detailed description of how Kalman filters operate see section
 \ref{sec:kalman}.
 
 \section{Differential GPS}
+\label{sec:dgps}
 \begin{itemize}
 \item Very briefly; won't be used anywhere further
 \item SBAS ?

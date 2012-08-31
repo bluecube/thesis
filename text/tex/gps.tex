@@ -454,6 +454,15 @@ at the expense of requiring internet connection during operation.
 
 \subsection{Dilution of Precision}
 \label{sec:gps-dop}
+
+Dilution of precision (DOP) is a value that describes the effects of satellite geometry
+on the precision of calculated fix.
+
+In theory standard deviation of the completed fix should have a linear dependency on
+UERE and DOP, but since the ionospheric errors are correlated, the real position error is
+typically slightly lower.
+his can be seen in \autoref{fig:wgs84_hdop_error}.
+
 \begin{itemize}
 \item DOP, PDOP, VDOP
 \item effect of satellite geometry on position error

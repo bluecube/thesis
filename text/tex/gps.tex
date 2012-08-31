@@ -386,8 +386,6 @@ Table \ref{tab:error-budget} contains example of error sizes, that are taken fro
 
 \subsubsection{Multipath}
 
-Multipath errors arise when the signal from satellite reaches the receiver
-through multiple paths of different length.
 
 \begin{figure}[ht]
 	\centering
@@ -396,6 +394,25 @@ through multiple paths of different length.
 	\label{fig:multipath}
 \end{figure}
 
+Multipath errors arise when the signal from satellite reaches the receiver
+through multiple paths of different length.
+They are typically caused by buildings surrounding the receiver position or
+when including satellites with low elevation angle (close to the horizon).
+
+An illustration of this effect is shown in \autoref{fig:multipath}.
+Here a signal drawn in green follows a direct path from the satellite to the receiver
+and the red signal is reflected from a building and the path it travels is longer.
+
+GPS receivers attempt to fix this error by ignoring delayed signals with a PRN that has already been
+detected, but efficiency of this approach is limited.
+For example in case when only the reflected signals are available or when the direct signal is shadowed.
+
+Multipath errors can be mitigated with better antenna design and better signal processing in receivers.
+When used for navigation, satellites may be dropped from the solution based on the elevation angle
+to avoid this kind of errors.
+More involved method of dealing with multipath errors is described in [TODO\todo{Find the article!}],
+where the error model of a satellite measurement is modified based if it is suspected to be corrupted
+by multipath error.
 
 
 \subsubsection{Atmospheric Delays}

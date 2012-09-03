@@ -126,6 +126,10 @@ planned \cite{gps-modernization-www}.
 \subsubsection{PRN Sequences}
 As mentioned above, PRN sequences are unique to every signal and every satellite.
 
+C/A codes have a chipping rate -- that is the frequency of PRN code modulated on top
+of the carrier wave -- of \SI{1.023}{\mega\hertz} and P(Y) code has a chipping rate
+of \SI{10.23}{\mega\hertz}.
+
 Receivers typically employ a number of specialised hardware correlators
 that attempt to duplicate the PRN codes and match them to the received signal.
 Result of successful matching is an identification of the transmitting satellite,
@@ -274,6 +278,7 @@ The last two approaches also have the advantage of being able to fuse other sens
 into the solution.\todo{Expand, maybe}
 
 \subsubsection{Carrier Phase Tracking}
+\label{sec:gps_carrier_phase}
 Carrier phase tracking is a technique that depends on measuring the phase of carrier wave.
 L1 frequency has a wavelength of approximately \SI{19}{\centi\meter}.
 When the receiver can match the L1 with \SI{1}{\percent} accuracy, then the available precision
@@ -390,8 +395,18 @@ Values in this table are a little bit outdated due to development in both GPS sp
 segment and user receivers, but breakdown of error values is otherwise hard to measure
 without survey hardware.
 
-\subsubsection{Receiver Noise and Fix Accuracy}
-\todo{Write something}
+\subsubsection{Match Accuracy and Receiver Delays}
+
+When the receiver is matches the received signal to expected PRN codes an 
+important question arises of how accurate the matching is.
+Often cited value is \SI{1}{\percent}, which for \SI{1.023}{\mega\hertz}
+chipping rate gives about \SI{2.9}{\meter}.\todo{Why doesn't this show in the table, huh?}
+This kind of errors can be improved by smoothing with carrier phase measurements (see
+\autoref{sec:gps_carrier_phase}).
+
+Delays also occur in receiver signal processing, both in the electronics and in software,
+but if these delays are constant for all pseudorange measurements, they will be removed
+together with receiver clock delay.
 
 \subsubsection{Multipath}
 

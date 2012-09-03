@@ -279,6 +279,7 @@ into the solution.\todo{Expand, maybe}
 
 \subsubsection{Carrier Phase Tracking}
 \label{sec:gps_carrier_phase}
+
 Carrier phase tracking is a technique that depends on measuring the phase of carrier wave.
 L1 frequency has a wavelength of approximately \SI{19}{\centi\meter}.
 When the receiver can match the L1 with \SI{1}{\percent} accuracy, then the available precision
@@ -390,10 +391,9 @@ also how to remove the error.
 Table \ref{tab:error-budget} contains example of error sizes, that are taken from
 \cite{kaplan06}.
 \todo{wtf is group delay?}
-
 Values in this table are a little bit outdated due to development in both GPS space
-segment and user receivers, but breakdown of error values is otherwise hard to measure
-without survey hardware.
+segment and user receivers, but we include it, because breakdown of error values is otherwise hard to measure
+without specialised hardware.
 
 \subsubsection{Match Accuracy and Receiver Delays}
 
@@ -431,8 +431,8 @@ detected, but efficiency of this approach is limited.
 For example in case when only the reflected signals are available or when the direct signal is shadowed.
 
 Multipath errors can be mitigated with better antenna design and better signal processing in receivers.
-When used for navigation, satellites may be dropped from the solution based on the elevation angle
-to avoid this kind of errors.
+When used for navigation, satellites may be dropped from the solution if the elevation angle
+is too low to avoid this kind of errors.
 More involved method of dealing with multipath errors is described in \cite{viandier08},
 where the error model of a satellite measurement is modified if it is suspected to be corrupted
 by multipath error.

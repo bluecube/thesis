@@ -355,6 +355,42 @@ class SoftwareVersionString(_SirfReceivedMessageBase):
         return cls({'message_id': data[0], 'string': s}, data)
 
 
+class CommandAcknowledgment(_SirfReceivedMessageBase):
+    """
+    Acknowledging command.
+    """
+
+    packer = _NamedUnpacker('>', [
+        ('B', 'message_id'),
+        ('B', 'ack_id')])
+
+    @classmethod
+    def get_message_id(cls):
+        return 11
+
+    @classmethod
+    def from_bytes(cls, data):
+        return cls(cls.packer.unpack(data), data)
+
+
+class CommandNegativeAcknowledgment(_SirfReceivedMessageBase):
+    """
+    Negative acknowledgement of a command.
+    """
+
+    packer = _NamedUnpacker('>', [
+        ('B', 'message_id'),
+        ('B', 'nack_id')])
+
+    @classmethod
+    def get_message_id(cls):
+        return 12
+
+    @classmethod
+    def from_bytes(cls, data):
+        return cls(cls.packer.unpack(data), data)
+
+
 class SwitchToNmeaProtocol(_SirfSentMessageBase):
     packer = struct.Struct('>BB18BxxH')
 

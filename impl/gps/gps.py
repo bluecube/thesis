@@ -81,7 +81,7 @@ class Gps(gps_operations.GpsOperations):
         Set how often a message gets sent by the SIRF chip.
         Rate is integer, meaning number of seconds, 0 means disabled.
         """
-        self.send_message(sirf_messages.SetMessageRate(msg = msg_type))
+        self.send_message(sirf_messages.SetMessageRate(msg = msg_type, update_rate = rate))
 
     def _log_status(self):
         """

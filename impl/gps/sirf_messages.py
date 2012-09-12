@@ -477,15 +477,16 @@ class SetMessageRate(_SirfSentMessageBase):
     def get_message_id(cls):
         return 166
     
-    def __init__(self, **kwargs):
+    def __init__(self, msg, update_rate = 1):
         #reasonable defaults
+        self.msg = msg
         self.mode = self.ONE_MESSAGE
-        self.update_rate = 1
-        super(SetMessageRate, self).__init__(kwargs)
+        self.update_rate = update_rate
+        super(SetMessageRate, self).__init__({msg: msg, update_rate: update_rate})
 
     def to_bytes(self):
         return self.packer.pack(
             self.get_message_id(),
             self.mode,
-            self.get_message_id(),
+            self.msg.get_message_id(),
             self.update_rate)

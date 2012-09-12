@@ -60,6 +60,8 @@ class Gps(gps_operations.GpsOperations):
 
         self._detect_mode(self.EXPECTED_MODES)
 
+        self._exit_protocol = 'NMEA'
+
         if self._mode[0] == 'NMEA':
             self._nmea_to_sirf()
 
@@ -104,14 +106,30 @@ class Gps(gps_operations.GpsOperations):
         if not self._mode:
             return
 
-        if self._mode[0] == 'SIRF':
+        if self._mode[0] != self._exit_protocol:
+            self.set_protocol(self._exit_protocol)
+        else:
+            self._logger.info('Not switching protocol')
+
+    def set_protocol(self, protocol):
+        self._exit_protocol = protocol
+
+        if protocol == 'NMEA':
             self._sirf_to_nmea()
+        elif protocol == 'SIRF':
+            self._nmea_to_sirf()
+        else:
+            return
 
     def _nmea_to_sirf(self):
         """
         Switch to SIRF binary mode from NMEA
         Only one constant speed will be used.
         """
+        if self._mode[0] != 'NMEA':
+            self._logger.info("Not in NMEA mode")
+            return
+
         nmea.send_sentence(self._ser, ("PSRF100", 0, self.SIRF_MODE[1], 8, 1, 0))
         self._switch_mode_internal(self.SIRF_MODE)
 
@@ -120,6 +138,10 @@ class Gps(gps_operations.GpsOperations):
         Switch to NMEA mode from SIRF binary.
         Only one constant speed will be used.
         """
+        if self._mode[0] != 'SIRF':
+            self._logger.info("Not in SIRF mode")
+            return
+
         self.send_message(sirf_messages.SwitchToNmeaProtocol(speed = self.NMEA_MODE[1]))
         self._switch_mode_internal(self.NMEA_MODE)
 

@@ -498,16 +498,23 @@ For more detailed description of how Kalman filters operate see section
 
 \section{Differential GPS}
 \label{sec:dgps}
-\begin{itemize}
-\item Very briefly; won't be used anywhere further
-\item SBAS ?
-\end{itemize}
 
+Differential GPS is a method to improve GPS accuracy using at least one reference station.
+DGPS exploit the correlations of GPS errors and is capable of removing or decreasing satellite clock errors,
+ephemeris errors, tropospheric and ionospheric errors.
 
-\subsection{Carrier phase}
-\url{http://www.colorado.edu/geography/gcraft/notes/gps/gps_f.html}
+DGPS systems may operate with baseline distances from a hundreds of meters to several thousand kilometers,
+may be used to calculate precise absolute positions or positions relative to positions.
+Accuracy of DGPS may range from several decimeters for code based systems to several
+millimeters for carrier based systems.
 
-\subsection{Real Time Kinematics}
+Reference stations must feed its data to the receivers, which use it to correct their own measurements.
+This need of infrastructure and reliable wireless connection makes DGPS impractical for many uses.
+
+%\cite{dana99}
+
+Differential GPS is often used in surveying (off-line, high precision) and this
+use is discussed in \cite{rizos99}.
 
 \section{Assisted GPS}
 

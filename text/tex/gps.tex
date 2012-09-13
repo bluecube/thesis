@@ -528,13 +528,40 @@ ranging from upload of initial ephemeris data to the receiver chip,
 sending the received GPS data to a remote server for position determination or
 completely calculating the position in software.
 
+%\section{GPS Receivers}
 
+%As stated before, this work focuses on low cost consumer grade receivers.
+%There are currently many different receiver chips available, differing in
 
-\section{GPS Receivers}
-\subsection{Protocols}
-\subsubsection{NMEA}
+\section{Protocols}
+\subsection{NMEA 0183}
+NMEA 0183 is a de-facto standard protocol for consumer grade GPS receivers.
+It is a proprietary format developed by National Marine Electronics Organization,
+but has been reverse engineered and the specification is known \cite{depriest}.
+
+The protocol by itself is designed for communication of marine electronic
+equipment and isn't specific to GPS receivers.
+It consists of a large number of sentences, some of which are intended to be used
+for position, velocity and time solutions of GPS navigation.
+
+Problem with NMEA protocol is, that a different subset is implemented in almost every
+receiver and there is no access to lower levels of the GPS signal processing.
+
+\subsection{Proprietary Protocols}
+Many GPS receivers extend the NMEA protocol using proprietary sentences or
+implement a custom protocols.
+Example of this is the SiRF binary protocol \cite{sirf-protocol}.
+
+Often the use of proprietary protocol is the only way to get complete functionality from
+the receiver.
+
 \subsection{RINEX}
-\subsubsection{Proprietary Protocols}
+
+The Receiver Independent Exchange Format \cite{rinex-format} is an exchange format
+for GPS and other satellite navigation systems.
+
+RINEX is typically used for post processing as it can contain various data that are not
+known during navigation, for example detailed ionospheric models, or high precision ephemeris.
 
 \section{Similar Systems}
 

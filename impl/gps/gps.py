@@ -56,7 +56,10 @@ class Gps(gps_operations.GpsOperations):
 
         self._mode = None
         self._ser = serial_wrapper.SerialWrapper(None, timeout=2)
-        self._ser.port = port
+        try:
+            self._ser.port = int(port)
+        except ValueError:
+            self._ser.port = port
 
         self._detect_mode(self.EXPECTED_MODES)
 

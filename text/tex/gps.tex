@@ -182,13 +182,14 @@ potential -- also defined in WGS84.
 
 Ephemeris in the context of GPS means data describing satellite positions and velocities
 at given time.
-Ephemeris data are transmitted in the \SI{50}{\bit\per\second} messages along with the ranging signals.
-Along with than ephemeris, these messages also contain clock offsets and clocks drifts of the satellites,
+Ephemeris data are transmitted in the \SI{50}{\bit\per\second} messages along with the ranging signals,
+together with clock offsets and clocks drifts of the satellites
 and possibly other data.
 
 Satellite orbits in the ephemeris messages are described using a set of Keplerian orbital parameters.
-\todo{Keplerian parameters? They are unimportant for the thesis, and it takes three
-pages to define them properly ... think of something better to write}
+Since in this work we will be only using ephemeris data in the ECEF reference frame, Keplerian parameter
+won't be discussed here.
+More details can be found for example in section 3.3.3 of \cite{rizos99}, or in \cite{kaplan06}.
 
 \subsubsection{Precise Ephemeris}
 Precise ephemeris are satellite ephemeris data calculated by ground stations
@@ -481,12 +482,7 @@ In theory standard deviation of the completed fix should have a linear dependenc
 UERE and DOP, but since the ionospheric errors are correlated, the real position error is
 typically slightly lower.
 his can be seen in \autoref{fig:wgs84_hdop_error}.
-
-\begin{itemize}
-\item DOP, PDOP, VDOP
-\item effect of satellite geometry on position error
-\item applicable only for complete fixes
-\end{itemize}
+\todo{Expand, add math}
 
 \section{Kalman Filters}
 Kalman filters are often used in the GPS receivers to merge past
@@ -517,16 +513,13 @@ Differential GPS is often used in surveying (off-line, high precision) and this
 use is discussed in \cite{rizos99}.
 
 \section{Assisted GPS}
-Assisted GPS refers to techniques that improve operation of GPS by offloading
-work from the receiver chip to a remote assistance server, used typically on PDAs and cell phones.
+Assisted GPS refers to techniques used typically on PDAs and cell phones, that improve operation of GPS by offloading
+work from the receiver chip to a remote assistance server.
 
-Goal of assisted GPS is to improve cold start times (when downloading the complete
-ephemeris) times and possibly also to improve precision.
-
-Assisted GPS method differ in the amount of work that is done by the receiving computer,
-ranging from upload of initial ephemeris data to the receiver chip,
-sending the raw received GPS data to a remote server for position determination or
-completely calculating the position in software.
+Assistance server has a good satellite reception and more computing power than the device
+and can supply the client system with complete position fixes based on uploaded GPS signal sample,
+ephemeris data which can then be used to speed up cold start of the client device or
+ionospheric parameters, forming simple DGPS system and increasing the fix precision.
 
 %\section{GPS Receivers}
 

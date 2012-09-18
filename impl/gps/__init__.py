@@ -15,6 +15,8 @@ def open_gps(file):
         return gps_replay.GpsReplay(file)
     except IOError:
         pass
+    except StopIteration:
+        pass
 
     return gps.Gps(file)
 

@@ -6,17 +6,17 @@ from . import nmea
 from . import precise_ephemeris
 
 
-def open_gps(file):
+def open_gps(*args, **kwargs):
     """
     Factory function. Tries to open a gps as a replay and if this fails
     tries a real gps.
     """
     try:
-        return gps_replay.GpsReplay(file)
+        return gps_replay.GpsReplay(*args, **kwargs)
     except IOError:
         pass
     except StopIteration:
         pass
 
-    return gps.Gps(file)
+    return gps.Gps(*args, **kwargs)
 

@@ -100,6 +100,43 @@ class GpsOperations(collections.Iterator):
 
             last_msg_time = self.last_msg_time
 
+    def loop(self, observers):
+        """
+        Read messages in infinite loop and notify observers.
+        """
+
+        observers = list(observers)
+
+        if bytes == str:
+            # This branch is here for python 2.x and to avoid
+            # the cost of calls to sirf.bytes_to_message_id
+            # This whole business is a little ugly :-)
+            message_id_filter = chr
+        else:
+            message_id_filter = lambda(x): x
+
+        assert message_id_filter(97) == b'a'[0]
+
+        message_ids = {}
+        for observer in observers:
+            for message_type in observer.observed_message_types():
+                filtered_id = message_id_filter(message_type.get_message_id())
+
+                message_ids.setdefault(filtered_id, []).append(observer)
+
+        while True:
+            binary = self._read_binary_sirf_msg()
+
+            message_id = binary[0]
+
+            if message_id not in message_ids:
+                continue
+
+            message = sirf.from_bytes(binary)
+
+            for observer in message_ids[message_id]:
+                observer.notify(message)
+
     def __next__(self):
         """
         We want to support iterator protocol.

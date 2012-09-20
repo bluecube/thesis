@@ -44,8 +44,7 @@ try:
                     counter += 1
                     if counter == 10:
                         msg = gps.sirf.from_bytes(msg)
-                        print("GPS TOW {}, Valid: {}, HDOP: {}, Sat count: {}, Lat: {}, Lon: {}".format(
-                            msg.gps_tow, msg.nav_valid == 0, msg.hdop, len(msg.sat_ids), msg.latitude, msg.longitude))
+                        print(msg.status_line())
                         counter = 0
 
         else:

@@ -2,6 +2,7 @@ from __future__ import division
 
 import struct
 import numpy
+import datetime
 
 from . import serial_wrapper
 from . import named_unpacker
@@ -290,8 +291,29 @@ class GeodeticNavigationData(_SirfReceivedMessageBase):
             num >>= 1
 
         fields['sat_ids'] = frozenset(sat_ids)
+
+        int_seconds = int(fields['utc_second'])
+        fields['utc'] = datetime.datetime(
+            fields['utc_year'],
+            fields['utc_month'],
+            fields['utc_day'],
+            fields['utc_hour'],
+            fields['utc_minute'],
+            int_seconds,
+            int(1000000 * (fields['utc_second'] - int_seconds)))
         
         return cls(fields, data)
+
+    def status_line(self):
+        """Return a string briefly describing status of the receiver."""
+        return "{:%Y-%m-%d %H:%M:%S} {} HDOP: {}, {} SV, ehpe: {}, Pos: {}, {}".format(
+            self.utc,
+            "--VALID--" if self.nav_valid == 0 else "--INVALID--",
+            self.hdop,
+            len(self.sat_ids),
+            self.ehpe,
+            self.latitude,
+            self.longitude)
 
 
 class SbasParameters(_SirfReceivedMessageBase):

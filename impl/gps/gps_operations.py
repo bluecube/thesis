@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 
 import collections
+import logging
 
 from . import sirf
 from . import sirf_messages
@@ -9,6 +10,9 @@ class GpsOperations(collections.Iterator):
     """
     Operations common to both real gps and recording.
     """
+
+    def __init__(self):
+        self._logger = logging.getLogger('localization.gps')
 
     def _read_binary_sirf_msg(self):
         """
@@ -100,9 +104,16 @@ class GpsOperations(collections.Iterator):
 
             last_msg_time = self.last_msg_time
 
-    def loop(self, observers):
+    def loop(self, observers, log_status = 10):
         """
         Read messages in infinite loop and notify observers.
+
+        observers:
+            list of observers that will be notified as messages
+            are received
+        log_status:
+            After how many cycles should the status be logged.
+            If this is false, then no logging is performed.
         """
 
         observers = list(observers)
@@ -124,15 +135,29 @@ class GpsOperations(collections.Iterator):
 
                 message_ids.setdefault(filtered_id, []).append(observer)
 
+        status_id = sirf_messages.GeodeticNavigationData.get_message_id()
+        status_remaining = 0
+
         while True:
             binary = self._read_binary_sirf_msg()
 
             message_id = binary[0]
 
-            if message_id not in message_ids:
-                continue
+            if log_status and not status_remaining:
+                message = sirf.from_bytes(binary)
+                logging.info(message.status_line())
 
-            message = sirf.from_bytes(binary)
+                status_remaining = log_status
+
+                if message_id not in message_ids:
+                    continue
+            else:
+                status_remaining -= 1
+
+                if message_id not in message_ids:
+                    continue
+                else:
+                    message = sirf.from_bytes(binary)
 
             for observer in message_ids[message_id]:
                 observer.notify(message)

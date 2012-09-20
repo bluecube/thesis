@@ -1,7 +1,6 @@
 from __future__ import unicode_literals
 
 import time
-import logging
 import itertools
 
 import serial
@@ -52,7 +51,7 @@ class Gps(gps_operations.GpsOperations):
     ALL_STOPBITS = (serial.STOPBITS_ONE, serial.STOPBITS_TWO)
 
     def __init__(self, port):
-        self._logger = logging.getLogger('localization.gps')
+        super(Gps, self).__init__()
 
         self._mode = None
         self._ser = serial_wrapper.SerialWrapper(None, timeout=2)

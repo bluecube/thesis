@@ -1,7 +1,6 @@
 from __future__ import unicode_literals
 
 import time
-import logging
 import itertools
 import gzip
 
@@ -27,7 +26,7 @@ class GpsReplay(gps_operations.GpsOperations):
         return self._f.read(length)
 
     def __init__(self, recording):
-        self._logger = logging.getLogger('localization.gps-replay')
+        super(GpsReplay, self).__init__()
 
         self._f = gzip.GzipFile(recording, 'rb')
 

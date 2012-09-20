@@ -7,23 +7,9 @@ import subprocess
 import UserDict
 import numpy
 
-import warnings
-warnings.simplefilter('ignore', numpy.RankWarning)
+from . import ephemeris
 
-class Ephemeris(object):
-    def sv_pos(self, prn, week, time):
-        raise NotImplementedError()
-
-    def sv_clock_offset(self, prn, week, time):
-        raise NotImplementedError()
-
-    def sv_velocity(self, prn, week, time):
-        raise NotImplementedError()
-
-    def sv_clock_drift(self, prn, week, time):
-        raise NotImplementedError()
-
-class IGSEphemeris(Ephemeris):
+class IGSEphemeris(ephemeris.Ephemeris):
     """
     Download precise ephemeris from igs.
     This is intended for real time applications --

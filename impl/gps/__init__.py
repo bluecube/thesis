@@ -1,9 +1,10 @@
-from . import gps
-from . import gps_replay
 from . import sirf
 from . import sirf_messages
 from . import nmea
-from . import precise_ephemeris
+from .gps import Gps
+from .gps_replay import GpsReplay
+from .precise_ephemeris import IGSEphemeris
+from .message_observer import MessageObserver
 
 
 def open_gps(*args, **kwargs):

@@ -6,8 +6,6 @@ import gzip
 
 from . import gps_operations
 
-import pickle
-
 class GpsReplay(gps_operations.GpsOperations):
     """
     Replay SIRF messages from a recording.

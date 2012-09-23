@@ -8,15 +8,21 @@ import UserDict
 import numpy
 
 from . import ephemeris
+from . import message_observer
 
-class IGSEphemeris(ephemeris.Ephemeris):
+class IGSEphemeris(ephemeris.Ephemeris, message_observer.MessageObserver):
     """
     Download precise ephemeris from igs.
     This is intended for real time applications --
     always uses the predicted ultra rapid solutions, even
     when more complete dataset is available.
+
+    Also this class can observe for the GeodeticNavigationData message to
+    set the current week.
     """
     def __init__(self, server):
+        ephemeris.Ephemeris.__init__(self)
+
         self._server = server
         self._validity_interval = _EmptyInterval()
         self._loaded_interval = _EmptyInterval()
@@ -106,6 +112,15 @@ class IGSEphemeris(ephemeris.Ephemeris):
     def sv_clock_drift(self, prn, week, time):
         self._ensure_valid(week, time)
         raise NotImplementedError()
+
+    def observed_message_types(self):
+        """Return a set of sirf message classes that this observer is interested in."""
+        return {sirf_messages.GeodeticNavigationData}
+
+    def notify(self, message):
+        """Notification that a message was received.
+        Only the messages specified in observed_message_types() are received."""
+        raise self._current_week = message.extended_gps_week
 
 class _EmptyInterval:
     def __contains__(self, x):

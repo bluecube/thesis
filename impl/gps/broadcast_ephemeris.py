@@ -11,6 +11,7 @@ class BroadcastEphemeris(ephemeris.Ephemeris, message_observer.MessageObserver):
     Completely ignores the GPS week field.
     """
     def __init__(self):
+        ephemeris.Ephemeris.__init__(self)
         self._sv_states = {}
 
     def sv_pos(self, prn, week, time):

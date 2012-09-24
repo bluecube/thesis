@@ -8,6 +8,7 @@ import UserDict
 import numpy
 
 from . import ephemeris
+from . import sirf_messages
 from . import message_observer
 
 class IGSEphemeris(ephemeris.Ephemeris, message_observer.MessageObserver):
@@ -27,7 +28,7 @@ class IGSEphemeris(ephemeris.Ephemeris, message_observer.MessageObserver):
         self._validity_interval = _EmptyInterval()
         self._loaded_interval = _EmptyInterval()
         self._week = None
-        self._polynomials = {}
+        self._positions = {}
 
     def _ensure_valid(self, week, time):
         """
@@ -81,7 +82,7 @@ class IGSEphemeris(ephemeris.Ephemeris, message_observer.MessageObserver):
                 #poly = numpy.polynomials.polynomials.Polynomial()
                 positions.append(numpy.polyfit(times, values, 12) * multiplier)
 
-            self._positions[prn] = polynomials
+            self._positions[prn] = positions
 
         self._validity_interval = _Interval(rounded_time_2, rounded_time_2 + 2 * 3600)
         self._week = week
@@ -98,16 +99,17 @@ class IGSEphemeris(ephemeris.Ephemeris, message_observer.MessageObserver):
     def sv_pos(self, prn, week, time):
         self._ensure_valid(week, time)
         return numpy.matrix([[
-            numpy.polyval(self._polynomials[prn][i], time) for i in range(3)]])
+            numpy.polyval(self._positions[prn][i], time) for i in range(3)]])
 
     def sv_clock_offset(self, prn, week, time):
         self._ensure_valid(week, time)
-        return numpy.polyval(self._polynomials[prn][3], time)
+        return numpy.polyval(self._positions[prn][3], time)
 
     def sv_velocity(prn, week, time):
         self._ensure_valid(week, time)
-        return numpy.matrix([[
-            numpy.polyval(self._polynomials[prn][i], time) for i in range(3)]])
+        raise NotImplementedError()
+        #return numpy.matrix([[
+        #    numpy.polyval(self._positions[prn][i], time) for i in range(3)]])
 
     def sv_clock_drift(self, prn, week, time):
         self._ensure_valid(week, time)
@@ -120,7 +122,7 @@ class IGSEphemeris(ephemeris.Ephemeris, message_observer.MessageObserver):
     def __call__(self, message):
         """Notification that a message was received.
         Only the messages specified in observed_message_types() are received."""
-        raise self._current_week = message.extended_gps_week
+        self._current_week = message.extended_gps_week
 
 class _EmptyInterval:
     def __contains__(self, x):

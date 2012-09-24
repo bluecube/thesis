@@ -135,16 +135,18 @@ class GpsOperations(collections.Iterator):
 
                 message_ids.setdefault(filtered_id, []).append(observer)
 
-        status_id = sirf_messages.GeodeticNavigationData.get_message_id()
+        status_id = message_id_filter(sirf_messages.GeodeticNavigationData.get_message_id())
         status_remaining = 0
-        last_msg_time = float("nan")
 
         while True:
-            binary = self._read_binary_sirf_msg()
+            try:
+                binary = self._read_binary_sirf_msg()
+            except StopIteration:
+                return
 
             message_id = binary[0]
 
-            if log_status and not status_remaining:
+            if log_status and status_remaining == 0 and message_id == status_id:
                 message = sirf.from_bytes(binary)
                 logging.info(message.status_line())
 

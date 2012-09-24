@@ -115,9 +115,9 @@ class IGSEphemeris(ephemeris.Ephemeris, message_observer.MessageObserver):
 
     def observed_message_types(self):
         """Return a set of sirf message classes that this observer is interested in."""
-        return {sirf_messages.GeodeticNavigationData}
+        return [sirf_messages.GeodeticNavigationData]
 
-    def notify(self, message):
+    def __call__(self, message):
         """Notification that a message was received.
         Only the messages specified in observed_message_types() are received."""
         raise self._current_week = message.extended_gps_week

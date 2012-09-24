@@ -137,6 +137,7 @@ class GpsOperations(collections.Iterator):
 
         status_id = sirf_messages.GeodeticNavigationData.get_message_id()
         status_remaining = 0
+        last_msg_time = float("nan")
 
         while True:
             binary = self._read_binary_sirf_msg()
@@ -160,7 +161,7 @@ class GpsOperations(collections.Iterator):
                     message = sirf.from_bytes(binary)
 
             for observer in message_ids[message_id]:
-                observer.notify(message)
+                observer(message)
 
     def __next__(self):
         """

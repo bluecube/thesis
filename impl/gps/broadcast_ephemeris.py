@@ -33,7 +33,7 @@ class BroadcastEphemeris(ephemeris.Ephemeris, message_observer.MessageObserver):
         return self._sv_states[prn].clock_drift
 
     def observed_message_types(self):
-        return {sirf_messages.NavigationLibrarySVStateData}
+        return [sirf_messages.NavigationLibrarySVStateData]
 
-    def notify(self, message):
+    def __call__(self, message):
         self._sv_states[message.satellite_id] = message

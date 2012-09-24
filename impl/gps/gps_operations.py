@@ -104,7 +104,7 @@ class GpsOperations(collections.Iterator):
 
             last_msg_time = self.last_msg_time
 
-    def loop(self, observers, log_status = 10):
+    def loop(self, observers, log_status = 600):
         """
         Read messages in infinite loop and notify observers.
 
@@ -146,16 +146,17 @@ class GpsOperations(collections.Iterator):
 
             message_id = binary[0]
 
-            if log_status and status_remaining == 0 and message_id == status_id:
+            if log_status and status_remaining <= 0 and message_id == status_id:
                 message = sirf.from_bytes(binary)
-                logging.info(message.status_line())
+                self._logger.info(message.status_line())
 
                 status_remaining = log_status
 
                 if message_id not in message_ids:
                     continue
             else:
-                status_remaining -= 1
+                if message_id == status_id:
+                    status_remaining -= 1
 
                 if message_id not in message_ids:
                     continue

@@ -35,7 +35,7 @@ logging.basicConfig(
 
 arg_parser = argparse.ArgumentParser(
     description="Calculate difference of precise ephemeris and\n"
-    "transmitted orbits.")
+    "broadcast orbits.")
 arg_parser.add_argument('gps')
 arg_parser.add_argument('--hist-resolution', default=0.5, type=float,
     help="Width of the histogram bin.")
@@ -50,13 +50,20 @@ pos_errors = []
 interpolation_distance = []
 
 
-source.loop([
-    broadcast_ephemeris,
-    precise_ephemeris, immediately,
-    #on_use
-    ])
+try:
+    source.loop([
+        broadcast_ephemeris,
+        precise_ephemeris,
+        immediately,
+        #on_use
+        ])
+except KeyboardInterrupt:
+    pass
 
 pos_errors = numpy.array(pos_errors)
+print(pos_errors)
+
+
 print numpy.amax(pos_errors)
 #
 #

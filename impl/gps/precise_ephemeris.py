@@ -6,6 +6,7 @@ import logging
 import subprocess
 import UserDict
 import numpy
+import numpy.polynomial.polynomial
 
 from . import ephemeris
 from . import sirf_messages
@@ -75,12 +76,13 @@ class IGSEphemeris(ephemeris.Ephemeris, message_observer.MessageObserver):
                     dtype=numpy.float)
                 assert len(times) == len(values) == 25
                 if i == 4:
-                    multiplier = 1e-6
+                    values = values * 1e-6
                 else:
-                    multiplier = 1e3
+                    values = values * 1e3
 
-                #poly = numpy.polynomials.polynomials.Polynomial()
-                positions.append(numpy.polyfit(times, values, 12) * multiplier)
+                poly = numpy.polynomial.polynomial.Polynomial.fit(times, values, 12)
+                #poly = numpy.polyfit(times, values, 12) * multiplier
+                positions.append(poly)
 
             self._positions[prn] = positions
 
@@ -99,11 +101,11 @@ class IGSEphemeris(ephemeris.Ephemeris, message_observer.MessageObserver):
     def sv_pos(self, prn, week, time):
         self._ensure_valid(week, time)
         return numpy.matrix([[
-            numpy.polyval(self._positions[prn][i], time) for i in range(3)]])
+            self._positions[prn][i](time) for i in range(3)]])
 
     def sv_clock_offset(self, prn, week, time):
         self._ensure_valid(week, time)
-        return numpy.polyval(self._positions[prn][3], time)
+        return self._positions[prn][3](time)
 
     def sv_velocity(prn, week, time):
         self._ensure_valid(week, time)

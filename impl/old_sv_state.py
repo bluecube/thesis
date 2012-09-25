@@ -3,6 +3,7 @@
 from __future__ import division, print_function, unicode_literals
 
 import gps
+import gps.message_observer
 import logging
 import sys
 import argparse
@@ -23,8 +24,8 @@ logger = logging.getLogger('main')
 logger.setLevel(logging.DEBUG)
 
 arg_parser = argparse.ArgumentParser(
-    description="Calculate the differences between " +
-    "a new position and corrected previous position")
+    description="Calculate the differences between two successive linearizations"
+    "of SV position.")
 arg_parser.add_argument('gps',
     help="Gps port or recording.")
 arg_parser.add_argument('--precision', default=1000, type=int,
@@ -37,31 +38,35 @@ logger.info("Starting.")
 
 last_state = {}
 errors = stats.Stats(arguments.precision)
+interp_distance = stats.Stats(arguments.precision)
+
+@gps.message_observer.message_observer(NavigationLibrarySVStateData)
+def test(msg):
+    if msg.satellite_id in last_state:
+        last = last_state[msg.satellite_id]
+
+        time_diff = msg.gps_time - last.gps_time
+        corrected_pos = last.pos + time_diff * last.v
+
+        pos_diff = corrected_pos - msg.pos
+        distance = math.sqrt(pos_diff * pos_diff.T)
+
+        #if msg.satellite_id == 32:
+        #    print(time_diff, pos_diff, distance)
+
+        if distance < 10:
+        #    print(distance)
+            errors.add(distance)
+            interp_distance.add(time_diff)
+
+    last_state[msg.satellite_id] = msg
 
 try:
-    for msg in x:
-        if not isinstance(msg, NavigationLibrarySVStateData):
-            continue
-
-        if msg.satellite_id in last_state:
-            last = last_state[msg.satellite_id]
-
-            time_diff = msg.gps_time - last.gps_time
-            corrected_pos = last.pos + time_diff * last.v
-
-            pos_diff = corrected_pos - msg.pos
-            distance = math.sqrt(pos_diff * pos_diff.T)
-
-            #if msg.satellite_id == 32:
-            #    print(time_diff, pos_diff, distance)
-
-            if distance < 10:
-                print(distance)
-                errors.add(distance)
-        
-        last_state[msg.satellite_id] = msg
+    x.loop([test])
 except KeyboardInterrupt:
     logger.info("Terminating.")
 
 print("mean error: {}".format(errors.mean()))
 print("maximal error: {}".format(errors.maximum))
+print("mean interpolation distance: {}".format(interp_distance.mean()))
+print("maximal interpolation distance: {}".format(interp_distance.maximum))

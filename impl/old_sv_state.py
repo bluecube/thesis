@@ -40,7 +40,7 @@ last_state = {}
 errors = stats.Stats(arguments.precision)
 interp_distance = stats.Stats(arguments.precision)
 
-@gps.message_observer.message_observer(NavigationLibrarySVStateData)
+@gps.message_observer_decorator(NavigationLibrarySVStateData)
 def test(msg):
     if msg.satellite_id in last_state:
         last = last_state[msg.satellite_id]

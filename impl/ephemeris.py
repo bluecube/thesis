@@ -5,13 +5,13 @@ import logging
 import argparse
 import gps
 import gps.sirf_messages
-import gps.message_observer
+import gps.message_observer_decorator
 
 import pyproj
 import numpy
 import matplotlib.pyplot as plt
 
-@gps.message_observer.message_observer(gps.sirf_messages.NavigationLibrarySVStateData)
+@gps.message_observer_decorator(gps.sirf_messages.NavigationLibrarySVStateData)
 def immediately(message):
     """Compare the SV positions in the time for which the interpolation is calculated
     by sirf."""
@@ -23,7 +23,7 @@ def immediately(message):
     pos_errors.append(precise_ephemeris_pos - message.pos)
 
 
-@gps.message_observer.message_observer(gps.sirf_messages.NavigationLibraryMeasurementData)
+@gps.message_observer_decorator(gps.sirf_messages.NavigationLibraryMeasurementData)
 def on_use(message):
     """Compare the SV positions in the time when pseudorange is transmitted"""
     pass

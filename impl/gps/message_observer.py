@@ -12,7 +12,7 @@ class MessageObserver:
         """
         raise NotImplementedError()
 
-def message_observer(*observed_message_types):
+def message_observer_decorator(*observed_message_types):
     """Decorator, that turns a ordinary function into an observer."""
     def decorate(func):
         func.observed_message_types = lambda: set(observed_message_types)

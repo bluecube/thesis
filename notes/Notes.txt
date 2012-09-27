@@ -29,6 +29,10 @@ Elevation angle cutoff (10deg ?)
 ===== SiRF carrier frequency =====
 Corrected Carrier Frequency (m/s) = Reported Carrier Frequency (m/s) – Clock Drift (Hz)*C / 1575420000 Hz.
 
+Doppler frequency / Carrier frequency = Velocity / Speed of light
+Note that the computed Doppler frequency contains a bias equal to the current clock drift as reported in Message ID 7. This
+bias, nominally 96.250 kHz, is equivalent to over 18 km/s.
+
 **http://www.gpspassion.com/forumsen/topic.asp?TOPIC_ID=7685#70279   !!!! important**
 
 

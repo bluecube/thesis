@@ -38,3 +38,12 @@ class Ephemeris(object):
         This version uses the current week."""
         return self.sv_clock_drift(prn, self._current_week, time)
 
+    def sv_time_to_sys_time(self, prn, sv_time):
+        """Convert between time frames on the satellite and the system time
+        based on the clock SV clock offset.
+        This is used mainly for transmission times.
+
+        This means finding roots of
+        sys_time + sv_clock_offset(sys_time) - sv_time = 0
+        Easy peasy."""
+        raise NotImplementedError()

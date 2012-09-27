@@ -22,7 +22,7 @@ class BroadcastEphemeris(ephemeris.Ephemeris, message_observer.MessageObserver):
     def sv_clock_offset(self, prn, week, time):
         """Return SV clock offset."""
         state = self._sv_states[prn]
-        return state.clock_offset + (time - state.gps_time) * state.clock_drift
+        return state.clock_bias + (time - state.gps_time) * state.clock_drift
 
     def sv_velocity(self, prn, week, time):
         """Return numpy matrix with SV velocity."""

@@ -242,14 +242,18 @@ converted to system time by subtracting their clock offsets:
 	\label{eq:pseudorange2}
 	\rho = \speedoflight (\sysrxtime - \systxtime) + \speedoflight (\recclockoffset - \svclockoffset)
 \end{equation}
-The real range can be described using the transmit and receive times:
+It should be noted that the clock offsets change in time, and that \(\recclockoffset\) is receiver clock
+offset in the time of receive and \(\svclockoffset\) applies to the time of transmission.
+
+Real geometric range \(\geomrange\) can be described using the transmit and receive times:
 \begin{equation}
 	\geomrange + \speedoflight\geomrangedelays = \speedoflight (\sysrxtime - \systxtime)
 \end{equation}
 where \(\geomrangedelays\) are delays of the signal propagation.
-This can be substituted into \eqref{eq:pseudorange2}, giving us
+Together with \eqref{eq:pseudorange2}, the previous equation gives us
+the basic equation for determining geometric distance from pseudorange measurements:
 \begin{equation}
-	\rho = \geomrange + \speedoflight\geomrangedelays + \speedoflight (\recclockoffset - \svclockoffset)
+	\geomrange + \speedoflight\geomrangedelays = \rho - \speedoflight (\recclockoffset - \svclockoffset)
 \end{equation}
 
 %\begin{equation}
@@ -262,7 +266,7 @@ Figure \ref{fig:pseudorange} summarizes relations between times in a single pseu
 \subsection{Position}
 
 If the position of satellites \(\svpos_i = \coord{x_{\mathrm{SV}i}}{y_{\mathrm{SV}i}}{z_{\mathrm{SV}i}}\) and satellite
-clock offsets \(\svclockoffset_i\) are known,
+clock offsets \(\svclockoffset_i\) at time of transmission are known,
 calculating receiver position from the pseudorange measurements means solving a set of non-linear equations
 \begin{equation}
 	\sqrt{(x_\REC - x_{{\SV}i})^2 + (y_\REC - y_{{\SV}i})^2 +(z_\REC - z_{{\SV}i})^2} +

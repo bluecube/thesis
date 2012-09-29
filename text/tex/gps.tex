@@ -419,30 +419,40 @@ together with receiver clock delay.
 \begin{figure}[t]
 	\centering
 	\input{img/multipath.pdf_tex}
-	\caption{Schematic of multipath error.}
+	\caption{Multipath and shadowing.}
 	\label{fig:multipath}
 \end{figure}
 
 Multipath errors arise when the signal from satellite reaches the receiver
 through multiple paths of different length.
-They are typically caused by buildings surrounding the receiver position or
-when including satellites with low elevation angle (close to the horizon).
+They are typically caused by buildings surrounding the receiver position,
+reflective surfaces surrounding the antenna (e.g. wings in aircraft mounted GPS) or earth surface
+when including satellites with low elevation angle.
 
-An illustration of this effect is shown in \autoref{fig:multipath}.
-Here a signal drawn in green follows a direct path from the satellite to the receiver
-and the red signal is reflected from a building and the path it travels is longer.
+An illustration of this effect and of shadowing is shown in \autoref{fig:multipath}.
+Signal drawn in green follows a direct path from the satellite to the receiver and is shadowed,
+and red multipath signal is reflected from a building, making its travelled path longer.
 
-GPS receivers attempt to fix this error by ignoring delayed signals with a PRN that has already been
-detected, but efficiency of this approach is limited.
-For example in case when only the reflected signals are available or when the direct signal is shadowed.
+If the signal following the direct path is received, GPS receivers can easily detect and remove large delays caused by multipath.
+A more problematic case arises when the multipath delay is relatively small, because this distorts
+receiver's attempts to correlate the received signal with the internal reference signal.
 
-Multipath errors can be mitigated with better antenna design and better signal processing in receivers.
-When used for navigation, satellites may be dropped from the solution if the elevation angle
+Shadowing is another phenomenon related to multipath, caused by the signal passing through obstacles, like buildings or foliage.
+Shadowing combined with multipath affects relative received power of direct and multipath signals, in extreme cases
+even causing the multipath to be the only received signal from given satellite.
+
+Multipath errors can be mitigated with hardware modifications, like antenna designs that suppress signals from suspicious angles,
+better antenna placement or coating nearby reflective surfaces with RF absorptive materials.
+Another option is to employ better signal processing in receivers.
+
+When only complete measurements are available (as is be the case in the implementation part of this thesis),
+satellites may be dropped from the solution if the elevation angle
 is too low to avoid this kind of errors.
 More involved method of dealing with multipath errors is described in \cite{viandier08},
 where the error model of a satellite measurement is modified if it is suspected to be corrupted
 by multipath error.
 
+Section 6.3 of \cite{kaplan06} contains detailed discussion of multipath.
 
 \subsubsection{Atmospheric Delays}
 

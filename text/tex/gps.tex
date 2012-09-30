@@ -264,6 +264,7 @@ the basic equation for determining geometric distance from pseudorange measureme
 Figure \ref{fig:pseudorange} summarizes relations between times in a single pseudorange measurement.
 
 \subsection{Position}
+\label{sec:gps-position}
 
 If the position of satellites \(\svpos_i = \coord{x_{\mathrm{SV}i}}{y_{\mathrm{SV}i}}{z_{\mathrm{SV}i}}\) and satellite
 clock offsets \(\svclockoffset_i\) at time of transmission are known,
@@ -491,15 +492,70 @@ at the expense of requiring internet connection during operation.
 
 Dilution of precision (DOP) is a value that describes the effects of satellite geometry
 on the precision of calculated fix.
+There are several types of dilution of precision, specifying errors in different directions.
+These are PDOP (position in all directions), HDOP (horizontal error), VDOP (vertical error)
+or TDOP (time error).
 
 In theory standard deviation of the completed fix should have a linear dependency on
-UERE and DOP, but since the ionospheric errors are correlated, the real position error is
-typically slightly lower.
-his can be seen in \autoref{fig:wgs84_hdop_error}.
-\todo{Expand, add math}
+UERE and DOP (see equation \eqref{eq:dop-def}), but real position error is typically slightly lower,
+since the ionospheric errors are correlated.
+Measured dependence of position error on HDOP is in \autoref{fig:wgs84_hdop_error}.
+
+\subsubsection{Definition}
+\todo{Should I add more detail to the definition?}
+Formal definition of DOP values is based on linearization of pseudorange equations
+in \autoref{sec:gps-position}:
+\begin{equation}
+	\label{eq:dop1}
+	\vect{H}\vect{\Delta x} = \vect{\Delta \rho}
+\end{equation}
+Here \(\vect{H}\) is a matrix of unit vectors pointing from linearization point
+to the satellites, \(\vect{\Delta \rho}\) is a vector containing difference between
+pseudoranges in linearization point and the real measured pseudoranges and finally
+\(\vect{\Delta x}\) is a vector describing the offset of receiver position from the
+linearization point.
+To simplify the final definitions of DOP values, all calculations here are performed
+in a local reference frame with the \(z\) axis pointing up from the linearization point.
+
+Equation \eqref{eq:dop1} is solved for \(\vect{\Delta x}\) using least squares and
+as a next step, pseudorange and position errors are taken into account.
+This yields an expression relating position error on pseudorange error.
+\begin{equation}
+	\vect{\delta x} = (\vect{H}^T \vect{H})^{-1} \vect{H}^T \vect{\delta \rho}
+\end{equation}
+Where \(\vect{\delta x}\) and \(\vect{\delta \rho}\) are position error and pseudorange errors.
+
+As a next step, pseudorange and position errors are taken into account and after
+some modifications relations between position and pseudorange error are expressed.
+All pseudorange errors are assumed to be independent, Gaussian and identically distributed.
+
+Covariance matrix of \(\vect{\delta x}\) can then be expressed as
+\begin{equation}
+	\cov(\vect{\delta x}) =
+		(\vect{H}^T \vect{H})^{-1} \sigma^2_\UERE =
+		\begin{pmatrix}
+			\sigma^2_{x}  & \sigma^2_{xy} & \sigma^2_{xz} & \sigma^2_{xt} \\
+			\sigma^2_{xy} & \sigma^2_{y}  & \sigma^2_{yz} & \sigma^2_{yt} \\
+			\sigma^2_{xz} & \sigma^2_{yz} & \sigma^2_{z}  & \sigma^2_{zt} \\
+			\sigma^2_{xt} & \sigma^2_{yt} & \sigma^2_{zt} & \sigma^2_{t}
+		\end{pmatrix}
+\end{equation}
+The covariance matrix only depends on satellite geometry as described by \(\vect{H}\) and UERE.
+
+DOP values are defined as follows:
+\begin{subequations}
+	\label{eq:dop-def}
+\begin{align}
+	\sqrt{\sigma^2_x + \sigma^2_y + \sigma^2_z} &= \mathrm{PDOP} \sigma_\UERE \\
+	\sqrt{\sigma^2_x + \sigma^2_y} &= \HDOP \sigma_\UERE \\
+	\sqrt{\sigma^2_z} &= \mathrm{VDOP} \sigma_\UERE \\
+	\sqrt{\sigma^2_t} / \speedoflight &= \mathrm{TDOP} \sigma_\UERE
+\end{align}
+\end{subequations}
+
 
 \section{Kalman Filters}
-Kalman filters are often used in the GPS receivers to merge past
+\todo{Do we need this section?}Kalman filters are often used in the GPS receivers to merge past
 data with incoming measurements or to combine the GPS position and velocity
 estimation with another source of measurements, for example inertial data.
 

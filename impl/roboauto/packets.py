@@ -1,4 +1,6 @@
 from __future__ import division
+import time
+import calendar
 
 import named_unpacker
 
@@ -33,10 +35,13 @@ class _PacketBase(object):
 
 
 class GPSMeasurement(_PacketBase):
+    """Fields of this class basically follow the packet format,
+    only utc_extended is added which turns the time-only (and kinda weird) field UTC
+    to regular Unix timestamp."""
     packer = named_unpacker.NamedUnpacker('<', [
         ('Q', 'timestamp', 1000),
         ('B', 'sat_in_view'),
-        ('Q', 'utc', 1000),
+        ('q', 'utc', 1000),
         ('?', 'gps_fix'),
         ('i', 'lat', 10000000),
         ('i', 'lon', 10000000),
@@ -50,7 +55,26 @@ class GPSMeasurement(_PacketBase):
 
     @classmethod
     def from_bytes(cls, data):
-        return cls(cls.packer.unpack(data))
+        unpacked = cls.packer.unpack(data)
+
+        utc = unpacked['utc']
+        # UTC is a negative number, the funny things happen because utc time is stored
+        # as delphi time and converted to unix timestamp as date-time 
+
+        # The first step is to remove the offset
+        utc += 25569 * 24 * 3600
+
+        # Then we take date from the timestamp
+        gmtime = time.gmtime(unpacked['timestamp'])
+
+        # ... and add it to the time of day value that we already have
+        utc += calendar.timegm((gmtime.tm_year, gmtime.tm_mon, gmtime.tm_mday, 0, 0, 0))
+
+
+        unpacked['utc_extended'] = utc
+
+
+        return cls(unpacked)
 
 
 class OdometerMeasurement(_PacketBase):

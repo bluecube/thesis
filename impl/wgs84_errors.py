@@ -95,9 +95,9 @@ hdop_drms_poly = numpy.polynomial.polynomial.Polynomial.fit(
     hdop_drms,
     deg=arguments.polynomial_degree,
     w=hdop_weight)
-#hdop_drms_linear = numpy.sum(hdop * dist) / numpy.sum(hdop*hdop)
-print("Fitted polynomial: {}".format(hdop_drms_poly))
-#print("Fitted Error(HDOP = 1): {}".format(hdop_error_linear))
+hdop_drms_linear = numpy.sum(used_hdop * hdop_drms * hdop_weight) / numpy.sum(used_hdop * used_hdop * hdop_weight)
+print("Fitted polynomial: {}".format(hdop_drms_poly.convert()))
+print("Fitted linear model: {}".format(hdop_drms_linear))
 
 logging.info("Done")
 
@@ -131,7 +131,7 @@ hdop_plot.scatter(used_hdop, hdop_drms, c='y', label="drms for HDOP")
 
 x = numpy.linspace(0, numpy.max(used_hdop))
 hdop_plot.plot(x, hdop_drms_poly(x), c='r', label="Fitted polynomial")
-#hdop_plot.plot(x, hdop_error_linear * x, c='g', label="Fitted linear model")
+hdop_plot.plot(x, hdop_drms_linear * x, c='g', label="Fitted linear model")
 hdop_plot.set_xlabel('HDOP')
 hdop_plot.set_ylabel('Error [m]')
 hdop_plot.legend().get_frame().set_alpha(0.75)

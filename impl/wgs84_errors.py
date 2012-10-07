@@ -65,15 +65,11 @@ logging.info("Done")
 
 logging.info("HDOP statistics")
 used_hdop = numpy.unique(hdop)
-#hdop_mean_error = numpy.empty_like(used_hdop)
 hdop_drms = numpy.empty_like(used_hdop)
 hdop_weight = numpy.empty_like(used_hdop)
 
 for i, current_hdop in enumerate(used_hdop):
     mask = (hdop != current_hdop)
-
-    #masked_dist = numpy.ma.array(dist, mask = mask)
-    #hdop_mean_error[i] = numpy.ma.mean(masked_dist)
 
     masked_dist_squared = numpy.ma.array(dist_squared, mask = mask)
     hdop_drms[i] = numpy.ma.mean(masked_dist_squared)
@@ -125,7 +121,6 @@ else:
 hdop_plot = fig2.add_subplot(1, 1, 1)
 hdop_plot.scatter(hdop[::plot_step], dist[::plot_step], marker='.',
     s=40, alpha=0.5, edgecolors='none', label="Measured data", rasterized=True)
-#hdop_plot.scatter(used_hdop, hdop_mean_error, c='b', label="Mean error for HDOP")
 hdop_plot.scatter(used_hdop, hdop_drms, c='y', label="drms for HDOP")
 
 x = numpy.linspace(0, numpy.max(used_hdop), num = 200)

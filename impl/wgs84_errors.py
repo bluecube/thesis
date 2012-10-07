@@ -3,6 +3,7 @@
 from __future__ import division
 
 import matplotlib_settings
+import wgs84_fixes_to_numpy
 
 import math
 import logging
@@ -21,8 +22,8 @@ logging.basicConfig(
 arg_parser = argparse.ArgumentParser(
     description="Calculate WGS84 errors.\n"
     "Assumes that the receiver was stationary during whole recording.")
-arg_parser.add_argument('gps',
-    help="A recording of SiRF messages.")
+arg_parser.add_argument('source',
+    help="A recording of SiRF messages or saved numpy array (*.npy).")
 arg_parser.add_argument('--polynomial-degree', default=4, type=int,
     help="Degree of interpolation polynomial.")
 arg_parser.add_argument('--hist-resolution', default=0.5, type=float,
@@ -43,15 +44,11 @@ arg_parser.add_argument('--max-plot-error', type=float,
     help="Don't plot hdop errors larger than this.")
 arguments = arg_parser.parse_args()
 
-source = gps.open_gps(arguments.gps)
+try:
+    fixes = numpy.load(arguments.source)
+except IOError:
+    fixes = wgs84_fixes_to_numpy.fixes_to_numpy(arguments.source)
 
-logging.info("Retrieving fixes")
-fixes = numpy.fromiter(
-    (
-        (msg.latitude, msg.longitude, msg.hdop)
-        for msg in source.filtered_messages([gps.sirf_messages.GeodeticNavigationData])
-    ),
-    dtype=[('lat', numpy.float), ('lon', numpy.float), ('hdop', numpy.float)])
 hdop = fixes['hdop']
 logging.info("Done. Have %i fixes", len(fixes))
 

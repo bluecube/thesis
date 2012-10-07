@@ -129,7 +129,7 @@ hdop_plot.scatter(hdop[::plot_step], dist[::plot_step], marker='.',
 #hdop_plot.scatter(used_hdop, hdop_mean_error, c='b', label="Mean error for HDOP")
 hdop_plot.scatter(used_hdop, hdop_drms, c='y', label="drms for HDOP")
 
-x = numpy.linspace(0, numpy.max(used_hdop))
+x = numpy.linspace(0, numpy.max(used_hdop), num = 200)
 hdop_plot.plot(x, hdop_drms_poly(x), c='r', label="Fitted polynomial")
 hdop_plot.plot(x, hdop_drms_linear * x, c='g', label="Fitted linear model")
 hdop_plot.set_xlabel('HDOP')

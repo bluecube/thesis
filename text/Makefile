@@ -31,7 +31,7 @@ view: all
 	ps2pdf -dEPSCrop $^ $@
 
 %.pdf_tex: %.svg
-	inkscape -f$^ --export-pdf=$*.pdf --export-latex
+	inkscape -f$^ --export-pdf=$*.pdf --export-latex --export-use-hints
 
 .INTERMEDIATE: %.1
 

@@ -6,6 +6,7 @@ from .gps_replay import GpsReplay
 from .precise_ephemeris import IGSEphemeris
 from .broadcast_ephemeris import BroadcastEphemeris
 from .message_observer import MessageObserver
+from .message_observer import MessageCollector
 from .message_observer import message_observer_decorator
 
 

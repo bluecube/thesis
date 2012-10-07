@@ -121,7 +121,7 @@ else:
 hdop_plot = fig2.add_subplot(1, 1, 1)
 hdop_plot.scatter(hdop[::plot_step], dist[::plot_step], marker='.',
     s=40, alpha=0.5, edgecolors='none', label="Measured data", rasterized=True)
-hdop_plot.scatter(used_hdop, hdop_drms, c='y', label="drms for HDOP")
+hdop_plot.scatter(used_hdop, hdop_drms, c='y', label="DRMS")
 
 x = numpy.linspace(0, numpy.max(used_hdop), num = 200)
 hdop_plot.plot(x, hdop_drms_linear * x, c='g', label="Fitted linear model")
@@ -137,7 +137,7 @@ margin = max_plot_error * xmargin
 hdop_plot.set_ylim([- margin, max_plot_error + margin])
 
 count_inside = sum((hdop <= max_plot_hdop) & (dist <= max_plot_error))
-print("{:.2%} % is in the area {}x{}".format(count_inside / len(dist), max_plot_hdop, max_plot_error))
+print("{:.2%} is in the area {}x{}".format(count_inside / len(dist), max_plot_hdop, max_plot_error))
 
 if arguments.save_hdop_plot is not None:
     fig2.savefig(arguments.save_hdop_plot)

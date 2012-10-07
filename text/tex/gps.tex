@@ -553,6 +553,26 @@ DOP values are defined as follows:
 \end{align}
 \end{subequations}
 
+\subsubsection{DRMS}
+Distance root mean square is an accuracy metric somewhat similar to
+standard deviation of a distribution.
+It is a single value describing the accuracy of a 2D position fix.
+
+DRMS is defined as
+\begin{equation}
+	\mathrm{DRMS} = \sqrt{E(\norm{\vect{\delta R}}^2)}
+\end{equation}
+where \(\vect{\delta R}\) is a horizontal component of the position error.
+
+Theoretically DRMS can be obtained from HDOP values:
+\begin{equation}
+	\mathrm{DRMS} = \HDOP \sigma_\UERE
+\end{equation}
+but in practice the dependence is not linear (see \autoref{sec:wgs84_hdop_error}
+and \autoref{fig:wgs84_hdop_error}).
+
+\(2 \times \mathrm{DRMS}\) is often used as an approximation for a radius containing
+\SI{95}{\percent} of measurements.
 
 \section{Kalman Filters}
 \todo{Do we need this section?}Kalman filters are often used in the GPS receivers to merge past

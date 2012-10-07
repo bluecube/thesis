@@ -11,6 +11,7 @@ import argparse
 import gps
 import pyproj
 import numpy
+import scipy.optimize
 import matplotlib.pyplot as plt
 import mpl_toolkits.mplot3d
 
@@ -24,8 +25,6 @@ arg_parser = argparse.ArgumentParser(
     "Assumes that the receiver was stationary during whole recording.")
 arg_parser.add_argument('source',
     help="A recording of SiRF messages or saved numpy array (*.npy).")
-arg_parser.add_argument('--polynomial-degree', default=4, type=int,
-    help="Degree of interpolation polynomial.")
 arg_parser.add_argument('--hist-resolution', default=0.5, type=float,
     help="Width of the histogram bin.")
 arg_parser.add_argument('--plotted-sample-count', default=5000, type=int,
@@ -90,14 +89,14 @@ hist, error_bins, hdop_bins = numpy.histogram2d(
     )
     )
 
-hdop_drms_poly = numpy.polynomial.polynomial.Polynomial.fit(
-    used_hdop,
-    hdop_drms,
-    deg=arguments.polynomial_degree,
-    w=hdop_weight)
+def goal_func(params):
+    ret = hdop_drms - numpy.sqrt((params[0] * used_hdop)**2 + params[1]**2)
+    return ret * numpy.sqrt(hdop_weight)
+
+hdop_drms_nonlinear, _ = scipy.optimize.leastsq(goal_func, (1, 1))
 hdop_drms_linear = numpy.sum(used_hdop * hdop_drms * hdop_weight) / numpy.sum(used_hdop * used_hdop * hdop_weight)
-print("Fitted polynomial: {}".format(hdop_drms_poly.convert()))
-print("Fitted linear model: {}".format(hdop_drms_linear))
+print("Fitted linear model: {} * HDOP".format(hdop_drms_linear))
+print("Fitted non linear model: sqrt(({} * HDOP)**2 + {}**2)".format(*hdop_drms_nonlinear))
 
 logging.info("Done")
 
@@ -130,8 +129,8 @@ hdop_plot.scatter(hdop[::plot_step], dist[::plot_step], marker='.',
 hdop_plot.scatter(used_hdop, hdop_drms, c='y', label="drms for HDOP")
 
 x = numpy.linspace(0, numpy.max(used_hdop), num = 200)
-hdop_plot.plot(x, hdop_drms_poly(x), c='r', label="Fitted polynomial")
 hdop_plot.plot(x, hdop_drms_linear * x, c='g', label="Fitted linear model")
+hdop_plot.plot(x, numpy.sqrt((hdop_drms_nonlinear[0] * x)**2 + hdop_drms_nonlinear[1]**2), c='r', label="Fitted non-linear model")
 hdop_plot.set_xlabel('HDOP')
 hdop_plot.set_ylabel('Error [m]')
 hdop_plot.legend().get_frame().set_alpha(0.75)

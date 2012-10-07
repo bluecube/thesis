@@ -21,6 +21,7 @@ This approach has the advantage of being very simple
 \end{itemize}
 
 \subsection{Sensor Model}
+\label{sec:wgs84_hdop_error}
 
 \begin{figure}[htp]
 	\centering
@@ -28,43 +29,54 @@ This approach has the advantage of being very simple
 	\caption{Measurement errors vs. HDOP.}
 	\label{fig:wgs84_hdop_error}
 
-	% cube@duskwalker ~/diplomka/impl $ ./wgs84_errors.py recordings/month.recording2 --max-plot-hdop 6 --max-plot-error 25 --no-show --save-hdop-plot ../text/img/wgs84_hdop_error.svg 
+	% cube@duskwalker ~/diplomka/impl $ ./wgs84_errors.py --no-show --plotted-sample-count 10000 --max-plot-hdop 4 --max-plot-error 20 --save-hdop-plot ../text/img/wgs84_hdop_error.svg recordings/processed_numpy_arrays/month_wgs84.npy 
 	% /usr/lib/python2.7/site-packages/mpl_toolkits/__init__.py:2: UserWarning: Module argparse was already imported from /usr/lib/python2.7/argparse.pyc, but /usr/lib/python2.7/site-packages is being added to sys.path
 	%   __import__('pkg_resources').declare_namespace(__name__)
-	% 2012-08-02 09:25:10,025 - root - INFO - Retrieving fixes
-	% 2012-08-02 10:22:03,807 - root - INFO - Done. Have 2363458 fixes
-	% 2012-08-02 10:22:03,808 - root - INFO - Projecting
-	% 2012-08-02 10:22:04,645 - root - INFO - Done
-	% 2012-08-02 10:22:04,645 - root - INFO - Calculating distances
-	% 2012-08-02 10:22:04,802 - root - INFO - Done
-	% 2012-08-02 10:22:04,802 - root - INFO - HDOP statistics
-	% Fitted polynomial: poly([ 21.61432911  11.82821964  -4.19552521   1.80325531])
-	% Fitted Error(HDOP = 1): 5.22782179741
-	% 2012-08-02 10:22:12,491 - root - INFO - Done
-	% Scatter plots will only use 1/472 samples
-	% 99.89% % is in the area 6.0x25.0
-	% 2012-08-02 10:23:12,397 - root - INFO - Saved ../text/img/wgs84_hdop_error.svg
+	% 2012-10-07 23:51:44,958 - root - INFO - Done. Have 2363458 fixes
+	% 2012-10-07 23:51:44,958 - root - INFO - Projecting
+	% 2012-10-07 23:51:45,803 - root - INFO - Done
+	% 2012-10-07 23:51:45,804 - root - INFO - Calculating distances
+	% 2012-10-07 23:51:46,090 - root - INFO - Done
+	% 2012-10-07 23:51:46,090 - root - INFO - HDOP statistics
+	% Fitted linear model: 6.25518909128 * HDOP
+	% Fitted non linear model: sqrt((4.94140672924 * HDOP)**2 + 3.5682895544**2)
+	% 2012-10-07 23:51:52,734 - root - INFO - Done
+	% Scatter plots will only use 1/236 samples
+	% 99.66% is in the area 4.0x20.0
+	% 2012-10-07 23:52:59,803 - root - INFO - Saved ../text/img/wgs84_hdop_error.svg
+
 \end{figure}
 
 For modelling the error we basically follow \cite{www-wilson}.
 
-Distance between the real receiver position and the reported position is modelled using Rayleigh distribution
+Horizontal component of the position error  \(\vect{\delta R}\) is modelled using Rayleigh distribution
 parameterized with HDOP of the measurement:
 \begin{equation}
-	\Prob(\norm{\vect{p_\mathrm{R}} - \vect{p'_\mathrm{R}}} < x \mid \HDOP) =
+	\Prob(\norm{\vect{\delta R}} < x \mid \HDOP) =
 		1 - e^{-x^2/2\sigma(\HDOP)^2}
 \end{equation}
-Here \(\vect{p_\mathrm{R}}\) is the real receiver position and \(\vect{p'_\mathrm{R}}\)
-the noisy reported position.
 
-The parameter \(\sigma(\HDOP)\) of the Rayleigh distribution is chosen to make the
-mean value of the distribution fit mean value of experimental data.
-Theoretically, mean error should be equal to \(\HDOP\) times \(\UERE\) (see \autoref{sec:gps-errors}),
-but in practice it is not linear.
-In figure \ref{fig:wgs84_hdop_error} green line shows fitting of the theoretical linear model and
-red curve is the fitted polynomial \(\num{21.61432911}x^3 + \num{11.82821964}x^2 - 
-\num{4.19552521}x + \num{1.80325531}\).
-Measured data are represented by blue dots and yellow dots show the mean for each HDOP value.
+Parameter \(\sigma(\HDOP)\) of the distribution is chosen to fit the DRMS values using a maximum likehood estimate
+\begin{equation}
+	\sigma = \frac{\mathrm{DRMS}}{\sqrt{2}}
+\end{equation}
+
+\autoref{fig:wgs84_hdop_error} plots position error versus HDOP value.
+Blue dots represent the measured data, yellow dots the DRMS values.
+Green line is the fitted theoretical linear model
+\begin{equation}
+\mathrm{DRMS}(\HDOP) = \num{6.255} \HDOP
+\end{equation}
+and red curve is the fitted non linear model from \cite{www-wilson}
+\begin{equation}
+\mathrm{DRMS}(\HDOP) = \sqrt{(\num{4.941}\HDOP)^2 + \num{3.568}^2})\
+\end{equation}
+Both of these models were fitted to the data using least squares weighted with counts of samples
+for each HDOP.
+
+Limited resolution of the HDOP values in input data is visible in the plot.
+
+Another interesting fact is, that only relatively low HDOP values were encountered.\todo{Expand, add graph, compare with data from roboauto}
 
 A problem that is hard to avoid with this approach is that position errors of the
 receiver output are correlated.
@@ -77,6 +89,7 @@ the problem. \todo{Or not.}
 
 \section{Measurement Domain Integration}
 \label{sec:measurement_domain}
+
 \begin{itemize}
 \item Using each pseudorange measurement
 \item Maybe better localization, no assumptions about vehicle properties

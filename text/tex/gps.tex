@@ -568,8 +568,14 @@ Theoretically DRMS can be obtained from HDOP values:
 \begin{equation}
 	\mathrm{DRMS} = \HDOP \sigma_\UERE
 \end{equation}
-but in practice the dependence is not linear (see \autoref{sec:wgs84_hdop_error}
-and \autoref{fig:wgs84_hdop_error}).
+
+\cite{www-wilson} offers an alternative expression for obtaining
+DRMS from HDOP:
+\begin{equation}
+	\mathrm{DRMS} = \sqrt{(a \HDOP)^2 + b^2)}
+\end{equation}
+with \(a\) and \(b\) are parameters that are fitted to measured data.
+In \autoref{sec:wgs84_hdop_error} we show how this expression fits our experimental data.
 
 \(2 \times \mathrm{DRMS}\) is often used as an approximation for a radius containing
 \SI{95}{\percent} of measurements.

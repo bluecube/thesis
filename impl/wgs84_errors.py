@@ -25,16 +25,12 @@ arg_parser = argparse.ArgumentParser(
     "Assumes that the receiver was stationary during whole recording.")
 arg_parser.add_argument('source',
     help="A recording of SiRF messages or saved numpy array (*.npy).")
-arg_parser.add_argument('--hist-resolution', default=0.5, type=float,
-    help="Width of the histogram bin.")
 arg_parser.add_argument('--plotted-sample-count', default=5000, type=int,
     help="Number of samples that will be plotted in the scatter plots.")
 arg_parser.add_argument('--save-hdop-plot', default=None, type=str,
     help="Where to save the HDOP plot.")
 arg_parser.add_argument('--save-fixes-plot', default=None, type=str,
     help="Where to save the fixes plot.")
-arg_parser.add_argument('--save-hist-plot', default=None, type=str,
-    help="Where to save the histogram plot.")
 arg_parser.add_argument('--no-show', action='store_true',
     help="Don't show the plots, only save them.")
 arg_parser.add_argument('--max-plot-hdop', type=float,
@@ -73,14 +69,6 @@ for i, current_hdop in enumerate(used_hdop):
     hdop_weight[i] = numpy.ma.count(masked_dist_squared)
 
 hdop_drms = numpy.sqrt(hdop_drms)
-
-hist, error_bins, hdop_bins = numpy.histogram2d(
-    dist, hdop,
-    (
-        (numpy.max(dist) - numpy.min(dist)) / arguments.hist_resolution,
-        (numpy.max(hdop) - numpy.min(hdop)) / 0.2
-    )
-    )
 
 def goal_func(params):
     ret = hdop_drms - numpy.sqrt((params[0] * used_hdop)**2 + params[1]**2)
@@ -139,19 +127,6 @@ print("{:.2%} is in the area {}x{}".format(count_inside / len(dist), max_plot_hd
 if arguments.save_hdop_plot is not None:
     fig2.savefig(arguments.save_hdop_plot)
     logging.info("Saved %s", arguments.save_hdop_plot)
-
-#fig3 = plt.figure()
-#hist_plot = fig3.add_subplot(1, 1, 1, projection='3d')
-#
-#max_hdop = numpy.max(hdop)
-#for i, current_hdop in enumerate(hdop_bins[:-1]):
-#    c = 'red' if i % 2 else 'blue'
-#    hist_plot.bar(error_bins[:-1], hist[:,i], current_hdop, zdir='y', color = c, 
-#        width = arguments.hist_resolution, alpha=0.75)
-#
-#hist_plot.set_xlabel('Error [m]')
-#hist_plot.set_ylabel('HDOP')
-#hist_plot.set_zlabel('Count')
 
 if not arguments.no_show:
     plt.show()

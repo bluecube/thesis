@@ -1,7 +1,6 @@
 import gzip
 import time
 
-from . import open_gps
 from . import gps_replay
 
 class GpsSaver:
@@ -17,16 +16,11 @@ class GpsSaver:
         self._write_number(len(b))
         self._f.write(b)
 
-    def __init__(self, source_file, target_file):
-        self._source = open_gps(source_file)
+    def __init__(self, target_file):
         self._f = gzip.open(target_file, 'wb')
+        self._last_msg_time = None
+        self._sirf_version_string = None
 
-        if isinstance(self._source, gps_replay.GpsReplay):
-            self._write_number(self._source.start_time)
-        else:
-            self._write_number(time.time())
-
-        self._write_bytes(self._source._sirf_version_string.encode('ascii'))
 
     def close(self):
         self._f.close()
@@ -40,6 +34,33 @@ class GpsSaver:
         self._write_bytes(msg)
         self._write_number(self._source.last_msg_time)
         return msg
+
+    def init_source(self, source):
+        """Try to open a new source.
+        Checks if message timestamps and versions are OK
+        and raises an exception if they are not.
+        This must be called before messages are saved."""
+
+        if isinstance(source, gps_replay.GpsReplay):
+            new_start_time = source.start_time
+        else:
+            new_start_time = time.time()
+
+        if self._sirf_version_string is None:
+            assert self._last_msg_time is None
+
+            self._write_number(new_start_time)
+            self._write_bytes(source._sirf_version_string.encode('ascii'))
+
+            self._last_msg_time = new_start_time
+            self._sirf_version_string = source._sirf_version_string
+        else:
+            if source.start_time < self._last_msg_time:
+                raise Exception("The new source has recording time in the past.")
+            if self._sirf_version_string != source._sirf_version_string:
+                raise Exception("Version strings do not match!")
+
+        self._source = source
 
     def save_all(self):
         """

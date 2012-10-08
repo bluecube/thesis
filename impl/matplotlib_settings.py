@@ -20,3 +20,5 @@ m.rcParams['figure.subplot.top'] = 1
 m.rcParams['figure.subplot.bottom'] = 0.10
 
 m.rcParams['axes.grid'] = True
+
+margins = 0.02

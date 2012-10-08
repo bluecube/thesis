@@ -115,10 +115,9 @@ hdop_plot.set_xlabel('HDOP')
 hdop_plot.set_ylabel('Error [m]')
 hdop_plot.legend().get_frame().set_alpha(0.75)
 
-xmargin, ymargin = hdop_plot.margins()
-margin = max_plot_hdop * xmargin
+margin = max_plot_hdop * matplotlib_settings.margins
 hdop_plot.set_xlim([- margin, max_plot_hdop + margin])
-margin = max_plot_error * xmargin
+margin = max_plot_error * matplotlib_settings.margins
 hdop_plot.set_ylim([- margin, max_plot_error + margin])
 
 count_inside = sum((hdop <= max_plot_hdop) & (dist <= max_plot_error))

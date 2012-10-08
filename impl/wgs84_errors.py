@@ -43,10 +43,7 @@ arg_parser.add_argument('--max-plot-error', type=float,
     help="Don't plot hdop errors larger than this.")
 arguments = arg_parser.parse_args()
 
-try:
-    fixes = numpy.load(arguments.source)
-except IOError:
-    fixes = wgs84_fixes_to_numpy.fixes_to_numpy(arguments.source)
+fixes = wgs84_fixes_to_numpy.open_source(arguments.source)
 
 hdop = fixes['hdop']
 logging.info("Done. Have %i fixes", len(fixes))

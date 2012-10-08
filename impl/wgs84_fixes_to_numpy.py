@@ -15,6 +15,11 @@ def fixes_to_numpy(gps_filename):
         ),
         dtype=[('lat', numpy.float), ('lon', numpy.float), ('hdop', numpy.float)])
 
+def open_source(source_filename):
+    try:
+        return numpy.load(source_filename)
+    except IOError:
+        return wgs84_fixes_to_numpy.fixes_to_numpy(source_filename)
 
 if __name__ == "__main__":
     import argparse

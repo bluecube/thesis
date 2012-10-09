@@ -92,6 +92,8 @@ fixes_plot.set_ylabel('Northing [m]')
 fixes_plot.set_aspect(1)
 fixes_plot.autoscale(tight=True)
 
+matplotlib_settings.common_plot_settings(fixes_plot, set_limits=False)
+
 fig2 = plt.figure()
 if arguments.max_plot_hdop is not None:
     max_plot_hdop = arguments.max_plot_hdop
@@ -115,10 +117,9 @@ hdop_plot.set_xlabel('HDOP')
 hdop_plot.set_ylabel('Error [m]')
 hdop_plot.legend().get_frame().set_alpha(0.75)
 
-margin = max_plot_hdop * matplotlib_settings.margins
-hdop_plot.set_xlim([- margin, max_plot_hdop + margin])
-margin = max_plot_error * matplotlib_settings.margins
-hdop_plot.set_ylim([- margin, max_plot_error + margin])
+matplotlib_settings.common_plot_settings(hdop_plot,
+    0, max_plot_hdop,
+    0, max_plot_error)
 
 count_inside = sum((hdop <= max_plot_hdop) & (dist <= max_plot_error))
 print("{:.2%} is in the area {}x{}".format(count_inside / len(dist), max_plot_hdop, max_plot_error))

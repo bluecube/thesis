@@ -30,6 +30,9 @@ view: all
 %.pdf: %.eps
 	ps2pdf -dEPSCrop $^ $@
 
+%.pdf: %.sh
+	./$^ $@ | tee $(<F).out
+
 %.pdf_tex: %.svg
 	inkscape -f$^ --export-pdf=$*.pdf --export-latex --export-use-hints
 

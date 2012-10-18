@@ -58,6 +58,10 @@ bins = [res * x - (res / 2) for x in range(int(math.floor(max_hdop / res) + 2))]
 if arguments.max_plot_hdop is not None:
     max_hdop = arguments.max_plot_hdop
 
+@matplotlib.ticker.FuncFormatter
+def y_format(x, pos):
+    return r'\num{' + str(x) + '}'
+
 for i, (hdop, label) in enumerate(zip(hdops, arguments.labels)):
     plot = fig.add_subplot(len(hdops), 1, i + 1)
     n, _, _ = plot.hist(hdop, bins=bins, label=label, alpha=0.7)
@@ -65,6 +69,7 @@ for i, (hdop, label) in enumerate(zip(hdops, arguments.labels)):
     plot.set_xlabel("HDOP")
     plot.set_ylabel("Fix count")
     plot.locator_params(axis='x', nbins=20, integer=False)
+    plot.yaxis.set_major_formatter(y_format)
     matplotlib_settings.common_plot_settings(plot,
         0, max_hdop,
         0, numpy.amax(n))

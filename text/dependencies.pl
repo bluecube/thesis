@@ -33,7 +33,7 @@ while(<>){
 			$checked{$fn} = 1;
 		}
 	)e;
-	
+
 	s(\\usepackage\{([^}]*)\})(
 		my $fn = "$1.sty";
 		if(-f $fn && !defined($checked{$fn})){

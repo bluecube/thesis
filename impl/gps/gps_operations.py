@@ -57,11 +57,11 @@ class GpsOperations(collections.Iterator):
             raise TypeError("msg_type must be a message type.")
 
         msg = None
-        
+
         while not isinstance(msg, msg_type):
             msg = self.read_message()
             #print(msg)
-                
+
         return msg
 
     def filtered_messages(self, msg_type_set):
@@ -70,7 +70,7 @@ class GpsOperations(collections.Iterator):
         Faster than filtering using isinstance.
         """
         ids = {msg_type.get_message_id() for msg_type in msg_type_set}
-        
+
         while True:
             data = self._read_binary_sirf_msg()
             if sirf.bytes_to_message_id(data) in ids:
@@ -94,7 +94,7 @@ class GpsOperations(collections.Iterator):
         last_msg_time = float("nan")
         while True:
             data = self._read_binary_sirf_msg()
-            
+
             if sirf.bytes_to_message_id(data) in ids:
                 out.append(sirf.from_bytes(data))
 

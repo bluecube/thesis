@@ -27,14 +27,14 @@ view: all
 	echo -n "$*.dependencies $*.pdf: " > $@
 	./dependencies.pl $(FILENAME).tex >> $@
 
-%.pdf: %.eps
+img/%.pdf: img/%.eps
 	ps2pdf -dEPSCrop $^ $@
 
-%.pdf: %.sh
-	./$^ $@ | tee $(<F).out
+plots/%.pdf: plots/%.sh
+	set -e ; set -o pipefail ; $^ $@ | tee plots/$*.out
 
-%.pdf_tex: %.svg
-	inkscape -f$^ --export-pdf=$*.pdf --export-latex --export-use-hints
+img/%.pdf_tex: img/%.svg
+	inkscape -f$^ --export-pdf=img/$*.pdf --export-latex --export-use-hints
 
 .INTERMEDIATE: %.1
 

@@ -11,7 +11,7 @@ IMAGEFILES = $(MPFILES:.mp=.pdf) $(EPSFILES:.eps=.pdf) \
 .PHONY: all
 .PHONY: clean
 
-RMEVERYTHING = rm -f *.1 *.log *.aux *.out *.pdf *.toc *.bbl *.blg *-blx.bib *.run.xml mperr.tex mptextmp.mp *.mpx *.mpo *-temp.* *-temp-* *.dependencies *.pdf_tex
+RMEVERYTHING = rm -f *.1 *.log *.aux *.out *.pdf *.toc *.bbl *.blg *-blx.bib *.run.xml mperr.tex mptextmp.mp *.mpx *.mpo *-temp.* *-temp-* *.dependencies *.pdf_tex *.spl
 
 all: $(FILENAME).pdf
 
@@ -44,5 +44,6 @@ view: all
 clean:
 	$(RMEVERYTHING)
 	cd img ; $(RMEVERYTHING)
+	cd plots ; $(RMEVERYTHING)
 
 include $(FILENAME).dependencies

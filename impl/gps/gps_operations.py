@@ -98,7 +98,7 @@ class GpsOperations(collections.Iterator):
             if sirf.bytes_to_message_id(data) in ids:
                 out.append(sirf.from_bytes(data))
 
-            if self.last_msg_time - last_msg_time > 0.3:
+            if self.last_msg_time - last_msg_time > separation:
                 yield out
                 out = []
 

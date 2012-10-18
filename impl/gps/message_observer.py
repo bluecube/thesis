@@ -16,7 +16,7 @@ class MessageObserver:
 class MessageCollector(MessageObserver):
     """A class that puts selected message types in its `collected` field"""
 
-    def __init__(self, observed_message_types):
+    def __init__(self, *observed_message_types):
         self._message_types = observed_message_types
         self.clear()
 

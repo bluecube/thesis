@@ -1,4 +1,5 @@
 import matplotlib as m
+import matplotlib.ticker
 import os
 
 #m.rcParams['axes.unicode_minus'] = False
@@ -26,6 +27,14 @@ m.rcParams['axes.grid'] = True
 
 margins = 0.02
 
+def ticker_format_func(x, pos):
+    if x == int(x):
+        x = int(x)
+    return r'\num{' + str(x) + '}'
+
+ticker_format = matplotlib.ticker.FuncFormatter(ticker_format_func)
+
+
 def common_plot_settings(plot, min_x = None, max_x = None, min_y = None, max_y = None, set_limits=True):
     """Common settings for all plots in my thesis.
     Should be applied after all drawing is done."""
@@ -33,6 +42,9 @@ def common_plot_settings(plot, min_x = None, max_x = None, min_y = None, max_y =
     legend = plot.legend()
     if legend is not None:
         legend.get_frame().set_alpha(0.75)
+
+    plot.xaxis.set_major_formatter(ticker_format)
+    plot.yaxis.set_major_formatter(ticker_format)
 
     if set_limits:
         margin = (max_x - min_x) * margins

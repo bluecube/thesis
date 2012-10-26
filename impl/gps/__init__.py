@@ -3,6 +3,7 @@ from . import sirf_messages
 from . import nmea
 from .gps import Gps
 from .gps_replay import GpsReplay
+from .rewindable_gps import RewindableGps
 from .precise_ephemeris import IGSEphemeris
 from .broadcast_ephemeris import BroadcastEphemeris
 from .message_observer import MessageObserver

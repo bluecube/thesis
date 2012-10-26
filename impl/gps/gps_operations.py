@@ -104,19 +104,19 @@ class GpsOperations(collections.Iterator):
 
             last_msg_time = self.last_msg_time
 
-    def loop(self, observers, block_end_callback = None, block_end_threshold = 0.3, log_status = 600):
+    def loop(self, observers, cycle_end_callback = None, cycle_end_threshold = 0.3, log_status = 600):
         """
         Read messages in infinite loop and notify observers.
 
         observers:
             Iterable of observers that will be notified as messages
             are received
-        block_end_callback:
-            Callable that will be called after the measurement block ends, or None.
+        cycle_end_callback:
+            Callable that will be called after the measurement cycle ends, or None.
             Block end callback will only be called when a message arrives with time distance larger
             than block end threshold, not immediately after the time runs out!
-        block_end_threshold:
-            How long a pause between two messages must be to be taken as a start of new block.
+        cycle_end_threshold:
+            How long a pause between two messages must be to be taken as a start of new measurement cycle.
         log_status:
             After how many cycles should the status be logged.
             If this is false, then no logging is performed.
@@ -154,8 +154,8 @@ class GpsOperations(collections.Iterator):
             except StopIteration:
                 return
 
-            if block_end_callback is not None and self.last_msg_time - last_msg_time > block_end_threshold:
-                block_end_callback()
+            if cycle_end_callback is not None and self.last_msg_time - last_msg_time > cycle_end_threshold:
+                cycle_end_callback()
 
             last_msg_time = self.last_msg_time
 

@@ -9,6 +9,8 @@ from .message_observer import MessageObserver
 from .message_observer import MessageCollector
 from .message_observer import message_observer_decorator
 
+from .measurement_error import MeasurementError
+
 
 def open_gps(*args, **kwargs):
     """

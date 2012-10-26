@@ -33,6 +33,7 @@ class BroadcastEphemeris(ephemeris.Ephemeris, message_observer.MessageObserver):
         return self._sv_states[prn].clock_drift
 
     def sv_time_to_sys_time(self, prn, sv_time):
+        state = self._sv_states[prn]
         return (
             (sv_time - state.clock_bias + state.gps_time * state.clock_drift) /
             (1 + state.clock_drift))

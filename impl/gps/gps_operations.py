@@ -6,6 +6,16 @@ import logging
 from . import sirf
 from . import sirf_messages
 
+if bytes == str:
+    # This branch is here for python 2.x and to avoid
+    # the cost of calls to sirf.bytes_to_message_id
+    # This whole business is a little ugly :-)
+    _message_id_filter = chr
+else:
+    _message_id_filter = lambda(x): x
+
+assert _message_id_filter(97) == b'a'[0]
+
 class GpsOperations(collections.Iterator):
     """
     Operations common to both real gps and recording.
@@ -124,25 +134,15 @@ class GpsOperations(collections.Iterator):
 
         observers = list(observers)
 
-        if bytes == str:
-            # This branch is here for python 2.x and to avoid
-            # the cost of calls to sirf.bytes_to_message_id
-            # This whole business is a little ugly :-)
-            message_id_filter = chr
-        else:
-            message_id_filter = lambda(x): x
-
-        assert message_id_filter(97) == b'a'[0]
-
         message_ids = {}
         for observer in observers:
             for message_type in observer.observed_message_types():
-                filtered_id = message_id_filter(message_type.get_message_id())
+                filtered_id = _message_id_filter(message_type.get_message_id())
 
                 message_ids.setdefault(filtered_id, []).append(observer)
 
         if log_status:
-            status_id = message_id_filter(sirf_messages.GeodeticNavigationData.get_message_id())
+            status_id = _message_id_filter(sirf_messages.GeodeticNavigationData.get_message_id())
         else:
             status_id = None
         status_remaining = 0

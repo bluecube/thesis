@@ -45,25 +45,18 @@ class RewindableGps(gps_operations.GpsOperations):
         self._state = iter(self._buffer)
 
     def _read_binary_sirf_msg(self):
-        if self._state is None:
-            msg = self._source._read_binary_sirf_msg()
-            self.last_msg_time = self._source.last_msg_time
-            self._buffer.append((msg, self.last_msg_time))
-            return msg
-            self.last_msg_time = time
-            return msg
-        else: #self._action = 'continue':
+        if self._state is not None:
             try:
-                msg, self.last_msg_time = next(self.state)
+                msg, self.last_msg_time = next(self._state)
                 return msg
             except StopIteration:
                 self._state = None
-                if self._action == 'exit':
+                if self._action == 'stop':
                     raise
 
             assert(self._action == 'continue')
-
-            msg = self._source._read_binary_sirf_msg()
-            self.last_msg_time = self._source.last_msg_time
-            return msg
             
+        msg = self._source._read_binary_sirf_msg()
+        self.last_msg_time = self._source.last_msg_time
+        self._buffer.append((msg, self.last_msg_time))
+        return msg

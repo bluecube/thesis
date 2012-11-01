@@ -15,7 +15,12 @@ class MeasurementError:
         calulation and precompute the common stuff.
 
         receiver_state is a StationState named tuple,
-        measurement is simply the SiRF message."""
+        measurement is simply the SiRF message.
+
+        Returns True if the measurement is valid."""
+
+        if measurement.pseudorange == 0:
+            return False
 
         time_of_transmission_sv = (
             measurement.gps_sw_time - measurement.pseudorange / C)
@@ -34,7 +39,8 @@ class MeasurementError:
         self._measurement = measurement
         self._user_to_sv = sv_state.pos - receiver_state.pos
 
-    @property
+        return True
+
     def receiver_clock_offset(self):
         """In this context receiver clock offset is the clock offset receiver would
         have if pseudorange_error was 0.
@@ -44,7 +50,6 @@ class MeasurementError:
 
         return (self._measurement.pseudorange - geom_range) / C + self._sv_state.clock_offset
 
-    @property
     def pseudorange_error(self):
         """Return difference between geometric range (determined from ephemeris and
         receiver state) and somehow corrected pseudorange."""

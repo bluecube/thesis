@@ -1,0 +1,203 @@
+#!/usr/bin/python
+from __future__ import division, print_function
+
+import argparse
+import random
+import numpy
+import math
+import logging
+
+import gps
+import matplotlib_settings
+import matplotlib.pyplot as plt
+
+logging.basicConfig(
+    format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level = logging.INFO
+)
+
+arg_parser = argparse.ArgumentParser(
+    description="Calculate the UERE from recorded data.\n"
+    "Assumes that the receiver was stationary during whole recording.")
+arg_parser.add_argument('gps', help="GPS receiver or recording.")
+arg_parser.add_argument('--receiver-pos', type=numpy.matrix, default=None, required=True,
+    help="Ground truth receiver position.")
+arg_parser.add_argument('--hist-resolution', default=1, type=float,
+    help="Width of the histogram bin.")
+arg_parser.add_argument('--fit-degree', type=int, default=2,
+    help="Degree of the polynomial estimating clock offsets.")
+arg_parser.add_argument('--no-show', action='store_true',
+    help="Don't show the plots, only save them.")
+arguments = arg_parser.parse_args()
+
+class ReceiverState:
+    """ Class that assumes the receiver stationary and estimates its clock drift
+    based on raw clock offsets."""
+
+    def __init__(self, receiver_pos, fit_degree, clock_correction_threshold):
+        """ Initialize the receiver state estimator.
+
+        receiver pos
+            is a 3x1 numpy matrix containing estimate position of the
+            receiver (it has to be static during the whole recording).
+
+        fit_degree
+            Degree of the polynomial for fitting clock offsets.
+
+        clock_correction_threshold
+            If clock offset changes more than this between two epochs,
+            it is considered as a clock correction and causes start of a
+            new block. """
+
+        self.pos = receiver_pos
+        self._fit_degree = fit_degree
+        self._clock_correction_threshold = clock_correction_threshold
+
+        self._gps_times = []
+        self._clock_offsets = []
+
+        self._last_avg_offset = None
+
+    def receiver_state_pos_only(self):
+        """ Return station state with zero clock offsets."""
+        return gps.StationState(
+            pos = self.pos,
+            velocity = numpy.matrix([[0, 0, 0]]),
+            clock_offset = 0,
+            clock_drift = 0)
+
+    def receiver_state(self, time):
+        """ Return estimated receiver state in the given time.
+        In contrast to the ephemeris classes time is NOT system time, but receiver time."""
+        return gps.StationState(
+            pos = self.pos,
+            velocity = numpy.matrix([[0, 0, 0]]),
+            clock_offset = self._clock_offset_poly(time),
+            clock_drift = self._clock_drift_poly(time))
+
+    def add_clock_offsets(self, gps_time, offsets):
+        """ Add a list of clock offsets recorded at given time for processing.
+
+        If this batch of offsets starts a new block, then finalize is called and
+        True returned. In this case the offsets in this batch are kept buffered
+        for a next block.
+
+        If the batch belongs to the currently running block, then
+        this function returns False. """
+
+        avg_offset = math.fsum(offsets) / len(offsets)
+
+        assert not len(self._gps_times) or gps_time > self._gps_times[-1]
+
+        is_clock_correction = (
+            self._last_avg_offset is not None and
+            abs(self._last_avg_offset - avg_offset) > self._clock_correction_threshold)
+        self._last_avg_offset = avg_offset
+
+        if is_clock_correction:
+            self._finalize()
+            self._gps_times = []
+            self._clock_offsets = []
+
+        self._gps_times.extend([gps_time] * len(offsets))
+        self._clock_offsets.extend(offsets)
+
+        return is_clock_correction
+
+    def _finalize(self):
+        """ Finalize the block (between two receiver clock corrections),
+        recalculate the polynomial for receiver clock offset. """
+
+        times = numpy.array(self._gps_times)
+        offsets = numpy.array(self._clock_offsets)
+
+        self._clock_offset_poly = numpy.polynomial.polynomial.Polynomial.fit(
+            times, offsets, deg = self._fit_degree)
+        self._clock_drift_poly = self._clock_offset_poly.deriv()
+
+        #TODO: Try if checking for outliers makes sense here
+        
+
+source = gps.RewindableGps(
+    gps.open_gps(arguments.gps),
+    exit_rewind_buffer_action='stop')
+ephemeris = gps.BroadcastEphemeris()
+measurements = gps.MessageCollector(gps.sirf_messages.NavigationLibraryMeasurementData)
+receiver_state = ReceiverState(
+    arguments.receiver_pos,
+    arguments.fit_degree,
+    0.05)
+measurement_error = gps.MeasurementError(ephemeris)
+
+plot_times = []
+plot_sv_ids = []
+plot_errors = []
+
+def top_level_cycle_end_callback():
+    receiver_state_pos_only = receiver_state.receiver_state_pos_only()
+
+    offsets = []
+    for measurement in measurements.collected:
+        if not measurement_error.set_params(receiver_state_pos_only, measurement):
+            continue
+        offset = measurement_error.receiver_clock_offset()
+        offsets.append(offset)
+
+    if not len(measurements.collected):
+        return
+
+    is_clock_correction = receiver_state.add_clock_offsets(
+        measurements.collected[0].gps_sw_time,
+        offsets)
+
+    measurements.clear()
+
+    if is_clock_correction:
+        block_end()
+
+def block_end():
+    source.rewind()
+    logging.info("processing block")
+    source.loop([ephemeris, measurements],
+        block_cycle_end_callback,
+        log_status = False)
+    source.set_mark()
+
+def block_cycle_end_callback():
+    if not len(measurements.collected):
+        return
+
+    receiver_time = measurements.collected[0].gps_sw_time
+    state = receiver_state.receiver_state(receiver_time)
+
+    sys_time = receiver_time - state.clock_offset
+
+    for measurement in measurements.collected:
+        if not measurement_error.set_params(state, measurement):
+            continue
+
+        plot_times.append(sys_time)
+        plot_errors.append(measurement_error.pseudorange_error())
+        plot_sv_ids.append(measurement.satellite_id)
+
+    measurements.clear()
+
+source.loop([ephemeris, measurements], top_level_cycle_end_callback)
+#handle the last block:
+receiver_state._finalize()
+block_end()
+
+plot_sv_ids = numpy.array(plot_sv_ids)
+plot_sv_ids /= plot_sv_ids.max()
+
+fig1 = plt.figure()
+error_plot = fig1.add_subplot(1, 1, 1)
+error_plot.scatter(plot_times, plot_errors,
+    c=plot_sv_ids, marker='.', s=40, alpha=0.75, edgecolors='none', rasterized=True)
+error_plot.set_title('Measurement errors')
+error_plot.set_xlabel('time [s]')
+error_plot.set_ylabel('error [m]')
+matplotlib_settings.common_plot_settings(error_plot, set_limits=False)
+
+if not arguments.no_show:
+    plt.show()

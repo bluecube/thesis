@@ -10,14 +10,9 @@ class MeasurementError:
     def __init__(self, ephemeris):
         self._ephemeris = ephemeris
 
-    def set_params(self, receiver_state, measurement):
-        """Input the other two sets of parameters necessary for the
-        calulation and precompute the common stuff.
-
-        receiver_state is a StationState named tuple,
-        measurement is simply the SiRF message.
-
-        Returns True if the measurement is valid."""
+    def set_measurement(self, measurement):
+        """ Set the measurement for the error calculation
+        Returns True if measurement is valid, False otherwise."""
 
         if measurement.pseudorange == 0:
             return False
@@ -35,20 +30,29 @@ class MeasurementError:
 
         self._transmission_time_sys = transmission_time_sys
         self._sv_state = sv_state
-        self._receiver_state = receiver_state
         self._measurement = measurement
-        self._user_to_sv = sv_state.pos - receiver_state.pos
 
         return True
 
-    def receiver_clock_offset(self):
-        """In this context receiver clock offset is the clock offset receiver would
-        have if pseudorange_error was 0.
-        This ignores receiver clock offset field in the receiver state (obviously)."""
-        
-        geom_range = numpy.linalg.norm(self._user_to_sv)
+    def _set_receiver_pos(self, receiver_position):
+        self._user_to_sv = self._sv_state.pos - receiver_position
+        self._geom_range = numpy.linalg.norm(self._user_to_sv)
 
-        return (self._measurement.pseudorange - geom_range) / C + self._sv_state.clock_offset
+    def receiver_clock_offset(self, measurement, receiver_position):
+        """Returns clock offset receiver would have if pseudorange_error was 0.
+        Internally calls set_measurement.
+        If the measurement is not valid, this method returns None."""
+        if not self.set_measurement(measurement):
+            return None
+        self._set_receiver_pos(receiver_position)
+
+        return (self._measurement.pseudorange - self._geom_range) / C + self._sv_state.clock_offset
+
+    def set_receiver_state(self, receiver_state):
+        """ Set the receiver state. Must be called after set_measurement """
+
+        self._receiver_state = receiver_state
+        self._set_receiver_pos(receiver_state.pos)
 
     def pseudorange_error(self):
         """Return difference between geometric range (determined from ephemeris and
@@ -58,9 +62,16 @@ class MeasurementError:
             self._measurement.pseudorange -
             C * (self._receiver_state.clock_offset - self._sv_state.clock_offset))
 
-        geom_range = numpy.linalg.norm(self._user_to_sv)
+        error = corrected_pseudorange - self._geom_range
 
-        return corrected_pseudorange - geom_range
+        #if abs(error) > 10000000:
+        #    print(error)
+        #    print(corrected_pseudorange)
+        #    print(self._receiver_state)
+        #    print(self._sv_state)
+        #    print(self._measurement)
+        
+        return error
 
     @property
     def doppler_error(self):

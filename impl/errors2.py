@@ -58,14 +58,6 @@ class ReceiverState:
 
         self._last_avg_offset = None
 
-    def receiver_state_pos_only(self):
-        """ Return station state with zero clock offsets."""
-        return gps.StationState(
-            pos = self.pos,
-            velocity = numpy.matrix([[0, 0, 0]]),
-            clock_offset = 0,
-            clock_drift = 0)
-
     def receiver_state(self, time):
         """ Return estimated receiver state in the given time.
         In contrast to the ephemeris classes time is NOT system time, but receiver time."""
@@ -127,21 +119,27 @@ receiver_state = ReceiverState(
     arguments.receiver_pos,
     arguments.fit_degree,
     0.05)
-measurement_error = gps.MeasurementError(ephemeris)
+
+# Buffer for measurement errors waiting for completed receiver state
+measurement_error_buffer = []
 
 plot_times = []
 plot_sv_ids = []
 plot_errors = []
 
 def top_level_cycle_end_callback():
-    receiver_state_pos_only = receiver_state.receiver_state_pos_only()
+    global measurement_error_buffer
 
     offsets = []
     for measurement in measurements.collected:
-        if not measurement_error.set_params(receiver_state_pos_only, measurement):
+        me = gps.MeasurementError(ephemeris)
+        offset = me.receiver_clock_offset(measurement, arguments.receiver_pos)
+
+        if offset is None:
             continue
-        offset = measurement_error.receiver_clock_offset()
+
         offsets.append(offset)
+        measurement_error_buffer.append(me)
 
     if not len(measurements.collected):
         return
@@ -156,48 +154,51 @@ def top_level_cycle_end_callback():
         block_end()
 
 def block_end():
-    source.rewind()
+    global measurement_error_buffer
+
     logging.info("processing block")
-    source.loop([ephemeris, measurements],
-        block_cycle_end_callback,
-        log_status = False)
-    source.set_mark()
 
-def block_cycle_end_callback():
-    if not len(measurements.collected):
-        return
+    for me in measurement_error_buffer:
+        measurement = me._measurement
+        receiver_time = measurement.gps_sw_time
+        state = receiver_state.receiver_state(receiver_time)
+        me.set_receiver_state(state)
 
-    receiver_time = measurements.collected[0].gps_sw_time
-    state = receiver_state.receiver_state(receiver_time)
-
-    sys_time = receiver_time - state.clock_offset
-
-    for measurement in measurements.collected:
-        if not measurement_error.set_params(state, measurement):
-            continue
+        sys_time = receiver_time - state.clock_offset
 
         plot_times.append(sys_time)
-        plot_errors.append(measurement_error.pseudorange_error())
+        plot_errors.append(me.pseudorange_error())
         plot_sv_ids.append(measurement.satellite_id)
 
-    measurements.clear()
+    measurement_error_buffer = []
 
 source.loop([ephemeris, measurements], top_level_cycle_end_callback)
 #handle the last block:
 receiver_state._finalize()
 block_end()
 
-plot_sv_ids = numpy.array(plot_sv_ids)
+plot_times = numpy.array(plot_times)
+plot_errors = numpy.array(plot_errors)
+plot_sv_ids = numpy.array(plot_sv_ids, dtype=numpy.float)
 plot_sv_ids /= plot_sv_ids.max()
 
 fig1 = plt.figure()
 error_plot = fig1.add_subplot(1, 1, 1)
 error_plot.scatter(plot_times, plot_errors,
-    c=plot_sv_ids, marker='.', s=40, alpha=0.75, edgecolors='none', rasterized=True)
+    c=plot_sv_ids, marker='.', s=40, alpha=0.75, edgecolors='none',rasterized=True)
 error_plot.set_title('Measurement errors')
 error_plot.set_xlabel('time [s]')
 error_plot.set_ylabel('error [m]')
 matplotlib_settings.common_plot_settings(error_plot, set_limits=False)
+
+#fig2 = plt.figure()
+#error_histogram = fig2.add_subplot(1, 1, 1)
+#error_histogram.scatter(plot_times, plot_errors,
+#error_histogram c=plot_sv_ids, marker='.', s=40, alpha=0.75, edgecolors='none', rasterized=True)
+#error_histogram.set_title('Measurement errors')
+#error_histogram.set_xlabel('time [s]')
+#error_histogram.set_ylabel('error [m]')
+#matplotlib_settings.common_plot_settings(error_histogram, set_limits=False)
 
 if not arguments.no_show:
     plt.show()

@@ -1,5 +1,6 @@
 from __future__ import division, print_function
 import numpy
+import math
 
 C = 299792458 # Speed of light
 
@@ -20,13 +21,16 @@ class MeasurementError:
         time_of_transmission_sv = (
             measurement.gps_sw_time - measurement.pseudorange / C)
 
-        transmission_time_sys = self._ephemeris.sv_time_to_sys_time(
-            measurement.satellite_id,
-            time_of_transmission_sv)
+        try:
+            transmission_time_sys = self._ephemeris.sv_time_to_sys_time(
+                measurement.satellite_id,
+                time_of_transmission_sv)
 
-        sv_state = self._ephemeris.sv_state_current_week(
-            measurement.satellite_id,
-            transmission_time_sys)
+            sv_state = self._ephemeris.sv_state_current_week(
+                measurement.satellite_id,
+                transmission_time_sys)
+        except LookupError:
+            return False
 
         self._transmission_time_sys = transmission_time_sys
         self._sv_state = sv_state

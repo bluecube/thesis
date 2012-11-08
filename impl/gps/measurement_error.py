@@ -40,7 +40,7 @@ class MeasurementError:
 
     def _set_receiver_pos(self, receiver_position):
         self._user_to_sv = self._sv_state.pos - receiver_position
-        self._geom_range = numpy.linalg.norm(self._user_to_sv)
+        self._geom_range = math.sqrt(math.fsum(x*x for x in self._user_to_sv.flat))
 
     def receiver_clock_offset(self, measurement, receiver_position):
         """Returns clock offset receiver would have if pseudorange_error was 0.

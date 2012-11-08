@@ -34,6 +34,8 @@ class ReceiverState:
     """ Class that assumes the receiver stationary and estimates its clock drift
     based on raw clock offsets."""
 
+    _velocity = numpy.matrix([[0, 0, 0]])
+
     def __init__(self, receiver_pos, fit_degree, clock_correction_threshold):
         """ Initialize the receiver state estimator.
 
@@ -63,7 +65,7 @@ class ReceiverState:
         In contrast to the ephemeris classes time is NOT system time, but receiver time."""
         return gps.StationState(
             pos = self.pos,
-            velocity = numpy.matrix([[0, 0, 0]]),
+            velocity = self._velocity,
             clock_offset = self._clock_offset_poly(time),
             clock_drift = self._clock_drift_poly(time))
 

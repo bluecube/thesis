@@ -132,6 +132,7 @@ plot_errors = []
 def top_level_cycle_end_callback():
     global measurement_error_buffer
 
+    tmp_measurement_error_buffer = []
     offsets = []
     for measurement in measurements.collected:
         me = gps.MeasurementError(ephemeris)
@@ -141,7 +142,7 @@ def top_level_cycle_end_callback():
             continue
 
         offsets.append(offset)
-        measurement_error_buffer.append(me)
+        tmp_measurement_error_buffer.append(me)
 
     if not len(measurements.collected):
         return
@@ -150,10 +151,12 @@ def top_level_cycle_end_callback():
         measurements.collected[0].gps_sw_time,
         offsets)
 
-    measurements.clear()
-
     if is_clock_correction:
         block_end()
+
+    measurement_error_buffer.extend(tmp_measurement_error_buffer)
+
+    measurements.clear()
 
 def block_end():
     global measurement_error_buffer

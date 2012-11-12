@@ -16,6 +16,8 @@ logging.basicConfig(
     level = logging.INFO
 )
 
+OUTLIER_THRESHOLD = 200
+
 arg_parser = argparse.ArgumentParser(
     description="Calculate the UERE from recorded data.\n"
     "Assumes that the receiver was stationary during whole recording.")
@@ -128,6 +130,7 @@ measurement_error_buffer = []
 plot_times = []
 plot_sv_ids = []
 plot_errors = []
+plot_clock_corrections = []
 
 def top_level_cycle_end_callback():
     global measurement_error_buffer
@@ -150,6 +153,7 @@ def top_level_cycle_end_callback():
     is_clock_correction = receiver_state.add_clock_offsets(
         measurements.collected[0].gps_sw_time,
         offsets)
+
 
     if is_clock_correction:
         block_end()
@@ -175,6 +179,8 @@ def block_end():
         plot_errors.append(me.pseudorange_error())
         plot_sv_ids.append(measurement.satellite_id)
 
+    plot_clock_corrections.append(sys_time)
+
     measurement_error_buffer = []
 
 source.loop([ephemeris, measurements], top_level_cycle_end_callback)
@@ -196,14 +202,25 @@ error_plot.set_xlabel('time [s]')
 error_plot.set_ylabel(r'Error [\si{\meter}]')
 matplotlib_settings.common_plot_settings(error_plot, set_limits=False)
 
-#fig2 = plt.figure()
-#error_histogram = fig2.add_subplot(1, 1, 1)
-#error_histogram.scatter(plot_times, plot_errors,
-#error_histogram c=plot_sv_ids, marker='.', s=40, alpha=0.75, edgecolors='none', rasterized=True)
-#error_histogram.set_title('Measurement errors')
-#error_histogram.set_xlabel('time [s]')
-#error_histogram.set_ylabel('error [m]')
-#matplotlib_settings.common_plot_settings(error_histogram, set_limits=False)
+for time in plot_clock_corrections[:-1]:
+    error_plot.axvline(x = time)
+
+
+res = arguments.hist_resolution
+bin_half_count = int(math.floor(1.05 * OUTLIER_THRESHOLD / res))
+    # extra 5% makes the histogram look a little nicer and not that cut off
+bins = [res * x - (res / 2) for x in range(-bin_half_count, bin_half_count + 2)]
+fig2 = plt.figure()
+error_histogram = fig2.add_subplot(1, 1, 1)
+n, bins, patches = error_histogram.hist(plot_errors, bins=bins, alpha=0.7)
+error_histogram.set_title('Measurement errors')
+error_histogram.set_xlabel(r'Error [\si{\meter}]')
+error_histogram.set_ylabel(r'Count')
+matplotlib_settings.common_plot_settings(error_histogram,
+    min_x = -OUTLIER_THRESHOLD,
+    max_x = OUTLIER_THRESHOLD,
+    min_y = 0,
+    max_y = numpy.max(n))
 
 if not arguments.no_show:
     plt.show()

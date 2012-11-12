@@ -190,10 +190,10 @@ plot_sv_ids /= plot_sv_ids.max()
 fig1 = plt.figure()
 error_plot = fig1.add_subplot(1, 1, 1)
 error_plot.scatter(plot_times, plot_errors,
-    c=plot_sv_ids, marker='.', s=40, alpha=0.75, edgecolors='none',rasterized=True)
+    c=plot_sv_ids, marker='.', s=40, alpha=0.7, edgecolors='none',rasterized=True)
 error_plot.set_title('Measurement errors')
 error_plot.set_xlabel('time [s]')
-error_plot.set_ylabel('error [m]')
+error_plot.set_ylabel(r'Error [\si{\meter}]')
 matplotlib_settings.common_plot_settings(error_plot, set_limits=False)
 
 #fig2 = plt.figure()

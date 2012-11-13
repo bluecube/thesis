@@ -13,7 +13,7 @@ IMAGEFILES = $(MPFILES:.mp=.pdf) $(EPSFILES:.eps=.pdf) \
 
 RMEVERYTHING = rm -f *.1 *.log *.aux *.out *.pdf *.toc *.bbl *.blg *-blx.bib *.run.xml mperr.tex mptextmp.mp *.mpx *.mpo *-temp.* *-temp-* *.dependencies *.pdf_tex *.spl
 
-all: $(FILENAME).pdf
+all: $(FILENAME).pdf $(FILENAME)-print.pdf
 
 view: all
 	evince $(FILENAME).pdf &
@@ -46,4 +46,4 @@ clean:
 	cd img ; $(RMEVERYTHING)
 	cd plots ; $(RMEVERYTHING)
 
-include $(FILENAME).dependencies
+include $(FILENAME).dependencies $(FILENAME)-print.dependencies

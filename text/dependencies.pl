@@ -23,6 +23,14 @@ while(<>){
 		}
 	)e;
 
+	s(\\addbibresource\{([^}]*)\})(
+		my $fn = $1;
+		if(!defined($checked{$fn})){
+			push @dependencies, $fn;
+			$checked{$fn} = 1;
+		}
+	)e;
+
 	s(\\input\{([^}]*)\})(
 #		my $fn = "$dir$1.tex";
 		my $fn = $1;

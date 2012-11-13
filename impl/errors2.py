@@ -16,7 +16,7 @@ logging.basicConfig(
     level = logging.INFO
 )
 
-OUTLIER_THRESHOLD = 200
+OUTLIER_THRESHOLD = 300
 
 arg_parser = argparse.ArgumentParser(
     description="Calculate the UERE from recorded data.\n"
@@ -107,12 +107,17 @@ class ReceiverState:
         times = numpy.array(self._gps_times)
         offsets = numpy.array(self._clock_offsets)
 
-        self._clock_offset_poly = numpy.polynomial.polynomial.Polynomial.fit(
+        poly = numpy.polynomial.polynomial.Polynomial.fit(
             times, offsets, deg = self._fit_degree)
-        self._clock_drift_poly = self._clock_offset_poly.deriv()
 
-        #TODO: Try if checking for outliers makes sense here
-        
+        mask = numpy.abs(offsets - poly(times)) > OUTLIER_THRESHOLD
+
+        masked_times = numpy.ma.masked_array(times, mask = mask)
+        masked_offsets = numpy.ma.masked_array(offsets, mask = mask)
+
+        self._clock_offset_poly = numpy.polynomial.polynomial.Polynomial.fit(
+            masked_times, masked_offsets, deg = self._fit_degree)
+        self._clock_drift_poly = self._clock_offset_poly.deriv()
 
 source = gps.RewindableGps(
     gps.open_gps(arguments.gps),
@@ -192,6 +197,7 @@ plot_times = numpy.array(plot_times)
 plot_errors = numpy.array(plot_errors)
 plot_sv_ids = numpy.array(plot_sv_ids, dtype=numpy.float)
 plot_sv_ids /= plot_sv_ids.max()
+
 
 fig1 = plt.figure()
 error_plot = fig1.add_subplot(1, 1, 1)

@@ -197,14 +197,12 @@ fig1 = plt.figure()
 error_plot = fig1.add_subplot(1, 1, 1)
 error_plot.scatter(plot_times, plot_errors,
     c=plot_sv_ids, marker='.', s=40, alpha=0.7, edgecolors='none',rasterized=True)
+for x in plot_clock_corrections[:-1]:
+    error_plot.axvline(x, color='b', alpha=0.5)
 error_plot.set_title('Measurement errors')
 error_plot.set_xlabel('time [s]')
 error_plot.set_ylabel(r'Error [\si{\meter}]')
 matplotlib_settings.common_plot_settings(error_plot, set_limits=False)
-
-for time in plot_clock_corrections[:-1]:
-    error_plot.axvline(x = time)
-
 
 res = arguments.hist_resolution
 bin_half_count = int(math.floor(1.05 * OUTLIER_THRESHOLD / res))

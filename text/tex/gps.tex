@@ -625,6 +625,15 @@ ionospheric parameters, forming simple DGPS system and increasing the fix precis
 %There are currently many different receiver chips available, differing in
 
 \section{Protocols}
+Most of the time a consumer GPS receivers is used as a black box that given power and possibly antenna connection
+provides position estimates.
+In more complicated use cases, such as measurement domain integration of GPS signals with
+other sensors discussed in section \ref{sec:measurement_domain} of this work,
+lower level data from the location estimation process are used, but only as provided
+by software in the GPS receiver.
+Many communication protocols providing position, velocity, clock data
+and other information are in use.
+
 \subsection{NMEA 0183}
 NMEA 0183 is a de-facto standard protocol for consumer grade GPS receivers.
 It is a text-based proprietary format developed by National Marine Electronics Organization,

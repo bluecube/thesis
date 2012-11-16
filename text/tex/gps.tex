@@ -282,7 +282,7 @@ These equations can be solved using various methods, including closed form solut
 previous position estimates, using Kalman filters (see \ref{sec:kalman}) or,
 as we will discuss in section \ref{sec:measurement_domain}, Monte Carlo localization.
 The last two approaches also have the advantage of being able to fuse other sensor data
-into the solution.\todo{Expand, maybe}
+into the solution.
 
 \subsubsection{Carrier Phase Tracking}
 \label{sec:gps_carrier_phase}
@@ -405,7 +405,6 @@ since the ionospheric errors are correlated.
 Measured dependence of position error on HDOP is in \autoref{fig:wgs84_hdop_error}.
 
 \subsubsection{Definition}
-\todo{Should I add more detail to the definition?}
 Formal definition of DOP values is based on linearization of pseudorange equations
 in \autoref{sec:gps-position}:
 \begin{equation}
@@ -503,7 +502,7 @@ Overview can be found in \cite{kouba09}.
 When the receiver is matches the received signal to expected PRN codes an 
 important question arises of how accurate the matching is.
 Often cited value is \SI{1}{\percent}, which for \SI{1.023}{\mega\hertz}
-chipping rate gives about \SI{2.9}{\meter}.\todo{Why doesn't this show in the table, huh?}
+chipping rate gives about \SI{2.9}{\meter}.
 This kind of errors can be improved by smoothing with carrier phase measurements (see
 \autoref{sec:gps_carrier_phase}).
 
@@ -584,7 +583,7 @@ at the expense of requiring internet connection during operation.
 \todo{Write something here!}
 
 \section{Kalman Filters}
-\todo{Do we need this section?}Kalman filters are often used in the GPS receivers to merge past
+Kalman filters are often used in the GPS receivers to merge past
 data with incoming measurements or to combine the GPS position and velocity
 estimation with another source of measurements, for example inertial data.
 
@@ -628,7 +627,7 @@ ionospheric parameters, forming simple DGPS system and increasing the fix precis
 \section{Protocols}
 \subsection{NMEA 0183}
 NMEA 0183 is a de-facto standard protocol for consumer grade GPS receivers.
-It is a proprietary format developed by National Marine Electronics Organization,
+It is a text-based proprietary format developed by National Marine Electronics Organization,
 but has been reverse engineered and the specification is known \cite{depriest}.
 
 The protocol by itself is designed for communication of marine electronic

@@ -119,9 +119,7 @@ class ReceiverState:
             masked_times, masked_offsets, deg = self._fit_degree)
         self._clock_drift_poly = self._clock_offset_poly.deriv()
 
-source = gps.RewindableGps(
-    gps.open_gps(arguments.gps),
-    exit_rewind_buffer_action='stop')
+source = gps.open_gps(arguments.gps)
 ephemeris = gps.BroadcastEphemeris()
 measurements = gps.MessageCollector(gps.sirf_messages.NavigationLibraryMeasurementData)
 receiver_state = ReceiverState(

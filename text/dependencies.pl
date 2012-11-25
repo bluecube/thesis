@@ -46,6 +46,7 @@ while(<>){
 		my $fn = "$1.sty";
 		if(-f $fn && !defined($checked{$fn})){
 			push @dependencies, $fn;
+			push @ARGV, $fn;
 			$checked{$fn} = 1;
 		}
 	)e;

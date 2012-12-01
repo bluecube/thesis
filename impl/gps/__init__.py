@@ -13,6 +13,7 @@ from .message_observer import message_observer_decorator
 
 from .measurement_error import MeasurementError
 
+from .measurement_error import C
 
 def open_gps(*args, **kwargs):
     """

@@ -44,6 +44,7 @@ class MeasurementError:
 
     def receiver_clock_offset(self, measurement, receiver_position):
         """Returns clock offset receiver would have if pseudorange_error was 0.
+        This is equal to pseudorange_error if receiver_clock_offset == 0, the divided by C
         Internally calls set_measurement.
         If the measurement is not valid, this method returns None."""
         if not self.set_measurement(measurement):

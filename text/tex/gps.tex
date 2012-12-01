@@ -115,7 +115,10 @@ Legacy GPS satellites work on two frequencies, primary L1 (\SI{1575.42}{\mega\he
 Unencrypted \SI{1}{\mega\hertz} C/A code is transmitted on L1, and encrypted military \SI{10}{\mega\hertz} P(Y) code is transmitted
 on both L1 and L2.
 
-One of the advantages of multiple frequencies is the ability to calculate corrections for ionospheric delays from the received signals.
+One of the main advantages of multiple frequencies is the ability to calculate corrections for ionospheric delays from the received signals.
+To use this feature without encryption keys for the P(Y) codes, codeless techniques have been developed
+that use the encrypted stream of P(Y) data and utilize timing of the bit stream.
+Semi-codeless techniques further exploit other properties of P(Y) code and its known relationships to C/A codes.
 
 Modernized GPS satellites provide three additional civilian signals:
 L2C, L5 and a military signal M. A fourth civilian signal and L1C is planned, that will be compatible with

@@ -2,12 +2,18 @@
 \label{chap:gps}
 
 This chapter contains a overview of Global Positioning System and
-its basic operation.
-Next it describes methods of obtaining receiver position and velocity,
+its basic operation, that will be later used to develop methods for using GPS
+measurements in Monte Carlo localization.
+
+First principles of GPS are discussed, followed by description of methods for
+obtaining receiver position and velocity,
 error sources of GPS measurements and methods of dealing with these errors.
-Lastly it discusses properties of consumer grade GPS receivers.
+Lastly this chapter deals with communication with consumer grade GPS receivers.
+and briefly also with alternative systems to GPS.
 
 This chapter is based mainly on chapters 2 and 7 of \cite{kaplan06}, unless other source is cited.\todo{Is this OK?}
+
+\section{Basic Description}
 
 Global Positioning System is a global navigation satellite system (GNSS)
 developed and operated by U.S. military.
@@ -296,8 +302,9 @@ When the receiver can match the L1 with \SI{1}{\percent} accuracy, then the avai
 is around \SI{2}{\milli\meter} compared to about \SI{3}{\meter} for code phase (pseudorange)
 tracking. More detailed description of the code phase tracking errors is in \autoref{sec:gps-errors}.
 
-One of the main problems with the carrier phase tracking is integer ambiguity of the carrier wave,
-that arises because the carrier wave doesn't contain any code designed to resolve it.
+One of the main problems with the carrier phase tracking is integer ambiguity of the carrier wave.
+This problem arises because the carrier wave doesn't contain any code designed to resolve
+this kind of ambiguity.
 
 Carrier phase measurements can be used to smooth pseudorange data.
 Details about this method can be found in section \enquote{Smooth} in \cite{sam-www}.

@@ -8,8 +8,8 @@ measurements in Monte Carlo localization.
 First principles of GPS are discussed, followed by description of methods for
 obtaining receiver position and velocity,
 error sources of GPS measurements and methods of dealing with these errors.
-Lastly this chapter deals with communication with consumer grade GPS receivers.
-and briefly also with alternative systems to GPS.
+Lastly this chapter deals with communication with consumer grade GPS receivers
+and briefly also with other position systems than GPS.
 
 This chapter is based mainly on chapters 2 and 7 of \cite{kaplan06}, unless other source is cited.\todo{Is this OK?}
 
@@ -275,10 +275,11 @@ Figure \ref{fig:pseudorange} summarizes relations between times in a single pseu
 \subsection{Position}
 \label{sec:gps-position}
 
-If the position of satellites \(\svpos_i = \coord{x_{\mathrm{SV}i}}{y_{\mathrm{SV}i}}{z_{\mathrm{SV}i}}\) and satellite
+If the position of satellites \(\svpos_i = \coord{x_{{\SV}i}}{y_{{\SV}i}}{z_{{\SV}i}}\) and satellite
 clock offsets \(\svclockoffset_i\) at time of transmission are known,
 calculating receiver position from the pseudorange measurements means solving a set of non-linear equations
 \begin{equation}
+	\label{eq:pseudorange3}
 	\sqrt{(x_\REC - x_{{\SV}i})^2 + (y_\REC - y_{{\SV}i})^2 +(z_\REC - z_{{\SV}i})^2} +
 	\speedoflight (\recclockoffset - \svclockoffset_i)
 	=
@@ -286,7 +287,9 @@ calculating receiver position from the pseudorange measurements means solving a 
 \end{equation}
 for receiver position \(\recpos = \coord{x_\REC}{y_\REC}{z_\REC}\) and receiver clock offset \(\recclockoffset\).
 
-These equations can be solved using various methods, including closed form solutions
+This can be visualised as intersection of conical surfaces in four dimensions.
+
+Equations from \eqref{eq:pseudorange3} can be solved using various methods, including closed form solutions
 (for example \cite{leva96}), iterative solutions, linearization of the equations around
 previous position estimates, using Kalman filters (see \ref{sec:kalman}) or,
 as we will discuss in section \ref{sec:measurement_domain}, Monte Carlo localization.
@@ -702,7 +705,7 @@ it will be compatible with GPS receivers that support the modernized L1C signals
 Galileo constellation will consist of 30 satellites, and will provide several types of services,
 from free public service to including safety-critical.
 
-In principle Galileo is fairly similar to GPS,
+Technically, Galileo is fairly similar to GPS,
 compatibility is provided by using the same geodetic and time reference frames
 and, as mentioned above, by using a signal compatible with the GPS L1C.
 This means, that GPS receiver supporting this signal will be able to seamlessly

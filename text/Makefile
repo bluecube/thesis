@@ -1,4 +1,7 @@
-FILENAME=thesis
+FILENAME = thesis
+
+GOALS = $(FILENAME).pdf
+GOALS += $(FILENAME)-print.pdf
 
 MPFILES = $(wildcard img/*.mp)
 EPSFILES = $(wildcard img/*.eps)
@@ -12,38 +15,38 @@ IMAGEFILES = $(MPFILES:.mp=.pdf) $(EPSFILES:.eps=.pdf) \
 .PHONY: clean
 
 RMEVERYTHING = rm -f *.1 *.log *.aux *.out *.pdf *.toc *.bbl *.blg *-blx.bib *.run.xml mperr.tex mptextmp.mp *.mpx *.mpo *-temp.* *-temp-* *.dependencies *.pdf_tex *.spl
+BUILD_DIR = build
 
-all: $(FILENAME).pdf $(FILENAME)-print.pdf
+GOALS_WITH_PATH = $(addprefix $(BUILD_DIR)/,$(GOALS))
+MAKE_DIR = mkdir -p $(@D)
 
-view: all
-	evince $(FILENAME).pdf &
+all: $(GOALS_WITH_PATH)
 
-%.pdf: %.tex
-	cd $(<D); pdflatex $(<F) -file-line-error
-	bibtex8 $(basename $<).aux
-	cd $(<D); pdflatex $(<F) -file-line-error
+$(BUILD_DIR)/%.pdf: %.tex
+	$(MAKE_DIR)
+	cd $(@D); TEXINPUTS="..:$$TEXINPUTS" pdflatex -file-line-error $(abspath $<)
+	cd $(@D); BIBINPUTS="..:$$BIBINPUTS" bibtex8 $(@F:.pdf=.aux)
+	cd $(@D); TEXINPUTS="..:$$TEXINPUTS" pdflatex -file-line-error $(abspath $<)
 
-%.dependencies: %.tex
-	echo -n "$*.dependencies $*.pdf: " > $@
-	./dependencies.pl $(FILENAME).tex >> $@
+$(BUILD_DIR)/%.pdf.dependencies: %.tex
+	$(MAKE_DIR)
+	echo -n "$(@:.dependencies=) $@: " > $@
+	./dependencies.py --build-dir=$(BUILD_DIR) $< >> $@
 
-img/%.pdf: img/%.eps
+$(BUILD_DIR)/%.pdf: %.eps
+	$(MAKE_DIR)
 	ps2pdf -dEPSCrop $^ $@
 
-plots/%.pdf: plots/%.sh
-	set -e ; set -o pipefail ; $^ $@ | tee plots/$*.out
+$(BUILD_DIR)/%.pdf: %.sh
+	$(MAKE_DIR)
+	set -e ; set -o pipefail ; $^ $@ | tee $(@:.pdf=.out)
 
-img/%.pdf_tex: img/%.svg
-	inkscape -f$^ --export-pdf=img/$*.pdf --export-latex --export-use-hints
+$(BUILD_DIR)/%.pdf_tex $(BUILD_DIR)/%.pdf: %.svg
+	$(MAKE_DIR)
+	inkscape -f$^ --export-pdf=$(basename $@).pdf --export-latex --export-use-hints
 
-.INTERMEDIATE: %.1
-
-%.1: %.mp
-	cd $(<D); mpost -tex=latex $(<F)
-
+.PHONY: clean
 clean:
-	$(RMEVERYTHING)
-	cd img ; $(RMEVERYTHING)
-	cd plots ; $(RMEVERYTHING)
+	rm -r $(BUILD_DIR)/*
 
-include $(FILENAME).dependencies $(FILENAME)-print.dependencies
+include $(addsuffix .dependencies,$(GOALS_WITH_PATH))

@@ -1,12 +1,2 @@
-*.aux
-*.log
-*.out
-*.pdf
-*.toc
-*.bbl
-*.blg
-*-blx.bib
-*.run.xml
-*.dependencies
-*.pdf_tex
+/build/
 *.add.spl

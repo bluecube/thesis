@@ -73,10 +73,12 @@ for line in lines():
 
     texfile = match_file(r'\input\{([^}]*)\}', line)
     if texfile:
+        orig_texfile = texfile
         texfile = prefix_build_path(texfile)
         if texfile not in dependencies:
             add_to_deps(texfile)
-            files_to_check.append(texfile)
+            if orig_texfile == texfile: # Generated tex files are not processed
+                files_to_check.append(texfile)
 
     package = match_file(r'\usepackage\{([^}]*)\}', line)
     if package and exists(package):

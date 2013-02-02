@@ -19,7 +19,8 @@ def exists(path):
     else:
         return True
 
-def match_file(regexp, line):
+def match_file(command, line):
+    regexp = '\\' + re.escape(command) + r'(?:\[[^\]]*\])*\{([^}]*)\}'
     match = re.findall(regexp, line)
     if len(match) == 0:
         return False
@@ -58,20 +59,19 @@ files_to_check = args.files
 dependencies = {f: ["argument"] for f in args.files}
 
 for line in lines():
-    if re.match(r'^\s*%', line):
-        continue
+    line = re.sub(r'(^|[^\\])%.*$', '$1', line)
 
-    graphics = match_file(r'\includegraphics(?:\[[^\]]*\])?\{([^}]*)\}', line)
+    graphics = match_file('includegraphics', line)
     if graphics:
         graphics = prefix_build_path(graphics)
         add_to_deps(graphics)
 
-    bibresource = match_file(r'\addbibresource\{([^}]*)\}', line)
+    bibresource = match_file('addbibresource', line)
     if bibresource:
         bibresource = prefix_build_path(bibresource)
         add_to_deps(bibresource)
 
-    texfile = match_file(r'\input\{([^}]*)\}', line)
+    texfile = match_file('input', line)
     if texfile:
         orig_texfile = texfile
         texfile = prefix_build_path(texfile)
@@ -80,7 +80,7 @@ for line in lines():
             if orig_texfile == texfile: # Generated tex files are not processed
                 files_to_check.append(texfile)
 
-    package = match_file(r'\usepackage\{([^}]*)\}', line)
+    package = match_file('usepackage', line)
     if package and exists(package):
         add_to_deps(package)
         files_to_check.append(package)

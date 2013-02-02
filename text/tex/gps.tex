@@ -303,7 +303,7 @@ Carrier phase tracking is a technique that depends on measuring the phase of car
 L1 frequency has a wavelength of approximately \SI{19}{\centi\meter}.
 When the receiver can match the L1 with \SI{1}{\percent} accuracy, then the available precision
 is around \SI{2}{\milli\meter} compared to about \SI{3}{\meter} for code phase (pseudorange)
-tracking. More detailed description of the code phase tracking errors is in \autoref{sec:gps-errors}.
+tracking. More detailed description of the code phase tracking errors is in \cref{sec:gps-errors}.
 
 One of the main problems with the carrier phase tracking is integer ambiguity of the carrier wave.
 This problem arises because the carrier wave doesn't contain any code designed to resolve
@@ -415,11 +415,11 @@ or TDOP (time error).
 In theory standard deviation of the completed fix should have a linear dependency on
 UERE and DOP (see equation \eqref{eq:dop-def}), but real position error is typically slightly lower,
 since the ionospheric errors are correlated.
-Measured dependence of position error on HDOP is in \autoref{fig:wgs84_hdop_error}.
+Measured dependence of position error on HDOP is in \cref{fig:wgs84_hdop_error}.
 
 \subsubsection{Definition}
 Formal definition of DOP values is based on linearization of pseudorange equations
-in \autoref{sec:gps-position}:
+in \cref{sec:gps-position}:
 \begin{equation}
 	\label{eq:dop1}
 	\vect{H}\vect{\Delta x} = \vect{\Delta \rho}
@@ -490,7 +490,7 @@ DRMS from HDOP:
 	\mathrm{DRMS} = \sqrt{(a \HDOP)^2 + b^2)}
 \end{equation}
 with \(a\) and \(b\) are parameters that are fitted to measured data.
-In \autoref{sec:wgs84_hdop_error} we show how this expression fits our experimental data.
+In \cref{sec:wgs84_hdop_error} we show how this expression fits our experimental data.
 
 \(2 \times \mathrm{DRMS}\) is often used as an approximation for a radius containing
 \SI{95}{\percent} of measurements.
@@ -517,7 +517,7 @@ important question arises of how accurate the matching is.
 Often cited value is \SI{1}{\percent}, which for \SI{1.023}{\mega\hertz}
 chipping rate gives about \SI{2.9}{\meter}.
 This kind of errors can be improved by smoothing with carrier phase measurements (see
-\autoref{sec:gps_carrier_phase}).
+\cref{sec:gps_carrier_phase}).
 
 Delays also occur in receiver signal processing, both in the electronics and in software,
 but if these delays are constant for all pseudorange measurements, they will be removed
@@ -538,7 +538,7 @@ They are typically caused by buildings surrounding the receiver position,
 reflective surfaces surrounding the antenna (e.g. wings in aircraft mounted GPS) or earth surface
 when including satellites with low elevation angle.
 
-An illustration of this effect and of shadowing is shown in \autoref{fig:multipath}.
+An illustration of this effect and of shadowing is shown in \cref{fig:multipath}.
 Signal drawn in green follows a direct path from the satellite to the receiver and is shadowed,
 and red multipath signal is reflected from a building, making its travelled path longer.
 
@@ -600,7 +600,7 @@ but they are not very reliable.
 An interesting property of ionospheric delays is, that they are correlated,
 both in measurements from different satellite to a single receiver and in measurements
 from a single satellite to multiple receivers.
-The later property is utilized in differential GPS (\autoref{sec:dgps}).\todo{Add citations, expand}
+The later property is utilized in differential GPS (\cref{sec:dgps}).\todo{Add citations, expand}
 
 
 \subsubsection{Ephemeris Errors and SV Clock Errors}
@@ -612,7 +612,7 @@ The errors are periodically corrected by the control segment, but between the up
 increases as the data age.
 \todo{expand, add citations}
 
-This class of errors can be avoided or at least decreased by using precise ephemeris (see \autoref{sec:gps-ephemeris})
+This class of errors can be avoided or at least decreased by using precise ephemeris (see \cref{sec:gps-ephemeris})
 at the expense of requiring internet connection during operation.
 
 \subsubsection{Relativistic Errors}

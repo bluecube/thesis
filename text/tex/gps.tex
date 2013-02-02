@@ -590,18 +590,20 @@ with hard-coded values for meteorologic parameters.
 
 \paragraph{Ionospheric Delays}
 
-Tropospheric delays are relatively small and can be relatively easily estimated based on satellite elevation
-angle\todo{Citation needed. And some equations.}, but ionospheric errors are much larger and harder to predict.
-
-Multi frequency receivers can calculate ionospheric delays by comparing the two received signals.
-Delay models for for ionosphere that can be used in a single frequency receiver also exist,
-but they are not very reliable.
+Compared to tropospheric delays, signal delays caused in ionosphere are larger and
+harder to predict.
 
 An interesting property of ionospheric delays is, that they are correlated,
 both in measurements from different satellite to a single receiver and in measurements
 from a single satellite to multiple receivers.
-The later property is utilized in differential GPS (\cref{sec:dgps}).\todo{Add citations, expand}
+The later property is utilized in differential GPS (\cref{sec:dgps}).
 
+Because the ionospheric delay is a function of signal frequency and total electron
+count in atmosphere, \cite{navipedia-ionospheric}, it can be almost completely
+eliminated when using multi frequency receivers.
+Low cost single frequency receivers, are however forced to use less accurate
+models of the ionosphere and ionospheric parameters transmitted in the
+GPS navigation messages \cite{fyfe92}.
 
 \subsubsection{Ephemeris Errors and SV Clock Errors}
 

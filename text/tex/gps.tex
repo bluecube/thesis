@@ -599,11 +599,13 @@ from a single satellite to multiple receivers.
 The later property is utilized in differential GPS (\cref{sec:dgps}).
 
 Because the ionospheric delay is a function of signal frequency and total electron
-count in atmosphere, \cite{navipedia-ionospheric}, it can be almost completely
+count in atmosphere \cite{kaplan06}, it can be almost completely
 eliminated when using multi frequency receivers.
-Low cost single frequency receivers, are however forced to use less accurate
-models of the ionosphere and ionospheric parameters transmitted in the
-GPS navigation messages \cite{fyfe92}.
+Single frequency receivers, are however forced to use less accurate
+models of the ionosphere and ionospheric parameters (Klobuchar model for GPS
+\cite{navipedia-klobuchar} or NeQuick model for Galileo \cite{navipedia-nequick}).
+Ionospheric correction estimates are also transmitted in the GPS navigation
+messages \cite{fyfe92}.
 
 \subsubsection{Ephemeris Errors and SV Clock Errors}
 

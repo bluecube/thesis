@@ -28,7 +28,7 @@ $(BUILD_DIR)/%.pdf: %.tex
 	cd $(@D); BIBINPUTS="..:$$BIBINPUTS" bibtex8 $(@F:.pdf=.aux)
 	cd $(@D); TEXINPUTS="..:$$TEXINPUTS" pdflatex -file-line-error $(abspath $<)
 
-$(BUILD_DIR)/%.pdf.dependencies: %.tex
+$(BUILD_DIR)/%.pdf.dependencies: %.tex dependencies.py
 	$(MAKE_DIR)
 	echo -n "$(@:.dependencies=) $@: " > $@
 	./dependencies.py --build-dir=$(BUILD_DIR) $< >> $@

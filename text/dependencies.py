@@ -46,10 +46,19 @@ def lines():
 def add_to_deps(path):
     global current_file
     global current_line
-    dependencies.setdefault(path, []).append(
-        "{}:{}".format(current_file, current_line))
+    dependencies.setdefault(path, []).append((current_file, current_line))
 
-parser = argparse.ArgumentParser(description='Find dependencies of a tex file.')
+parser = argparse.ArgumentParser(description="""Find dependencies of a tex file.
+
+Read input files line by line and look for "includegraphics", "addbibresource",
+"input" and "usepackage" commands. If the referenced file exists, it is added
+as a dependency, if it doesn not, then with "usepackage" it is skipped and
+with all other commands it is first prefixed with build path and added to
+dependencies.
+If they exist, files found with "input" and "usepackage" are also added to
+the list of source files and scanned for dependencies themselves.
+One additional rule is, that input'd file in build directory will not be read
+as an input even if it exists.""")
 parser.add_argument('files', nargs='+')
 parser.add_argument('--build-directory',
     help='build directory to prefix to path to generated files.')
@@ -81,10 +90,12 @@ for line in lines():
                 files_to_check.append(texfile)
 
     package = match_file('usepackage', line)
-    if package and exists(package):
-        add_to_deps(package)
-        files_to_check.append(package)
+    if package:
+        package = package + ".sty"
+        if exists(package):
+            add_to_deps(package)
+            files_to_check.append(package)
 
 print(' \\\n'.join(sorted(dependencies.keys())))
-for k, v in sorted(dependencies.items()):
-    print("# " + k + ": " + " ".join(v))
+for filename, sources in sorted(dependencies.items()):
+    print("# " + filename + ": " + " ".join("{}:{}".format(*src) for src in sources))

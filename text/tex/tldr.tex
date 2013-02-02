@@ -1,0 +1,29 @@
+\chapter{tl;dr}
+
+\begin{itemize}
+\item
+Using low level GPS data as a sequence of correction inputs to Monte Carlo Localization.
+
+\item
+Communication with GPS receiver
+\begin{itemize}
+    \item Only SiRF 3 chips with binary SiRF protocol is supported, but the
+    approach should be adaptable to other receivers without major modifications
+    \item \autoref{sec:impl-sirf}
+\end{itemize}
+
+\item
+NMEA data as MCL input
+\begin{itemize}
+    \item Simpler, less CPU intensive, drops some information when the results are
+    wrapped in lat / lon / hdop for WGS84.
+    \item
+        Fitting curve to measured data:
+        \begin{equation*}
+            \mathrm{DRMS}(\HDOP) = \sqrt{(\num{4.941}\HDOP)^2 + \num{3.568}^2}
+        \end{equation*}
+    \item \autoref{fig:wgs84_hdop_error}, \autoref{sec:wgs84_hdop_error}
+\end{itemize}
+
+\end{itemize}
+\todo{Write this once there are results.}

@@ -23,7 +23,7 @@ precise time source for every place on earth with direct satellite visibility.
 GPS consists of a constellation of at least 24 satellites (space vehicles, SVs),
 control segment and end-user receivers.
 
-The satellites are orbiting in six nearly circular orbits approximately \SI{20200}{km}
+The satellites are orbiting in six nearly circular orbits approximately \SI{20200}{\kilo\meter}
 above Earth surface.
 The satellite constellation is still being modernized \cite{gps-modernization-www}
 and new satellites are being launched.
@@ -565,7 +565,30 @@ Section 6.3 of \cite{kaplan06} contains detailed discussion of multipath.
 
 \subsubsection{Atmospheric Delays}
 
-When the GPS signals are travelling through the atmosphere, they are delayed in troposphere and ionosphere.
+GPS signals experience delays when travelling through the atmosphere.
+%For the purposes of GPS they are divided into tropospheric and ionospheric delays.
+
+\paragraph{Tropospheric Delays}
+Tropospheric delays describe signal delays in the non-ionized layers of Earth's atmosphere.
+
+Troposphere is the non-ionized layer of atmosphere from Earth surface to
+approximately \SI{8}{\kilo\meter}.
+The stratosphere -- another non-ionized layer of atmosphere -- causes the same
+type of delays and is usually included in the therm tropospheric delay.
+
+Tropospheric delays are modelled as consisting of a wet and dry components,
+and when left uncompensated, they amount to between \SI{2.4}{\meter} and \SI{25}{\meter}
+depending on satellite elevation angle, the dry component
+responsible for about \SI{90}{\percent} of the delay \cite{kaplan06}.
+
+There are several models for estimating tropospheric delays depending on satellite
+elevation angle, altitude of the receiver, atmospheric pressure, temperature and
+water vapour pressure.
+
+In the implementation part of this work we use model outlined in \cite{navipedia-tropospheric}
+with hard-coded values for meteorologic parameters.
+
+\paragraph{Ionospheric Delays}
 
 Tropospheric delays are relatively small and can be relatively easily estimated based on satellite elevation
 angle\todo{Citation needed. And some equations.}, but ionospheric errors are much larger and harder to predict.

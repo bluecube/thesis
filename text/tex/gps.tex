@@ -191,9 +191,9 @@ potential -- also defined in WGS84.
 
 Ephemeris in the context of GPS means data describing satellite positions and velocities
 at given time.
-Ephemeris data are transmitted in the \SI{50}{\bit\per\second} messages along with the ranging signals,
-together with clock offsets and clocks drifts of the satellites
-and possibly other data.
+Ephemeris data are transmitted in the \SI{50}{\bit\per\second} navigation messages,
+together with clock offset and clocks drift data of the satellites, ionospheric
+delay estimates and other data.
 
 Satellite orbits in the ephemeris messages are described using a set of Keplerian orbital parameters.
 Since in this work we will be only using ephemeris data in the ECEF reference frame, Keplerian parameter
@@ -211,7 +211,7 @@ they are still several times more precise than the broadcast ephemerides
 (\SI{5}{\centi\meter} RMS versus \SI{100}{\centi\meter} RMS, according to \cite{orbit-data}).
 
 Precise ephemeris files consist of satellite positions in ECEF
-coordinates and clock offsets, in 15 minutes intervals and must be interpolated
+coordinates and clock offsets, both sampled in 15 minutes intervals and must be interpolated
 before using them for navigation \cite{schenewerk03}.
 
 \section{Obtaining Position and Velocity}
@@ -609,14 +609,12 @@ messages \cite{fyfe92}.
 
 \subsubsection{Ephemeris and SV Clock Errors}
 
-When the receiver relies on the transmitted ephemeris and satellite clock corrections,
-it is also affected by errors in these values.
+Ephemeris and satellite clock corrections periodically uploaded by the control
+segment, however the residual errors increase with the age of upload.
+According to \cite{kaplan06}, \(1 \sigma\) pseudorange error is typically about \SI{0.8}{\meter}
+and up to \SI{4}{\meter} for clock errors.
 
-The errors are periodically corrected by the control segment, but between the updates the error
-increases as the data age.
-\todo{expand, add citations}
-
-This class of errors can be avoided or at least decreased by using precise ephemeris (see \cref{sec:gps-ephemeris})
+As discussed in \cref{sec:gps-ephemeris}, this class of errors can be avoided orat least decreased by using precise ephemeris
 at the expense of requiring internet connection during operation.
 
 \subsubsection{Relativistic Errors}

@@ -617,8 +617,15 @@ and up to \SI{4}{\meter} for clock errors.
 As discussed in \cref{sec:gps-ephemeris}, this class of errors can be avoided orat least decreased by using precise ephemeris
 at the expense of requiring internet connection during operation.
 
-\subsubsection{Relativistic Errors}
-\todo{Write something here!}
+\subsubsection{Relativistic Effects}
+
+\paragraph{Satellite Clock Frequency}
+The most famous effect of relativity is frequency shift of the satellite clock
+when measured on receiver on the ground.
+To compensate this, satellite clock frequency is set to
+\SI{10.22999999543}{\mega\hertz} before launch and the observed frequency on the
+ground is \SI{10.23}{\mega\hertz} \cite{fyfe92}.
+
 
 \section{Kalman Filters}
 Kalman filters are often used in the GPS receivers to merge past

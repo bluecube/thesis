@@ -292,12 +292,12 @@ This can be visualised as intersection of conical surfaces in four dimensions.
 Equations from \eqref{eq:pseudorange3} can be solved using various methods, including closed form solutions
 (for example \cite{leva96}), iterative solutions, linearization of the equations around
 previous position estimates, using Kalman filters (see \ref{sec:kalman}) or,
-as we will discuss in section \ref{sec:measurement_domain}, Monte Carlo localization.
+as we will discuss in section \ref{sec:measurement-domain}, Monte Carlo localization.
 The last two approaches also have the advantage of being able to fuse other sensor data
 into the solution.
 
 \subsubsection{Carrier Phase Tracking}
-\label{sec:gps_carrier_phase}
+\label{sec:gps-carrier-phase}
 
 Carrier phase tracking is a technique that depends on measuring the phase of carrier wave.
 L1 frequency has a wavelength of approximately \SI{19}{\centi\meter}.
@@ -415,7 +415,7 @@ or TDOP (time error).
 In theory standard deviation of the completed fix should have a linear dependency on
 UERE and DOP (see equation \eqref{eq:dop-def}), but real position error is typically slightly lower,
 since the ionospheric errors are correlated.
-Measured dependence of position error on HDOP is in \cref{fig:wgs84_hdop_error}.
+Measured dependence of position error on HDOP is in \cref{fig:wgs84-hdop-error}.
 
 \subsubsection{Definition}
 Formal definition of DOP values is based on linearization of pseudorange equations
@@ -490,7 +490,7 @@ DRMS from HDOP:
 	\mathrm{DRMS} = \sqrt{(a \HDOP)^2 + b^2)}
 \end{equation}
 with \(a\) and \(b\) are parameters that are fitted to measured data.
-In \cref{sec:wgs84_hdop_error} we show how this expression fits our experimental data.
+In \cref{sec:wgs84-hdop-error} we show how this expression fits our experimental data.
 
 \(2 \times \mathrm{DRMS}\) is often used as an approximation for a radius containing
 \SI{95}{\percent} of measurements.
@@ -517,7 +517,7 @@ important question arises of how accurate the matching is.
 Often cited value is \SI{1}{\percent}, which for \SI{1.023}{\mega\hertz}
 chipping rate gives about \SI{2.9}{\meter}.
 This kind of errors can be improved by smoothing with carrier phase measurements (see
-\cref{sec:gps_carrier_phase}).
+\cref{sec:gps-carrier-phase}).
 
 Delays also occur in receiver signal processing, both in the electronics and in software,
 but if these delays are constant for all pseudorange measurements, they will be removed
@@ -673,7 +673,7 @@ ionospheric parameters, forming simple DGPS system and increasing the fix precis
 Most of the time a consumer GPS receivers is used as a black box that given power and possibly antenna connection
 provides position estimates.
 In more complicated use cases, such as measurement domain integration of GPS signals with
-other sensors discussed in section \ref{sec:measurement_domain} of this work,
+other sensors discussed in section \ref{sec:measurement-domain} of this work,
 lower level data from the location estimation process are used, but only as provided
 by software in the GPS receiver.
 Many communication protocols providing position, velocity, clock data

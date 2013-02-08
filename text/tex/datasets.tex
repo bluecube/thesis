@@ -11,7 +11,7 @@ in the SiRF binary protocol.
 First dataset contains approximately one month of recorded SiRF data.
 During this period the receiver was stationary inside a room and had good signal 
 reception. 
-It was used for modelling of the GPS measurements errors in \cref{chap:gps_and_mcl}.
+It was used for modelling of the GPS measurements errors in \cref{chap:gps-and-mcl}.
 
 The dataset contains \num{2363458} measurement cycles and
 \num{22726200} pseudorange measurements.
@@ -30,34 +30,16 @@ The last dataset is for debugging purposes only and contains approximately
 
 \end{itemize}
 
-\Cref{fig:hdop_hist} contains histograms showing the distribution of HDOP values in the datasets.
+\Cref{fig:hdop-hist} contains histograms showing the distribution of HDOP values in the datasets.
 %Missing from the plots are outliers with HDOP more than 10.
 
 \begin{figure}[htp]
 	\centering
 	\noindent\makebox[\textwidth]{
-	\includegraphics{plots/hdop_hist.pdf}
+	\includegraphics{plots/hdop-hist.pdf}
 	}
 	\caption{Histograms of HDOP values for our data sets.}
-	\label{fig:hdop_hist}
-
-	% cube@duskwalker ~/diplomka/impl $ ./compare_hdop_histogram.py recordings/processed_numpy_arrays/month_wgs84.npy recordings/roboauto_merged.recording2 --max-plot-hdop 10 --save-hist-plot ../text/img/hdop_hist.svg --label '"Month" dataset','"Roboauto" dataset' --no-show
-	% 2012-10-09 23:25:27,669 - root - INFO - Retrieving fixes from recordings/processed_numpy_arrays/month_wgs84.npy
-	% 2012-10-09 23:25:27,771 - root - INFO - Done. Have 2363458 fixes
-	% 2012-10-09 23:25:27,787 - root - INFO - Retrieving fixes from recordings/roboauto_merged.recording2
-	% 2012-10-09 23:25:27,787 - root - INFO - Retrieving fixes
-	% 2012-10-09 23:25:29,932 - root - INFO - Done. Have 1531 fixes
-	% Outliers in "Month" dataset:
-	% 9.9 - 10.1: 22
-	% 12.7 - 12.9: 4
-	% 12.9 - 13.1: 7
-	% 14.1 - 14.3: 2
-	% 14.3 - 14.5: 6
-	% 14.7 - 14.9: 1
-	% 15.1 - 15.3: 1
-	% Outliers in "Roboauto" dataset:
-	% 49.9 - 50.1: 4
-	% 2012-10-09 23:25:31,977 - root - INFO - Saved ../text/img/hdop_hist.svg
+	\label{fig:hdop-hist}
 \end{figure}
 
 

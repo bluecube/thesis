@@ -4,7 +4,7 @@ import os
 
 #m.rcParams['axes.unicode_minus'] = False
 m.rcParams['text.usetex'] = True
-m.rcParams['text.latex.preamble'] = '\input{' + os.getcwd() + '/../text/common_style_stuff}'
+m.rcParams['text.latex.preamble'] = '\input{' + os.getcwd() + '/../text/common-style.tex}'
 
 m.rcParams['font.size'] = 11
 m.rcParams['font.family'] = 'serif'

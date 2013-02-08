@@ -204,7 +204,7 @@ for more detailed description see \cite{welch95}.
 \begin{gather}
 	\bar{x}^{-}_i = A_{i - 1}\bar{x}_{i-1} + B_{i - 1}a_{i - 1}
 	\\
-	P^{-}_i = A_{i - 1}P_{i - 1}A^\mathrm{T}_{i - 1} + Q_{i - 1}
+	P^{-}_i = A_{i - 1}P_{i - 1}A^{\mathrm{T}}_{i - 1} + Q_{i - 1}
 \end{gather}
 
 Here \(\bar{x}_i\) and \(P_i\) are mean and covariance describing \(\Bel(X_i)\).
@@ -214,7 +214,7 @@ Here \(\bar{x}_i\) and \(P_i\) are mean and covariance describing \(\Bel(X_i)\).
 \subsubsection{Correction}
 \begin{gather}
 	\label{eq:kalman-gain}
-	K_i = P^{-}_{i}H^\mathrm{T}_{i}(H_{i}P^{-}_{i}H^\mathrm{T}_{i} + R_{i})^{-1}
+	K_i = P^{-}_{i}H^{\mathrm{T}}_{i}(H_{i}P^{-}_{i}H^{\mathrm{T}}_{i} + R_{i})^{-1}
 	\\
 	\bar{x}_i = \bar{x}^{-}_i + K_i (o_i - H_{i}\bar{x}^{-}_i)
 	\\

@@ -270,7 +270,7 @@ the basic equation for determining geometric distance from pseudorange measureme
 %		\speedoflight \geomrangedelays + \speedoflight \svclockoffset
 %\end{equation}
 
-Figure \ref{fig:pseudorange} summarizes relations between times in a single pseudorange measurement.
+\Cref{fig:pseudorange} summarizes relations between times in a single pseudorange measurement.
 
 \subsection{Position}
 \label{sec:gps-position}
@@ -422,31 +422,31 @@ Formal definition of DOP values is based on linearization of pseudorange equatio
 in \cref{sec:gps-position}:
 \begin{equation}
 	\label{eq:dop1}
-	\vect{H}\vect{\Delta x} = \vect{\Delta \rho}
+	\vect{H}\vect{\Delta{}x} = \vect{\Delta{}\rho}
 \end{equation}
 Here \(\vect{H}\) is a matrix of unit vectors pointing from linearization point
-to the satellites, \(\vect{\Delta \rho}\) is a vector containing difference between
+to the satellites, \(\vect{\Delta{}\rho}\) is a vector containing difference between
 pseudoranges in linearization point and the real measured pseudoranges and finally
-\(\vect{\Delta x}\) is a vector describing the offset of receiver position from the
+\(\vect{\Delta{}x}\) is a vector describing the offset of receiver position from the
 linearization point.
 To simplify the final definitions of DOP values, all calculations here are performed
 in a local reference frame with the \(z\) axis pointing up from the linearization point.
 
-Equation \eqref{eq:dop1} is solved for \(\vect{\Delta x}\) using least squares and
+Equation \eqref{eq:dop1} is solved for \(\vect{\Delta{}x}\) using least squares and
 as a next step, pseudorange and position errors are taken into account.
 This yields an expression relating position error on pseudorange error.
 \begin{equation}
-	\vect{\delta x} = (\vect{H}^T \vect{H})^{-1} \vect{H}^T \vect{\delta \rho}
+	\vect{\delta{}x} = (\vect{H}^T \vect{H})^{-1} \vect{H}^T \vect{\delta{}\rho}
 \end{equation}
-Where \(\vect{\delta x}\) and \(\vect{\delta \rho}\) are position error and pseudorange errors.
+Where \(\vect{\delta{}x}\) and \(\vect{\delta{}\rho}\) are position error and pseudorange errors.
 
 As a next step, pseudorange and position errors are taken into account and after
 some modifications relations between position and pseudorange error are expressed.
 All pseudorange errors are assumed to be independent, Gaussian and identically distributed.
 
-Covariance matrix of \(\vect{\delta x}\) can then be expressed as
+Covariance matrix of \(\vect{\delta{}x}\) can then be expressed as
 \begin{equation}
-	\cov(\vect{\delta x}) =
+	\cov(\vect{\delta{}x}) =
 		(\vect{H}^T \vect{H})^{-1} \sigma^2_\UERE =
 		\begin{pmatrix}
 			\sigma^2_{x}  & \sigma^2_{xy} & \sigma^2_{xz} & \sigma^2_{xt} \\
@@ -475,9 +475,9 @@ It is a single value describing the accuracy of a 2D position fix.
 
 DRMS is defined as
 \begin{equation}
-	\mathrm{DRMS} = \sqrt{E(\norm{\vect{\delta R}}^2)}
+	\mathrm{DRMS} = \sqrt{E(\norm{\vect{\delta{}R}}^2)}
 \end{equation}
-where \(\vect{\delta R}\) is a horizontal component of the position error.
+where \(\vect{\delta{}R}\) is a horizontal component of the position error.
 
 Theoretically DRMS can be obtained from HDOP values:
 \begin{equation}

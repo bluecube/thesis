@@ -18,7 +18,7 @@ RMEVERYTHING = rm -f *.1 *.log *.aux *.out *.pdf *.toc *.bbl *.blg *-blx.bib *.r
 BUILD_DIR = build
 
 GOALS_WITH_PATH = $(addprefix $(BUILD_DIR)/,$(GOALS))
-MAKE_DIR = mkdir -p $(@D)
+MAKE_DIR = @mkdir -p $(@D)
 
 all: $(GOALS_WITH_PATH)
 

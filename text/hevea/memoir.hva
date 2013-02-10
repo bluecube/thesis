@@ -1,0 +1,23 @@
+\input{book.hva}
+
+\newcommand{\chapterstyle}[1]{}
+\newcommand{\titlingpage}{}
+\newcommand{\endtitlingpage}{}
+\newcommand{\movetooddpage}{}
+\newcommand{\frontmatter}{}
+\newcommand{\mainmatter}{}
+\newcommand{\OnehalfSpacing}{}
+\newcommand{\setsecnumdepth}{}
+\newcommand{\settocdepth}{}
+
+\newcommand{\the}{}
+\newcommand{\year}{2013} % TODO
+
+\makeatletter
+\newcommand{\@ifnextchar}[2]{}
+\makeatother
+
+\newenvironment{otherlanguage}{}{}
+
+\newcommand{\DeclareMathOperator}[2]{\newcommand{#1}{\operatorname{#2}}}
+\newcommand{\addbibresource}[1]{\bibliography{#1}}

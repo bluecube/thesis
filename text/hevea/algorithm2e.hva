@@ -1,0 +1,7 @@
+\newcommand{\DontPrintSemicolon}{}
+\newcommand{\SetAlCapSkip}[1]{}
+\newcommand{\SetKw}[2]{\newcommand{#1}{#2}}
+\newcommand{\SetKwFor}[4]{}
+\newcommand{\SetKwFunction}[2]{\newcommand{\\#1}{\@open{code}{}#2\@close{code}}}
+
+\newenvironment{algorithm}{\begin{toimage}\begin{algorithm}}{\end{algorithm}\end{toimage}}

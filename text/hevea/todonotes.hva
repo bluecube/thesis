@@ -1,0 +1,2 @@
+\newcommand{\todo}[1]{}
+\newcommand{\missingfigure}[1]{\begin{toimage}\missingfigure{#1}\end{toimage}}

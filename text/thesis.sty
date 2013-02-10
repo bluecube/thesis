@@ -53,16 +53,16 @@
 }
 \usepackage{booktabs}
 \usepackage{bm} % bold math symbols
-
 \usepackage[obeyDraft]{todonotes}
 \usepackage[backend=bibtex8]{biblatex}
-
 \usepackage{xstring}
+\usepackage{hevea}
 
 \usepackage[nameinlink]{cleveref}
 
 \graphicspath{{img/}}
 
+\begin{latexonly}
 %% Define a new style for url that will use a smaller font.
 \makeatletter
 \def\url@smallerstyle{%
@@ -70,6 +70,7 @@
 \makeatother
 %% Now actually use the newly defined style.
 \urlstyle{smaller}
+\end{latexonly}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Algorithms

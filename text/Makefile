@@ -28,6 +28,12 @@ $(BUILD_DIR)/%.pdf: %.tex
 	cd $(@D); BIBINPUTS="..:$$BIBINPUTS" bibtex8 $(@F:.pdf=.aux)
 	cd $(@D); TEXINPUTS="..:$$TEXINPUTS" pdflatex -file-line-error $(abspath $<)
 
+$(BUILD_DIR)/%.html: %.tex hevea/*
+	$(MAKE_DIR)
+	hevea -v -I . -I hevea/ -o $@ extra.hva $<
+	cd $(@D); BIBINPUTS="..:$$BIBINPUTS" bibhva $(@F:.html=.haux)
+	hevea -v -I . -I hevea/ -o $@ extra.hva $<
+
 $(BUILD_DIR)/%.pdf.dependencies: %.tex dependencies.py
 	$(MAKE_DIR)
 	echo -n "$(@:.dependencies=) $@: " > $@

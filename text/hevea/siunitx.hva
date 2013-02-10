@@ -1,0 +1,17 @@
+\newcommand{\num}[1]{\ensuremath{#1}}
+\newcommand{\SI}[2]{\ensuremath{\num{#1}\,\mathrm{#2}}}
+\newcommand{\ang}[1]{\ensuremath{\num{#1}°}}
+
+\newcommand{\bit}{b}
+\newcommand{\second}{s}
+\newcommand{\meter}{m}
+\newcommand{\hertz}{Hz}
+\newcommand{\percent}{\%}
+
+\newcommand{\mega}{M}
+\newcommand{\kilo}{k}
+\newcommand{\centi}{c}
+\newcommand{\milli}{m}
+\newcommand{\micro}{\mu}
+
+\newcommand{\per}{/}

@@ -20,7 +20,18 @@ BUILD_DIR = build
 GOALS_WITH_PATH = $(addprefix $(BUILD_DIR)/,$(GOALS))
 MAKE_DIR = @mkdir -p $(@D)
 
+.PHONY: default
+default: pdf
+	@echo
+	@echo 'Only built target pdf. use `make all` to rebuild everything.'
+
 all: $(GOALS_WITH_PATH)
+
+.PHONY: pdf
+pdf: $(BUILD_DIR)/$(FILENAME).pdf
+
+.PHONY: print-pdf
+print-pdf: $(BUILD_DIR)/$(FILENAME)-print.pdf
 
 $(BUILD_DIR)/%.pdf: %.tex
 	$(MAKE_DIR)

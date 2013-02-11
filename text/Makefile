@@ -3,28 +3,20 @@ FILENAME = thesis
 GOALS = $(FILENAME).pdf
 GOALS += $(FILENAME)-print.pdf
 
-MPFILES = $(wildcard img/*.mp)
-EPSFILES = $(wildcard img/*.eps)
-
-TEXFILES = $(wildcard tex/*.tex)
-IMAGEFILES = $(MPFILES:.mp=.pdf) $(EPSFILES:.eps=.pdf) \
-	$(wildcard tex/*.jpg) $(wildcard tex/*.png)
-
-.PHONY: view
-.PHONY: all
-.PHONY: clean
-
-RMEVERYTHING = rm -f *.1 *.log *.aux *.out *.pdf *.toc *.bbl *.blg *-blx.bib *.run.xml mperr.tex mptextmp.mp *.mpx *.mpo *-temp.* *-temp-* *.dependencies *.pdf_tex *.spl
 BUILD_DIR = build
+IMPL_DIR = $(realpath ../impl)
+export IMPL_DIR
 
 GOALS_WITH_PATH = $(addprefix $(BUILD_DIR)/,$(GOALS))
-MAKE_DIR = @mkdir -p $(@D)
+
+DO_MAKE_DIR = @mkdir -p $(@D)
 
 .PHONY: default
 default: pdf
 	@echo
 	@echo 'Only built target pdf. use `make all` to rebuild everything.'
 
+.PHONY: all
 all: $(GOALS_WITH_PATH)
 
 .PHONY: pdf
@@ -34,7 +26,7 @@ pdf: $(BUILD_DIR)/$(FILENAME).pdf
 print-pdf: $(BUILD_DIR)/$(FILENAME)-print.pdf
 
 $(BUILD_DIR)/%.pdf: %.tex
-	$(MAKE_DIR)
+	$(DO_MAKE_DIR)
 	cd $(@D); TEXINPUTS="..:$$TEXINPUTS" pdflatex -file-line-error $(abspath $<)
 	cd $(@D); BIBINPUTS="..:$$BIBINPUTS" bibtex8 $(@F:.pdf=.aux)
 	cd $(@D); TEXINPUTS="..:$$TEXINPUTS" pdflatex -file-line-error $(abspath $<)
@@ -46,20 +38,20 @@ $(BUILD_DIR)/%.html: %.tex hevea/*
 	hevea -v -I . -I hevea/ -o $@ extra.hva $<
 
 $(BUILD_DIR)/%.pdf.dependencies: %.tex dependencies.py
-	$(MAKE_DIR)
+	$(DO_MAKE_DIR)
 	echo -n "$(@:.dependencies=) $@: " > $@
 	./dependencies.py --build-dir=$(BUILD_DIR) $< >> $@
 
 $(BUILD_DIR)/%.pdf: %.eps
-	$(MAKE_DIR)
+	$(DO_MAKE_DIR)
 	ps2pdf -dEPSCrop $^ $@
 
-$(BUILD_DIR)/%.pdf: %.sh
-	$(MAKE_DIR)
-	set -e ; set -o pipefail ; $^ $@ | tee $(@:.pdf=.out)
+$(BUILD_DIR)/%.pdf $(BUILD_DIR)/%.out: %.sh
+	$(DO_MAKE_DIR)
+	set -e ; set -o pipefail ; $^ $(basename $@).pdf | tee $(basename $@).out
 
 $(BUILD_DIR)/%.pdf_tex $(BUILD_DIR)/%.pdf: %.svg
-	$(MAKE_DIR)
+	$(DO_MAKE_DIR)
 	inkscape -f$^ --export-pdf=$(basename $@).pdf --export-latex --export-use-hints
 
 .PHONY: clean

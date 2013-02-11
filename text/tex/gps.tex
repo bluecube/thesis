@@ -499,7 +499,7 @@ In \cref{sec:wgs84-hdop-error} we show how this expression fits our experimental
 
 The following text describes major sources of the measurement errors and when possible
 also how to remove the error.
-Other than errors mentioned in this section there are many more sources, but they cause inaccuracies
+Apart from errors mentioned in this section, there are many more sources, but they cause inaccuracies
 that are negligible for single receiver applications discussed in this thesis.
 Overview can be found in \cite{kouba09}.
 
@@ -619,13 +619,17 @@ at the expense of requiring internet connection during operation.
 
 \subsubsection{Relativistic Effects}
 
-\paragraph{Satellite Clock Frequency}
+%\paragraph{Satellite Clock Frequency}
 The most famous effect of relativity is frequency shift of the satellite clock
-when measured on receiver on the ground.
-To compensate this, satellite clock frequency is set to
-\SI{10.22999999543}{\mega\hertz} before launch and the observed frequency on the
-ground is \SI{10.23}{\mega\hertz} \cite{fyfe92}.
+when received on the ground.
+This frequency shift happens because satellites are moving relative to the user
+and because satellite orbits are further from Earth's mass and therefore less
+affected by the spacetime curvature caused by it.
 
+To compensate, satellite clock frequency is set to
+\SI{10.22999999543}{\mega\hertz} before launch, so the observed frequency
+is \SI{10.23}{\mega\hertz} \cite{fyfe92}.
+\todo{Check if it is necessary, maybe expand}
 
 \section{Kalman Filters}
 Kalman filters are often used in the GPS receivers to merge past

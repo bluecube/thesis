@@ -4,11 +4,14 @@ import re
 import argparse
 import os.path
 
+def force_prefix_build_path(path):
+    return os.path.join(args.build_directory, path)
+
 def prefix_build_path(path):
     if exists(path):
         return path
     else:
-        return os.path.join(args.build_directory, path)
+        return force_prefix_build_path(path)
 
 def exists(path):
     try:
@@ -20,7 +23,7 @@ def exists(path):
         return True
 
 def match_file(command, line):
-    regexp = '\\' + re.escape(command) + r'(?:\[[^\]]*\])*\{([^}]*)\}'
+    regexp = re.escape('\\' + command) + r'(?:\[[^\]]*\])*\{([^}]*)\}'
     match = re.findall(regexp, line)
     if len(match) == 0:
         return False
@@ -43,16 +46,19 @@ def lines():
         except IOError:
             pass
 
-def add_to_deps(path):
+def add_to_deps(path, origin = None):
     global current_file
     global current_line
-    dependencies.setdefault(path, []).append((current_file, current_line))
+
+    if origin is None:
+        origin = "{}:{}".format(current_file, current_line)
+    dependencies.setdefault(path, []).append(origin)
 
 parser = argparse.ArgumentParser(description="""Find dependencies of a tex file.
 
 Read input files line by line and look for "includegraphics", "addbibresource",
 "input" and "usepackage" commands. If the referenced file exists, it is added
-as a dependency, if it doesn not, then with "usepackage" it is skipped and
+as a dependency, if it does not, then with "usepackage" it is skipped and
 with all other commands it is first prefixed with build path and added to
 dependencies.
 If they exist, files found with "input" and "usepackage" are also added to
@@ -77,7 +83,8 @@ for line in lines():
 
     bibresource = match_file('addbibresource', line)
     if bibresource:
-        bibresource = prefix_build_path(bibresource)
+        bibresource = re.sub(r'.bib$', '.bbl', bibresource)
+        bibresource = force_prefix_build_path(bibresource)
         add_to_deps(bibresource)
 
     texfile = match_file('input', line)
@@ -98,4 +105,4 @@ for line in lines():
 
 print(' \\\n'.join(sorted(dependencies.keys())))
 for filename, sources in sorted(dependencies.items()):
-    print("# " + filename + ": " + " ".join("{}:{}".format(*src) for src in sources))
+    print("# " + filename + ": " + " ".join(sources))

@@ -32,6 +32,8 @@ arg_parser.add_argument('--fit-degree', type=int, default=1,
     help="Degree of the polynomial estimating clock offsets.")
 arg_parser.add_argument('--no-show', action='store_true',
     help="Don't show the plots, only save them.")
+arg_parser.add_argument('--plot-thinning', action='store', type=int, default=1,
+    help="Only plot each N-th item.")
 arguments = arg_parser.parse_args()
 
 receiver_state = gps.StationState(
@@ -141,8 +143,8 @@ sv_ids /= sv_ids.max()
 fig1 = plt.figure()
 error_plot = fig1.add_subplot(1, 1, 1)
 
-error_plot.scatter(times, measurement_errors,
-    c=sv_ids, marker='.', s=40, alpha=0.7, edgecolors='none',rasterized=True)
+error_plot.scatter(times[::arguments.plot_thinning], measurement_errors[::arguments.plot_thinning],
+    c=sv_ids[::arguments.plot_thinning], marker='.', s=40, alpha=0.7, edgecolors='none',rasterized=True)
 for index in clock_corrections:
     error_plot.axvline(times[index], color='b', alpha=0.5)
 error_plot.set_title('Measurement errors')

@@ -83,8 +83,7 @@ for line in lines():
 
     bibresource = match_file('addbibresource', line)
     if bibresource:
-        bibresource = re.sub(r'.bib$', '.bbl', bibresource)
-        bibresource = force_prefix_build_path(bibresource)
+        bibresource = prefix_build_path(bibresource)
         add_to_deps(bibresource)
 
     texfile = match_file('input', line)

@@ -148,7 +148,7 @@ error_plot.scatter(times[::arguments.plot_thinning], measurement_errors[::argume
 for index in clock_corrections:
     error_plot.axvline(times[index], color='b', alpha=0.5)
 error_plot.set_title('Measurement errors')
-error_plot.set_xlabel('Time [\si{\second}]')
+error_plot.set_xlabel(r'Time [\si{\second}]')
 error_plot.set_ylabel(r'Error [\si{\meter}]')
 matplotlib_settings.common_plot_settings(error_plot, set_limits=False)
 

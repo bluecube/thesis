@@ -50,22 +50,32 @@ measurements = gps.MessageCollector(gps.sirf_messages.NavigationLibraryMeasureme
 clock_corrections = []
 
 times = [] # Measurement times in receiver time frame
-sv_ids = [] 
+sv_ids = []
 measurement_errors = []
 clock_correction_values  = []
 last_derivation = None
 last_avg_error = None
 last_time = None
+unmodified_last_time = None
+week_offset = 0 # offset of the current gps week from the first recorded one
 
 def cycle_end_callback():
     global last_avg_error
     global last_time
+    global unmodified_last_time
     global last_derivation
+    global week_offset
 
     count = 0
     error_sum = 0
 
     cycle_start = len(measurement_errors)
+
+    if len(measurements.collected) == 0:
+        return
+
+    if measurements.collected[0].gps_sw_time < unmodified_last_time:
+        week_offset += 7 * 24 * 3600
 
     for measurement in measurements.collected:
         me = gps.MeasurementError(ephemeris)
@@ -77,7 +87,8 @@ def cycle_end_callback():
 
         count += 1
         error_sum += error
-        times.append(measurement.gps_sw_time)
+        times.append(measurement.gps_sw_time + week_offset)
+        unmodified_last_time = measurement.gps_sw_time
         sv_ids.append(measurement.satellite_id)
         measurement_errors.append(error)
 

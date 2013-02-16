@@ -15,6 +15,11 @@ concept and for further experimenting; a \enquote{real world} implementation
 would probably be written in C or C++, for increased performance and better portability
 to embedded systems, using libraries like GPSTk \cite{tolman04} for the low level GPS access.
 
+\section{Design}
+\begin{itemize}
+\item Record / replay
+\end{itemize}
+
 \section{What's specific to SiRF}
 \label{sec:impl-sirf}
 \begin{itemize}
@@ -24,24 +29,20 @@ to embedded systems, using libraries like GPSTk \cite{tolman04} for the low leve
 \item \ldots
 \end{itemize}
 
-\section{Design}
-\begin{itemize}
-\item Record / replay
-\end{itemize}
-
 \subsection{Communication With SiRF Chip}
 \begin{itemize}
 \item Detection / switching: SiRF binary <-> NMEA
 \item Parsing and building SiRF messages
 \end{itemize}
 
-\subsection{Obtaining the error model}
-\begin{itemize}
-\item Detection / switching: SiRF binary <-> NMEA
-\end{itemize}
+\section{Position Domain Error Model}
 
-\subsection{Monte Carlo Localization Input}
-\begin{itemize}
-\item ???
-\end{itemize}
+\subsection{Mapping Coordinate Frames}
+\label{sec:impl-coordinates}
+
+
+\section{Measurement Domain Error Model}
+
+In contrast to the previous approach, the whole localization process is kept in
+the ECEF coordinate frame, because GPS of the amount of GPS data being processed.
 

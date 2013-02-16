@@ -6,6 +6,7 @@ import random
 import numpy
 import math
 import logging
+import gc
 
 import gps
 import matplotlib_settings
@@ -124,10 +125,13 @@ logging.info("Processing...")
 
 cycle_end_callback() # Last cycle doesn't end, so this wouldn't be otherwise called.
 
+logging.info("- Convert to arrays...")
 times = numpy.array(times, dtype=numpy.float)
 sv_ids = numpy.array(sv_ids, dtype=numpy.float)
 measurement_errors = numpy.array(measurement_errors, dtype=numpy.float)
 clock_correction_values = numpy.array(clock_correction_values, dtype=numpy.float)
+
+logging.info("- Fit clock corrections...")
 
 poly = numpy.polynomial.polynomial.Polynomial.fit(
     times, measurement_errors + clock_correction_values, deg = arguments.fit_degree)
@@ -139,6 +143,21 @@ measurement_errors -= clock_offsets
 
 sv_ids /= sv_ids.max()
 
+logging.info("- Free some memory...")
+del clock_correction_values
+del clock_offsets
+del ephemeris
+del measurements
+del source
+
+collected = gc.collect(0)
+logging.info("  Collected(0) {} objects.".format(collected))
+collected = gc.collect(1)
+logging.info("  Collected(1) {} objects.".format(collected))
+collected = gc.collect(2)
+logging.info("  Collected(2) {} objects.".format(collected))
+
+logging.info("Plot...")
 
 fig1 = plt.figure()
 error_plot = fig1.add_subplot(1, 1, 1)

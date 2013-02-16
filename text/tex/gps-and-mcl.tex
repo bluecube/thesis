@@ -1,24 +1,25 @@
 \chapter{GPS and Monte Carlo Localization}
 \label{chap:gps-and-mcl}
 
-This chapter discusses two approaches to using GPS receiver as a correction input
-to Monte Carlo localization. One based on pseudorange measurements and one based on
-WGS84 pre-calculated data.
+This chapter discusses using GPS data as an input to to Monte Carlo localization.
 
+As discussed in \cref{chap:mcl}, Monte Carlo localization accepts two kinds of
+inputs -- prediction and correction.
+Of these two we will consider only correction inputs as GPS doesn't provide any
+a priori data about motion of the robot.
 
+First we will concentrate on the approach based on high level data that are available
+from the standard WGS84 protocol,
+second we will use individual pseudorange measurements each as an independent
+correction input to MCL.
 
 \section{Position Domain Integration}
-Position domain integration means combining the calculated position and velocity from
-GPS with other sensors.
+Integrating the measurements in position domain means processing the complete
+fixes in ECEF reference frames (or WGS84 converted to ECEF, see \cref{sec:ref-frames})
+and treating the GPS receiver as a source of absolute position and velocity information.
 
-Most GPS receivers 
-
-This approach has the advantage of being very simple 
-
-\begin{itemize}
-\item Using complete fixes from receiver
-\item Simple, less CPU intensive
-\end{itemize}
+This approach has the advantage of being very simple, because most of the work
+is done in the dedicated hardware of the GPS receiver.
 
 \subsection{Sensor Model}
 \label{sec:wgs84-hdop-error}
@@ -34,7 +35,12 @@ This approach has the advantage of being very simple
 
 For modelling the error we basically follow \cite{www-wilson}.
 
-Horizontal component of the position error  \(\vect{\delta R}\) is modelled using Rayleigh distribution
+WGS84 inputs are transformed to robot's local coordinate system (see
+\cref{sec:impl-coordinates}) and the reported position and HDOP are used
+to modify weights of the samples\todo{What about velocities?}.
+
+In this case we are operating only in two dimensions.
+The horizontal component of the position error  \(\vect{\delta R}\) is modelled using Rayleigh distribution
 parameterized with HDOP of the measurement:
 \begin{equation}
 	\Prob(\norm{\vect{\delta R}} < x \mid \HDOP) =

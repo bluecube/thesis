@@ -92,9 +92,10 @@ To obtain the final sensor model, we must express the PDF of Rayleight distribut
 \end{equation}
 
 \Cref{algo:gps-position-domain} shows a pseudo code implementation of a function
-that provides a sensor model to MCL algorithm \cref{chap:mcl}.
+that provides a sensor model to MCL algorithm from \cref{chap:mcl} based on the
+fitted non-linear model.
 
-\begin{figure}[thp]
+\begin{figure}[tp]
 \begin{algorithm}[H]
     \SetKwFunction{project}{project}
     \SetKwFunction{abs}{abs}

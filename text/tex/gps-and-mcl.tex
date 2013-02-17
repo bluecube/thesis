@@ -20,6 +20,22 @@ and treating the GPS receiver as a source of absolute position and velocity info
 
 This approach has the advantage of being very simple, because most of the work
 is done in the dedicated hardware of the GPS receiver.
+On the other hand information are discarded when the fix is converted to the simple
+latitude / longitude / HDOP format, which may decrease the accuracy of the
+localization.
+\velocitytodo
+
+\subsection{Sample Format}
+For position domain integration we work in a two dimensional coordinate
+system on a surface of Earth, with X axis going East and Y axis going North.
+WGS84 inputs are transformed to this reference frame using orthogonal projection
+this reported position and HDOP are used to modify weights of the samples.
+\velocitytodo
+
+No other variables are required in the robot's state for this method.
+This makes it possible to seamlessly integrate it into existing localization framework.
+Adding another more state, however might improve the accuracy, one such option
+is discussed in \cref{sec:position-domain-correlation}.
 
 \subsection{Sensor Model}
 \label{sec:wgs84-hdop-error}
@@ -33,11 +49,10 @@ is done in the dedicated hardware of the GPS receiver.
 	\label{fig:wgs84-hdop-error}
 \end{figure}
 
-For modelling the error we basically follow \cite{www-wilson}.
+Position domain integration has no requirements on the prediction phase
+and only 
 
-WGS84 inputs are transformed to robot's local coordinate system (see
-\cref{sec:impl-coordinates}) and the reported position and HDOP are used
-to modify weights of the samples\todo{What about velocities?}.
+For modelling the error we basically follow \cite{www-wilson}.
 
 In this case we are operating only in two dimensions.
 The horizontal component of the position error  \(\vect{\delta R}\) is modelled using Rayleigh distribution
@@ -49,34 +64,84 @@ parameterized with HDOP of the measurement:
 
 Parameter \(\sigma(\HDOP)\) of the distribution is chosen to fit the DRMS values using a maximum likehood estimate
 \begin{equation}
-	\sigma = \frac{\mathrm{DRMS}}{\sqrt{2}}
+	\sigma(\HDOP) = \frac{\mathrm{DRMS}(\HDOP)}{\sqrt{2}}
 \end{equation}
 
-\Cref{fig:wgs84-hdop-error} plots position error versus HDOP value.
-Blue dots represent the measured data, yellow dots the DRMS values.
-Green line is the fitted theoretical linear model
+Experimentally measured data were fitted to the theoretical linear model and to
+the non-linear model from \cite{www-wilson}.
+Both were fitted to the data using least squares weighted with counts of samples
+for each HDOP, resulting in the expressions
 \begin{equation}
 \mathrm{DRMS}(\HDOP) = \num{6.255} \HDOP
 \end{equation}
-and red curve is the fitted non linear model from \cite{www-wilson}
+and
 \begin{equation}
 \mathrm{DRMS}(\HDOP) = \sqrt{(\num{4.941}\HDOP)^2 + \num{3.568}^2}
 \end{equation}
-Both of these models were fitted to the data using least squares weighted with counts of samples
-for each HDOP.
 
-Limited resolution of the HDOP values in input data is visible in the plot,
-another interesting fact is, that only relatively low HDOP values were encountered.
-This can be seen in \cref{fig:hdop-hist}.
+\Cref{fig:wgs84-hdop-error} is a visualisation of fitting of these two models,
+blue dots representing the measured data, yellow dots the DRMS values.
+Green line shows the theoretical linear model and red curve is the non linear model.
+Limited resolution of the HDOP values in input data is visible in the plot.
+Another interesting fact is, that only relatively low HDOP values were encountered.
+\Cref{fig:hdop-hist} shows this in a more pronounced way.
 
+To obtain the final sensor model, we must express the PDF of Rayleight distribution:
+\begin{equation}
+    f(x) = \frac{x}{\sigma^2}e^{-x^2/2\sigma^2}
+\end{equation}
+
+\Cref{algo:gps-position-domain} shows a pseudo code implementation of a function
+that provides a sensor model to MCL algorithm \cref{chap:mcl}.
+
+\begin{figure}[thp]
+\begin{algorithm}[H]
+    \SetKwFunction{project}{project}
+    \SetKwFunction{abs}{abs}
+    \SetKwFunction{exp}{exp}
+
+    \SetKwData{sample}{sample}
+    \SetKwData{projected}{projected}
+    \SetKwData{observation}{observation}
+    \SetKwData{hdop}{HDOP}
+    \SetKwData{latLon}{latLon}
+    \SetKwData{pos}{position}
+    \SetKwData{positionError}{positionError}
+    \SetKwData{drms}{DRMS}
+    \SetKwData{drmsSquared}{\(\drms^2\)}
+
+    \function{observationProbabilityGPS}{
+        \KwIn{sample, observation}
+        \KwOut{probability}
+        \BlankLine
+        \projected \assign \project{\observation.\latLon}\;
+        \hdop \assign \observation.\hdop\;
+        \BlankLine
+        \positionError \assign \abs{\projected \(-\) \sample}\;
+        \drmsSquared \assign \( ( \num{4.941}\hdop )^2 + \num{3.568}^2 \)\;% (\num{4.941}\HDOP)^2 + \num{3.568}^2 )\;
+        \BlankLine
+        \Return 2 * \positionError / \drmsSquared * \exp{-\(\positionError^2\)/\drmsSquared} \;
+    }
+\end{algorithm}
+\caption{Correction algorithm for position domain integration of GPS measurements}
+\label{algo:gps-position-domain}
+\end{figure}
+
+\subsection{Correlation of Position Errors}
+\label{sec:position-domain-correlation}
 A problem that is hard to avoid with this approach is that position errors of the
 receiver output are correlated.
 This is in part because errors of the individual satellite measurements are correlated
-(which is discussed in \ref{sec:measurement-domain-correlation}), but another major reason
+(which is discussed in \cref{sec:measurement-domain-correlation}), but another major reason
 is the \enquote{inertia} added by the Kalman filter.
 This kind of correlation obviously breaks the independence assumptions of Markov
-localization defined in \ref{sec:markov-assumptions}, but in this case we chose to ignore
-the problem. \todo{Or not.}
+localization defined in \cref{sec:markov-assumptions}.
+
+An attempt at mitigating this could be done by estimating the error as part of
+the robot's state, possibly removing atmospheric effects and some of the low pass
+filtering properties of the Kalman filter in the receiver.
+These options, however, will not be explored in this work.
+\todo{possibilities}\todo{Mention if we end up doing this in measurement domain}
 
 \section{Measurement Domain Integration}
 \label{sec:measurement-domain}
@@ -91,6 +156,9 @@ the problem. \todo{Or not.}
 Monte Carlo Localization assumes that the environment is static, but we need to
 localize according to moving satellites.
 To avoid this problem we will hide satellite motion into the robot state and sensor model.
+
+\subsection{Robot State}
+
 
 \subsection{Error distribution}
 Normal distribution (???)

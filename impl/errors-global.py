@@ -6,7 +6,7 @@ import random
 import numpy
 import math
 import logging
-import gc
+import resource
 
 import gps
 import matplotlib_settings
@@ -155,18 +155,18 @@ measurement_errors -= clock_offsets
 sv_ids /= sv_ids.max()
 
 logging.info("- Free some memory...")
+
+rss_before = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+
 del clock_correction_values
 del clock_offsets
 del ephemeris
 del measurements
 del source
 
-collected = gc.collect(0)
-logging.info("  Collected(0) {} objects.".format(collected))
-collected = gc.collect(1)
-logging.info("  Collected(1) {} objects.".format(collected))
-collected = gc.collect(2)
-logging.info("  Collected(2) {} objects.".format(collected))
+rss_saved = rss_before - resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+
+logging.info("    Freed {} kB".format(rss_saved))
 
 logging.info("Plot...")
 

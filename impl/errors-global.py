@@ -29,8 +29,8 @@ arg_parser.add_argument('--receiver-pos', type=numpy.matrix, default=None, requi
     help="Ground truth receiver position.")
 arg_parser.add_argument('--hist-resolution', default=1, type=float,
     help="Width of the histogram bin.")
-arg_parser.add_argument('--fit-degree', type=int, default=1,
-    help="Degree of the polynomial estimating clock offsets.")
+arg_parser.add_argument('--fit-window', type=float, default=20 * 60,
+    help="Controls how large the window for smoothing clock offsets will be, in seconds.")
 arg_parser.add_argument('--no-show', action='store_true',
     help="Don't show the plots, only save them.")
 arg_parser.add_argument('--plot-thinning', action='store', type=int, default=1,
@@ -53,8 +53,10 @@ times = [] # Measurement times in receiver time frame
 sv_ids = []
 measurement_errors = []
 clock_correction_values  = []
-last_derivation = None
+
 last_avg_error = None
+
+last_derivation = None
 last_time = None
 unmodified_last_time = None
 week_offset = 0 # offset of the current gps week from the first recorded one
@@ -92,6 +94,8 @@ def cycle_end_callback():
         sv_ids.append(measurement.satellite_id)
         measurement_errors.append(error)
 
+    measurements.clear()
+
     if not count:
         return
 
@@ -125,16 +129,81 @@ def cycle_end_callback():
     last_avg_error = avg_error
     last_time = times[-1]
 
-    measurements.clear()
+def fit_clock_offsets(x, y, width):
+    """
+    For every point x, y fit a line to a window with x within <-width / 2, +width / 2>
+    of that point, return slopes of these lines and y positions of the central point
+    on these lines.
+
+    Runs in O(n).
+    """
+    x_sum = 0
+    y_sum = 0
+    xy_sum = 0
+    xx_sum = 0
+    right = 0
+    left = 0
+
+    a_list = []
+    b_list = []
+
+    width /= 2
+
+    for x0 in x:
+
+        while right < len(measurement_errors):
+            if x[right] > x0 + width:
+                break;
+
+            x_val = x[right]
+            y_val = y[right]
+
+            x_sum += x_val
+            y_sum += y_val
+            xy_sum += x_val * y_val
+            xx_sum += x_val * x_val
+
+            right += 1
+
+        while left < right:
+            if x[left] >= x0 - width:
+                break
+
+            x_val = x[left]
+            y_val = y[left]
+
+            x_sum -= x_val
+            y_sum -= y_val
+            xy_sum -= x_val * y_val
+            xx_sum -= x_val * x_val
+
+            left += 1
+
+        count = right - left
+
+        a = (xy_sum * count - x_sum * y_sum) / (xx_sum * count - x_sum * x_sum)
+        b = (y_sum - a * x_sum) / count
+
+        a_list.append(a)
+        b_list.append(b)
+
+    a_array = numpy.array(a_list)
+    b_array = numpy.array(b_list)
+
+    #print(a_array)
+    #print(b_array)
+
+    return a_array, a_array * x + b_array
+
 
 try:
     source.loop([ephemeris, measurements], cycle_end_callback)
 except KeyboardInterrupt:
     pass
 
-logging.info("Processing...")
-
 cycle_end_callback() # Last cycle doesn't end, so this wouldn't be otherwise called.
+
+logging.info("Processing...")
 
 logging.info("- Convert to arrays...")
 times = numpy.array(times, dtype=numpy.float)
@@ -142,17 +211,12 @@ sv_ids = numpy.array(sv_ids, dtype=numpy.float)
 measurement_errors = numpy.array(measurement_errors, dtype=numpy.float)
 clock_correction_values = numpy.array(clock_correction_values, dtype=numpy.float)
 
-logging.info("- Fit clock corrections...")
+logging.info("- Fit clock offset...")
 
-poly = numpy.polynomial.polynomial.Polynomial.fit(
-    times, measurement_errors + clock_correction_values, deg = arguments.fit_degree)
-
-clock_offsets = poly(times) - clock_correction_values
-
+clock_drifts, clock_offsets = fit_clock_offsets(times, measurement_errors + clock_correction_values,
+    arguments.fit_window)
+clock_offsets -= clock_correction_values
 measurement_errors -= clock_offsets
-#system_times = times - clock_offsets / gps.C
-
-sv_ids /= sv_ids.max()
 
 logging.info("- Free some memory...")
 
@@ -169,6 +233,8 @@ rss_saved = rss_before - resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
 logging.info("    Freed {} kB".format(rss_saved))
 
 logging.info("Plot...")
+
+sv_ids /= sv_ids.max()
 
 fig1 = plt.figure()
 error_plot = fig1.add_subplot(1, 1, 1)
@@ -197,6 +263,15 @@ matplotlib_settings.common_plot_settings(error_histogram,
     max_x = OUTLIER_THRESHOLD,
     min_y = 0,
     max_y = numpy.max(n))
+
+fig3 = plt.figure()
+drifts_plot = fig3.add_subplot(1, 1, 1)
+drifts_plot.plot(times[::arguments.plot_thinning], clock_drifts[::arguments.plot_thinning],
+    '-', alpha=0.7)
+drifts_plot.set_title('Receiver clock drifts')
+drifts_plot.set_xlabel(r'Time [\si{\second}]')
+drifts_plot.set_ylabel(r'Drift [\si{\meter\per\second}]')
+matplotlib_settings.common_plot_settings(drifts_plot, set_limits=False)
 
 #fig3 = plt.figure()
 #offsets_plot = fig3.add_subplot(1, 1, 1)

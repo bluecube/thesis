@@ -24,8 +24,10 @@ to embedded systems, using libraries like GPSTk \cite{tolman04} for the low leve
 \label{sec:impl-sirf}
 \begin{itemize}
 \item All measurements normalized to common time
-\item Relativistic errors are already taken care of
+\item Relativistic errors are already taken care of \todo{Really?}
 \item SV positions given in ECEF, instead of orbit parameters
+\item Carrier phases are not reported, but are used to smooth pseudorange measurements
+    This sucks.
 \item \ldots
 \end{itemize}
 
@@ -34,6 +36,26 @@ to embedded systems, using libraries like GPSTk \cite{tolman04} for the low leve
 \item Detection / switching: SiRF binary <-> NMEA
 \item Parsing and building SiRF messages
 \end{itemize}
+
+\subsection{Clock Jumps in SiRF Output}
+SiRF III chipset appears to internally modify its clock when the clock offset
+becomes too large.
+This causes problems when processing the raw data, because reported clock values
+can't be relied on being monotonic.
+Example of this is shown in \cref{fig:impl-clock-jumps}.
+
+To work around this problem, we measure difference between average measurement
+errors and when it becomes very large (larger than \SI{1e6}{\meter} proves as an
+appropriate value) we mark this measurement as a skip and estimate the skip
+length to match the difference between previous pair of average errors.
+\todo{Describe the concept of average errors}
+
+\begin{figure}[tp]
+	\centering
+	\missingfigure{Example of clock jumps in SiRF output data}
+	\caption{Example of clock jumps in SiRF output data}
+	\label{fig:impl-clock-jumps}
+\end{figure}
 
 \section{Position Domain Error Model}
 

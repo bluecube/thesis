@@ -144,12 +144,12 @@ def fit_clock_offsets(x, y, width):
     right = 0
     left = 0
 
-    a_list = []
-    b_list = []
+    slope = numpy.empty_like(x)
+    offset = numpy.empty_like(x)
 
     width /= 2
 
-    for x0 in x:
+    for i, x0 in enumerate(x):
 
         while right < len(measurement_errors):
             if x[right] > x0 + width:
@@ -181,19 +181,10 @@ def fit_clock_offsets(x, y, width):
 
         count = right - left
 
-        a = (xy_sum * count - x_sum * y_sum) / (xx_sum * count - x_sum * x_sum)
-        b = (y_sum - a * x_sum) / count
+        slope[i] = (xy_sum * count - x_sum * y_sum) / (xx_sum * count - x_sum * x_sum)
+        offset[i] = (slope[i] * (x0 * count  - x_sum) + y_sum) / count
 
-        a_list.append(a)
-        b_list.append(b)
-
-    a_array = numpy.array(a_list)
-    b_array = numpy.array(b_list)
-
-    #print(a_array)
-    #print(b_array)
-
-    return a_array, a_array * x + b_array
+    return slope, offset
 
 
 try:

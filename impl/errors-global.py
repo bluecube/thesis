@@ -35,6 +35,8 @@ arg_parser.add_argument('--no-show', action='store_true',
     help="Don't show the plots, only save them.")
 arg_parser.add_argument('--plot-thinning', action='store', type=int, default=1,
     help="Only plot each N-th item.")
+arg_parser.add_argument('--plot-clock-corrections', action='store_true',
+    help="Add vertical lines marking clock corrections.")
 arguments = arg_parser.parse_args()
 
 receiver_state = gps.StationState(
@@ -232,8 +234,9 @@ error_plot = fig1.add_subplot(1, 1, 1)
 
 error_plot.scatter(times[::arguments.plot_thinning], measurement_errors[::arguments.plot_thinning],
     c=sv_ids[::arguments.plot_thinning], marker='.', s=40, alpha=0.7, edgecolors='none',rasterized=True)
-for index in clock_corrections:
-    error_plot.axvline(times[index], color='b', alpha=0.5)
+if arguments.plot_clock_corrections:
+    for index in clock_corrections:
+        error_plot.axvline(times[index], color='b', alpha=0.5)
 error_plot.set_title('Measurement errors')
 error_plot.set_xlabel(r'Time [\si{\second}]')
 error_plot.set_ylabel(r'Error [\si{\meter}]')

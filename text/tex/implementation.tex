@@ -20,10 +20,28 @@ to embedded systems, using libraries like GPSTk \cite{tolman04} for the low leve
 \item Record / replay
 \end{itemize}
 
-\section{What's specific to SiRF}
+\section{Specifics to SiRF Chipset}
 \label{sec:impl-sirf}
+
+Unlike the WGS84 position / velocity data that can be retrieved from the GPS receiver in a standard
+NMEA protocol, pseudoranges and other lower level details must be obtained
+in a receiver specific manner.
+
+Implementation part of this thesis was performed with a GPS receiver containing
+a SiRF III chipset, and the following sections describe specifics of working with
+this hardware.
+
+SiRF III is a fairly high quality consumer receiver found in many
+\enquote{black boxes} on the market.
+Apart from the standard NMEA, it can be switched to a proprietary binary protocol
+which provides access to much more of the chip's features.
+There is a single publicly available piece of documentation concerning this
+interface \cite{sirf-protocol}, but details about workings of the chip are hard
+to find and must be pieced together from forum posts (especially the thread
+\cite{gpspassion-sirf} at gpspassion forums) and trial and error.
+
+
 \begin{itemize}
-\item All measurements normalized to common time
 \item Relativistic errors are already taken care of \todo{Really?}
 \item SV positions given in ECEF, instead of orbit parameters
 \item Carrier phases are not reported, but are used to smooth pseudorange measurements
@@ -37,6 +55,14 @@ to embedded systems, using libraries like GPSTk \cite{tolman04} for the low leve
 \item Parsing and building SiRF messages
 \end{itemize}
 
+\subsection{Grouping of Reported Measurements}
+All measurements reported by the chipset are grouped and appear
+to have to have been made simultaneously.
+Reportedly this is to simplify single point solving of the GPS position.
+
+In later text we will refer to these measurements as groups and use average
+measurement error of the group in several calculations.
+
 \subsection{Clock Jumps in SiRF Output}
 SiRF III chipset appears to internally modify its clock when the clock offset
 becomes too large.
@@ -44,11 +70,10 @@ This causes problems when processing the raw data, because reported clock values
 can't be relied on being monotonic.
 Example of this is shown in \cref{fig:impl-clock-jumps}.
 
-To work around this problem, we measure difference between average measurement
-errors and when it becomes very large (larger than \SI{1e6}{\meter} proves as an
+We work around this problem by measure difference between consecutive average
+measurement errors and when it becomes very large (larger than \SI{1e6}{\meter} proves as an
 appropriate value) we mark this measurement as a skip and estimate the skip
 length to match the difference between previous pair of average errors.
-\todo{Describe the concept of average errors}
 
 \begin{figure}[tp]
 	\centering

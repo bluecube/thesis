@@ -264,8 +264,8 @@ if arguments.plot_clock_corrections:
     for index in clock_corrections:
         error_plot.axvline(times[index], color='b', alpha=0.5)
 error_plot.set_title('Measurement errors')
-error_plot.set_xlabel(r'Time [\si{\second}]')
-error_plot.set_ylabel(r'Error [\si{\meter}]')
+error_plot.set_xlabel(r'Time/\si{\second}')
+error_plot.set_ylabel(r'Error/\si{\meter}')
 matplotlib_settings.common_plot_settings(error_plot, set_limits=False)
 
 res = arguments.hist_resolution
@@ -276,7 +276,7 @@ fig2 = plt.figure()
 error_histogram = fig2.add_subplot(1, 1, 1)
 n, bins, patches = error_histogram.hist(measurement_errors, bins=bins, alpha=0.7)
 error_histogram.set_title('Measurement errors')
-error_histogram.set_xlabel(r'Error [\si{\meter}]')
+error_histogram.set_xlabel(r'Error/\si{\meter}')
 error_histogram.set_ylabel(r'Count')
 matplotlib_settings.common_plot_settings(error_histogram,
     min_x = -arguments.outlier_threshold,
@@ -289,8 +289,8 @@ drifts_plot = fig3.add_subplot(1, 1, 1)
 drifts_plot.plot(times[::arguments.plot_thinning], clock_drifts[::arguments.plot_thinning],
     '-', alpha=0.7)
 drifts_plot.set_title('Receiver clock drifts')
-drifts_plot.set_xlabel(r'Time [\si{\second}]')
-drifts_plot.set_ylabel(r'Drift [\si{\meter\per\second}]')
+drifts_plot.set_xlabel(r'Time/\si{\second}')
+drifts_plot.set_ylabel(r'Drift/\si{\meter\per\second}')
 matplotlib_settings.common_plot_settings(drifts_plot, set_limits=False)
 
 #fig3 = plt.figure()

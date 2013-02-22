@@ -18,7 +18,6 @@ logging.basicConfig(
     level = logging.INFO
 )
 
-OUTLIER_THRESHOLD = 300 # Error in meters that is considered an outlier
 CLOCK_CORRECTION_THRESHOLD = 1e6 # Distance jump in meters that is considered as clock correction.
 
 arg_parser = argparse.ArgumentParser(
@@ -38,6 +37,8 @@ arg_parser.add_argument('--plot-thinning', action='store', type=int, default=1,
     help="Only plot each N-th item.")
 arg_parser.add_argument('--plot-clock-corrections', action='store_true',
     help="Add vertical lines marking clock corrections.")
+arg_parser.add_argument('--outlier-threshold', action='store', type=float, default=100,
+    help="Distance in meters from the smoothed pseudorange at which the point is considered an outlier")
 arguments = arg_parser.parse_args()
 
 receiver_state = gps.StationState(
@@ -136,7 +137,7 @@ def fit_clock_offsets(x, y, width, progressbar = None):
     drifts, offsets = windowed_least_squares(x, y, width, None, progressbar)
 
     del drifts
-    mask = numpy.abs(y - offsets) < OUTLIER_THRESHOLD
+    mask = numpy.abs(y - offsets) < arguments.outlier_threshold
     del offsets
 
     return windowed_least_squares(x, y, width, mask, progressbar)
@@ -268,7 +269,7 @@ error_plot.set_ylabel(r'Error [\si{\meter}]')
 matplotlib_settings.common_plot_settings(error_plot, set_limits=False)
 
 res = arguments.hist_resolution
-bin_half_count = int(math.floor(1.05 * OUTLIER_THRESHOLD / res))
+bin_half_count = int(math.floor(arguments.outlier_threshold * 1.05 / res))
     # extra 5% makes the histogram look a little nicer and not that cut off
 bins = [res * x - (res / 2) for x in range(-bin_half_count, bin_half_count + 2)]
 fig2 = plt.figure()
@@ -278,8 +279,8 @@ error_histogram.set_title('Measurement errors')
 error_histogram.set_xlabel(r'Error [\si{\meter}]')
 error_histogram.set_ylabel(r'Count')
 matplotlib_settings.common_plot_settings(error_histogram,
-    min_x = -OUTLIER_THRESHOLD,
-    max_x = OUTLIER_THRESHOLD,
+    min_x = -arguments.outlier_threshold,
+    max_x = arguments.outlier_threshold,
     min_y = 0,
     max_y = numpy.max(n))
 

@@ -204,8 +204,8 @@ error_plot.scatter(plot_times, plot_errors,
 for x in plot_clock_corrections[:-1]:
     error_plot.axvline(x, color='b', alpha=0.5)
 error_plot.set_title('Measurement errors')
-error_plot.set_xlabel('time [s]')
-error_plot.set_ylabel(r'Error [\si{\meter}]')
+error_plot.set_xlabel('time/\si{\second}')
+error_plot.set_ylabel(r'Error/\si{\meter}')
 matplotlib_settings.common_plot_settings(error_plot, set_limits=False)
 
 res = arguments.hist_resolution
@@ -216,7 +216,7 @@ fig2 = plt.figure()
 error_histogram = fig2.add_subplot(1, 1, 1)
 n, bins, patches = error_histogram.hist(plot_errors, bins=bins, alpha=0.7)
 error_histogram.set_title('Measurement errors')
-error_histogram.set_xlabel(r'Error [\si{\meter}]')
+error_histogram.set_xlabel(r'Error/\si{\meter}')
 error_histogram.set_ylabel(r'Count')
 matplotlib_settings.common_plot_settings(error_histogram,
     min_x = -OUTLIER_THRESHOLD,

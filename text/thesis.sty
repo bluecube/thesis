@@ -5,18 +5,15 @@
 \OnehalfSpacing
 \setsecnumdepth{subsection}
 \settocdepth{subsection}
+\pagestyle{plain}
+\chapterstyle{hangnum}
 
 \usepackage[hyphens]{url}
-
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage[czech,english]{babel}
 
 \usepackage[final]{graphicx}
 \usepackage[final]{microtype}
 \usepackage{paralist}
 \usepackage{csquotes}
-\usepackage{amsmath}
 \usepackage[
 	inner=28mm,
 	outer=28mm,
@@ -52,7 +49,7 @@
 	mathescape=true
 }
 \usepackage{booktabs}
-\usepackage{bm} % bold math symbols
+
 \usepackage[obeyDraft]{todonotes}
 \usepackage[backend=bibtex8]{biblatex}
 \usepackage{xstring}
@@ -94,6 +91,3 @@
 \newcommand{\velocitytodo}{\todo[linecolor=blue!50!white, backgroundcolor=blue!50!white]{velocity}}
 \newcommand{\questiontodo}[1]{\todo[linecolor=green!50!white, backgroundcolor=green!50!white]{#1}}
 
-\pagestyle{plain}
-\chapterstyle{hangnum}
-%\chapterstyle{section}

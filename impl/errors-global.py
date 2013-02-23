@@ -133,16 +133,16 @@ def cycle_end_callback():
     last_avg_error = avg_error
     last_time = times[-1]
 
-def fit_clock_offsets(x, y, width, progressbar = None):
-    drifts, offsets = windowed_least_squares(x, y, width, None, progressbar)
+def fit_clock_offsets(x, y, width):
+    drifts, offsets = windowed_least_squares(x, y, width)
 
     del drifts
     mask = numpy.abs(y - offsets) < arguments.outlier_threshold
     del offsets
 
-    return windowed_least_squares(x, y, width, mask, progressbar)
+    return windowed_least_squares(x, y, width, mask)
 
-def windowed_least_squares(x, y, width, mask = None, progressbar = None):
+def windowed_least_squares(x, y, width, mask = None):
     """
     For every point x, y fit a line to a window with x within <-width / 2, +width / 2>
     of that point, return slopes of these lines and y positions of the central point
@@ -165,10 +165,7 @@ def windowed_least_squares(x, y, width, mask = None, progressbar = None):
 
     width /= 2
 
-    if progressbar is not None:
-        bar = progressbar(maxval = len(x))
-    else:
-        bar = lambda x: x
+    bar = progressbar.ProgressBar(maxval = len(x))
 
     for i, x0 in bar(enumerate(x)):
 
@@ -233,7 +230,7 @@ clock_correction_values = numpy.array(clock_correction_values, dtype=numpy.float
 logging.info("- Fit clock offset...")
 
 clock_drifts, clock_offsets = fit_clock_offsets(times, measurement_errors + clock_correction_values,
-    arguments.fit_window, progressbar.ProgressBar)
+    arguments.fit_window)
 clock_offsets -= clock_correction_values
 measurement_errors -= clock_offsets
 

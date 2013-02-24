@@ -12,6 +12,7 @@ import progressbar
 import gps
 import matplotlib_settings
 import matplotlib.pyplot as plt
+import matplotlib
 
 logging.basicConfig(
     format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -234,6 +235,16 @@ clock_drifts, clock_offsets = fit_clock_offsets(times, measurement_errors + cloc
 clock_offsets -= clock_correction_values
 measurement_errors -= clock_offsets
 
+logging.info("- Mean and standard deviation...")
+
+masked_errors = numpy.ma.array(measurement_errors,
+    mask = numpy.abs(measurement_errors) > arguments.outlier_threshold)
+mu = numpy.ma.mean(masked_errors)
+sigma = numpy.ma.std(masked_errors)
+
+print("Mean: {}".format(mu))
+print("Sigma: {}".format(sigma))
+
 logging.info("- Free some memory...")
 
 rss_before = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
@@ -272,6 +283,11 @@ bins = [res * x - (res / 2) for x in range(-bin_half_count, bin_half_count + 2)]
 fig2 = plt.figure()
 error_histogram = fig2.add_subplot(1, 1, 1)
 n, bins, patches = error_histogram.hist(measurement_errors, bins=bins, alpha=0.7)
+
+bincenters = 0.5 * (bins[1:] + bins[:-1])
+y = matplotlib.mlab.normpdf(bincenters, mu, sigma) * masked_errors.count()
+error_histogram.plot(bincenters, y, 'r--')
+
 error_histogram.set_title('Measurement errors')
 error_histogram.set_xlabel(r'Error/\si{\meter}')
 error_histogram.set_ylabel(r'Count')

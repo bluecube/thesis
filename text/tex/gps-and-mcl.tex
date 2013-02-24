@@ -150,10 +150,20 @@ These options, however, will not be explored in this work.
 \section{Measurement Domain Integration}
 \label{sec:measurement-domain}
 
-\begin{itemize}
-\item Using each pseudorange measurement
-\item Maybe better localization, no assumptions about vehicle properties
-\end{itemize}
+Measurement domain integration takes each pseudorange measurement as an input
+and combines it with other sensor data.
+
+In Monte Carlo localization GPS data are used in a similar way as
+for example ultrasound ranging beacons are used in \cite{some-beacon-ref}\todo{Fix this ref!},
+taking each measured pseudorange after a correction for measurement errors
+and after clock correction modifying the sample weight based on the measured distance
+compared to expected distance.
+GPS, of cause has the additional complexity of the receiver clock offset, which
+has to be known in order to transform pseudoranges to measured geometric ranges.
+
+The main reason for attempting to use the GPS in this way is to add more information
+into the localization process and to have more control over assumptions made during
+processing of the GPS data.
 
 \subsection{Static Environment Assumption}
 \label{sec:gps-mcl-static-env}

@@ -87,8 +87,25 @@ length to match the difference between previous pair of average errors.
 \subsection{Mapping Coordinate Frames}
 \label{sec:impl-coordinates}
 
-
 \section{Measurement Domain Error Model}
+\begin{itemize}
+\item Fixed receiver position
+\item Receiver clock offset cannot be fixed (obviously)
+    \begin{itemize}
+    \item Assume that satellites are all around receiver
+    \item -> clock offset + noise can be obtained from average pseudorange - geometric distance
+    \item on clock offsets from previous steps we perform least squares in a sliding window
+        (\cref{fig:sliding-window-linear-regression}).
+    \end{itemize}
+\end{itemize}
+
+\begin{figure}[h]
+	\centering
+	\input{img/sliding-window-linear-regression.pdf_tex}
+	\caption{Sliding window linear regression.}
+	\label{fig:sliding-window-linear-regression}
+\end{figure}
+
 
 In contrast to the previous approach, the whole localization process is kept in
 the ECEF coordinate frame, because GPS of the amount of GPS data being processed.

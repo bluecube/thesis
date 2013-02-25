@@ -69,3 +69,6 @@ class Ephemeris(object):
         sys_time + sv_clock_offset(sys_time) - sv_time = 0
         Easy peasy."""
         raise NotImplementedError()
+
+    def correction(self, prn):
+        return 0

@@ -29,6 +29,9 @@ class MeasurementError:
             sv_state = self._ephemeris.sv_state_current_week(
                 measurement.satellite_id,
                 transmission_time_sys)
+
+            self._correction = self._ephemeris.correction(
+                measurement.satellite_id) # TODO: Clean up
         except LookupError:
             return False
 
@@ -67,6 +70,8 @@ class MeasurementError:
             self._measurement.pseudorange -
             C * (self._receiver_state.clock_offset - self._sv_state.clock_offset))
 
+        corrected_pseudorange += self._correction
+
         error = corrected_pseudorange - self._geom_range
 
         #if abs(error) > 10000000:
@@ -78,6 +83,5 @@ class MeasurementError:
         
         return error
 
-    @property
     def doppler_error(self):
         raise NotImplementedError()

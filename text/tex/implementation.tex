@@ -23,6 +23,10 @@ to embedded systems, using libraries like GPSTk \cite{tolman04} for the low leve
 \section{Specifics to SiRF Chipset}
 \label{sec:impl-sirf}
 
+\begin{itemize}
+\item Pseudorange does not contain ionospheric, tropospheric or clock corrections
+\end{itemize}
+
 Unlike the WGS84 position / velocity data that can be retrieved from the GPS receiver in a standard
 NMEA protocol, pseudoranges and other lower level details must be obtained
 in a receiver specific manner.
@@ -83,13 +87,16 @@ length to match the difference between previous pair of average errors.
 \end{figure}
 
 \section{Position Domain Error Model}
+\begin{itemize}
+\item Fixed receiver position (\cref{sec:usage-average-position-py})
+\end{itemize}
 
 \subsection{Mapping Coordinate Frames}
 \label{sec:impl-coordinates}
 
 \section{Measurement Domain Error Model}
 \begin{itemize}
-\item Fixed receiver position
+\item Fixed receiver position (\cref{sec:usage-average-position-py})
 \item Receiver clock offset cannot be fixed (obviously)
     \begin{itemize}
     \item Assume that satellites are all around receiver

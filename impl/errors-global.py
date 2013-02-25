@@ -30,7 +30,7 @@ arg_parser.add_argument('--receiver-pos', type=numpy.matrix, default=None, requi
     help="Ground truth receiver position.")
 arg_parser.add_argument('--hist-resolution', default=1, type=float,
     help="Width of the histogram bin.")
-arg_parser.add_argument('--fit-window', type=float, default=20 * 60,
+arg_parser.add_argument('--fit-window', type=float, default=10 * 60,
     help="Controls how large the window for smoothing clock offsets will be, in seconds.")
 arg_parser.add_argument('--no-show', action='store_true',
     help="Don't show the plots, only save them.")

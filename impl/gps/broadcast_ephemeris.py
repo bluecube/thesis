@@ -43,3 +43,6 @@ class BroadcastEphemeris(ephemeris.Ephemeris, message_observer.MessageObserver):
 
     def __call__(self, message):
         self._sv_states[message.satellite_id] = message
+
+    def correction(self, prn):
+        return -self._sv_states[prn].iono_delay

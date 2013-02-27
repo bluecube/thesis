@@ -68,9 +68,13 @@ In later text we will refer to these measurements as groups and use average
 measurement error of the group in several calculations.
 
 \subsection{Clock Jumps in SiRF Output}
-SiRF III chipset appears to internally modify its clock when the clock offset
-becomes too large.
-This causes problems when processing the raw data, because reported clock values
+According to \cite{sirf-protocol}, notes for message ID 28, SiRF chipset has a
+notion of nominal clock drift with corresponding velocity correction of \SI{18315.766}{\meter\per\second}.
+This causes the clock offset to consistently increase in time.
+When it becomes too large, the chip produces a skip in its reported time and
+partially corrects the offset.
+In the recorded data this happens approximately every \SI{20}{\minute} and causes
+problems when processing the raw data, because reported clock values
 can't be relied on being monotonic.
 Example of this is shown in \cref{fig:impl-clock-jumps}.
 

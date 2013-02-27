@@ -87,12 +87,35 @@ length to match the difference between previous pair of average errors.
 \end{figure}
 
 \section{Position Domain Error Model}
-\begin{itemize}
-\item Fixed receiver position (\cref{sec:usage-average-position-py})
-\end{itemize}
+Calculating error model in position domain is done in a fairly straightforward way.
+The obtained WGS84 coordinates projected onto a two dimensional plane
+(details are discussed later).
+The fix data are not obtained from a NMEA model, but from message 41 in SiRF
+binary protocol.
+This lets us simply work with both WGS84 and pseudorange on the same recording,
+while keeping the available values identical to what's found in NMEA protocol.
+
+Next, because the receiver was stationary during the whole recording, we want to
+calculate the ground truth position.
+To do this we assume that the reported point positions are unbiased.
+This is reasonable assumption for long recordings,
+because the distribution of satellites in view during a longer period is
+virtually uniform which makes any potential biases in pseudorange measurements
+cancel out.
+This means we can obtain approximation of the real receiver position as a simple
+mean of reported GPS positions.
+Then for each measurement a distance from the mean position is calculated and
+curves for each model are fitted.
 
 \subsection{Mapping Coordinate Frames}
 \label{sec:impl-coordinates}
+Conversion between WGS84 latitude and longitude and two dimensional euclidean
+plane necessary for localization is done using orthographic projection from
+the library PyProj \cite{www-pyproj}.
+
+The exact choice of projection is not that important for robots operating within
+a radius of a few kilometers, but orthographic projection was chosen because
+it's principle is simple to imagine.
 
 \section{Measurement Domain Error Model}
 \begin{itemize}

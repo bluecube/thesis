@@ -101,7 +101,7 @@ while keeping the available values identical to what's found in NMEA protocol.
 
 Next, because the receiver was stationary during the whole recording, we want to
 calculate the ground truth position.
-To do this we assume that the reported point positions are unbiased.
+To do this we assume that the reported point positions have mean in the real receiver position.
 This is reasonable assumption for long recordings,
 because the distribution of satellites in view during a longer period is
 virtually uniform which makes any potential biases in pseudorange measurements
@@ -122,16 +122,37 @@ a radius of a few kilometers, but orthographic projection was chosen because
 it's principle is simple to imagine.
 
 \section{Measurement Domain Error Model}
-\begin{itemize}
-\item Fixed receiver position (\cref{sec:usage-average-position-py})
-\item Receiver clock offset cannot be fixed (obviously)
-    \begin{itemize}
-    \item Assume that satellites are all around receiver
-    \item -> clock offset + noise can be obtained from average pseudorange - geometric distance
-    \item on clock offsets from previous steps we perform least squares in a sliding window
-        (\cref{fig:sliding-window-linear-regression}).
-    \end{itemize}
-\end{itemize}
+The basic idea for determining error model for pseudorange measurements is
+similar to how error model for position domain is determined, but a complicated
+by several aspects of the pseudoranges.
+
+In contrast with the previous approach, the whole localization process is kept in
+the ECEF coordinate frame, because GPS of the amount of GPS data being processed.
+
+The main problem is determining receiver position from which the errors will be
+calculated.
+Spatial position can be determined fairly simply, since SiRF receiver also
+reports position in ECEF reference frame and averaging these values gives
+reasonable estimate, for the same reasons as averaging could have been used in
+position domain integration.
+
+\subsection{Clock Offset Estimation}
+Clock offset of the receiver, on the other hand, is not fixed during the recording
+and has to be estimated during the calculation.
+Because we know geometric component of each pseudorange measurement, we can
+calculate the receiver clock offset under the condition that there is no measurement
+error.
+
+The previous step gives us a large number of points, one for each pseudorange
+measurement, with time and the idealized receiver clock offset.
+It is now necessary to merge all the clock offsets to obtain clock offset for
+each measurement time.
+
+First approach explored in this thesis was to fit a polynomial through these
+points, but it didn't fit the points well enough.
+
+Currently we fit a linear function to points from a sliding window centered
+around each of points as illustrated on \cref{fig:sliding-window-linear-regression}.
 
 \begin{figure}[h]
 	\centering
@@ -140,7 +161,28 @@ it's principle is simple to imagine.
 	\label{fig:sliding-window-linear-regression}
 \end{figure}
 
+Here for point with time coordinate \(x_0\) the fitted line is drawn in red
+and the value \(y\) is returned as the clock offset of this point.
+Additionally slope of the line is returned and used as clock drift.
+\todo{Maybe add the plot of clock drifts? Looks nice.}
+\todo{Maybe add the plot of corrected measurement errors?}
 
-In contrast to the previous approach, the whole localization process is kept in
-the ECEF coordinate frame, because GPS of the amount of GPS data being processed.
+The clock offset fitting step is done twice in our code, first run done on
+all data, then the errors are calculated for the first time and the second run
+is performed only on measurements with error lower than a certain threshold.
+
+Empirically obtained values are \SI{10}{\minute} for the window width and
+\SI{150}{\meter} for outlier threshold.
+
+\subsection{Error Model}
+\Cref{fig:impl-error-histogam} shows the histogram of the corrected pseudorange
+errors.
+\todo{Statistical testing for being gaussian\ldots}
+
+\begin{figure}[tp]
+	\centering
+	\missingfigure{Histogram of pseudorange errors}
+	\caption{Histogram of pseudorange errors}
+	\label{fig:impl-error-histogam}
+\end{figure}
 

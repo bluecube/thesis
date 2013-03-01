@@ -23,10 +23,6 @@ to embedded systems, using libraries like GPSTk \cite{tolman04} for the low leve
 \section{Specifics to SiRF Chipset}
 \label{sec:impl-sirf}
 
-\begin{itemize}
-\item Pseudorange does not contain ionospheric, tropospheric or clock corrections
-\end{itemize}
-
 Unlike the WGS84 position / velocity data that can be retrieved from the GPS receiver in a standard
 NMEA protocol, pseudoranges and other lower level details must be obtained
 in a receiver specific manner.
@@ -46,6 +42,7 @@ to find and must be pieced together from forum posts (especially the thread
 
 
 \begin{itemize}
+\item Pseudorange does not contain ionospheric, tropospheric or clock corrections
 \item Relativistic errors are already taken care of \todo{Really?}
 \item SV positions given in ECEF, instead of orbit parameters
 \item Carrier phases are not reported, but are used to smooth pseudorange measurements
@@ -174,10 +171,32 @@ is performed only on measurements with error lower than a certain threshold.
 Empirically obtained values are \SI{10}{\minute} for the window width and
 \SI{150}{\meter} for outlier threshold.
 
-\subsection{Error Model}
+One might object, that this method of estimating receiver clock offset will
+also include other effects from different sources than receiver clock,
+for example atmospheric delays (imagine the user standing in a ball of material
+that slows down propagation of radio signals), or signal processing delays
+in the receiver.
+This is true, but as far as localization is concerned, these effect would
+be indistinguishable from receiver clock inaccuracies and will be
+removed also during localization in a similar way.
+
+\subsection{Position Error Model}
 \Cref{fig:impl-error-histogam} shows the histogram of the corrected pseudorange
 errors.
-\todo{Statistical testing for being gaussian\ldots}
+\begin{itemize}
+\item Statistical testing for being gaussian\ldots
+\item Modelling each satellite separately, based on previous error?
+      Estimating residual errors per satellite?
+\item Error based on signal strength?
+\end{itemize}
+
+\subsection{Velocity Error Model}
+\Cref{fig:impl-error-histogam} shows the histogram of the corrected pseudorange
+errors.
+\begin{itemize}
+\item Statistical testing for being gaussian\ldots
+\item \url{http://www.gpspassion.com/forumsen/topic.asp?TOPIC_ID=7685#70279}
+\end{itemize}
 
 \begin{figure}[tp]
 	\centering

@@ -38,7 +38,7 @@ arg_parser.add_argument('--plot-thinning', action='store', type=int, default=1,
     help="Only plot each N-th item.")
 arg_parser.add_argument('--plot-clock-corrections', action='store_true',
     help="Add vertical lines marking clock corrections.")
-arg_parser.add_argument('--outlier-threshold', action='store', type=float, default=200,
+arg_parser.add_argument('--outlier-threshold', action='store', type=float, default=150,
     help="Distance in meters from the smoothed pseudorange at which the point is considered an outlier")
 arguments = arg_parser.parse_args()
 

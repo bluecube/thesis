@@ -13,6 +13,9 @@ and briefly also with other position systems than GPS.
 
 This chapter is based mainly on chapters 2 and 7 of \cite{kaplan06}, unless other source is cited.
 \questiontodo{Is this OK?}
+The document \cite{fyfe92} contains a specification of the GPS interface to user
+segment describing many of the gory details of GPS system, however this is mostly
+too low level to be of any use in this work.
 
 \section{Basic Description}
 
@@ -115,8 +118,7 @@ precise time after a fix is obtained by adding the offset to the receiver clock.
 \subsection{GPS Signals}
 GPS signals are transmitted using CDMA.
 Each signal at each satellite is assigned a unique pseudo random sequence, called PRN code and the carrier frequency is
-modulated using this sequence, possibly mixed with \SI{50}{\bit\per\second} navigation messages, for transmitting
-ephemeris and other data (see chapter 3 of \cite{rizos99}).
+modulated using this sequence, possibly mixed navigation messages (see further).
 
 Legacy GPS satellites work on two frequencies, primary L1 (\SI{1575.42}{\mega\hertz}) and secondary L2 (\SI{1227.6}{\mega\hertz}).
 Unencrypted \SI{1}{\mega\hertz} C/A code is transmitted on L1, and encrypted military \SI{10}{\mega\hertz} P(Y) code is transmitted
@@ -132,6 +134,15 @@ L2C, L5 and a military signal M. A fourth civilian signal and L1C is planned, th
 European navigation system Galileo (see \ref{sec:galileo}).
 At the time of this writing, the signals L2C and L5 are partially supported and L1C is still only
 planned \cite{gps-modernization-www}.
+
+\subsection{Navigation Messages}
+Navigation messages are transmitted modulated on the ranging signals at \SI{50}{\bit\per\second}.
+These messages contain ephemeris and clock corrections for each satellite
+and other data, including meta data on the ephemeris values and estimated
+ionospheric parameters.
+
+See chapter 3.3 of \cite{rizos99} for brief overview of navigation messages,
+or section 20.3.3 of \cite{fyfe92} for the details.
 
 \subsubsection{PRN Sequences}
 As mentioned above, PRN sequences are unique to every signal and every satellite.

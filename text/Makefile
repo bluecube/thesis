@@ -50,6 +50,10 @@ $(BUILD_DIR)/%.pdf $(BUILD_DIR)/%.out: %.sh
 	$(DO_MAKE_DIR)
 	set -e ; set -o pipefail ; $^ $(basename $@).pdf | tee $(basename $@).out
 
+$(BUILD_DIR)/%.tex $(BUILD_DIR)/%.out: %.sh
+	$(DO_MAKE_DIR)
+	set -e ; set -o pipefail ; $^ $(basename $@).tex | tee $(basename $@).out
+
 $(BUILD_DIR)/%.pdf_tex $(BUILD_DIR)/%.pdf: %.svg
 	$(DO_MAKE_DIR)
 	inkscape -f$^ --export-pdf=$(basename $@).pdf --export-latex --export-use-hints

@@ -2,6 +2,8 @@
 \label{chap:usage}
 
 \section{Package \lstinline=gps=}
+\label{sec:package-gps}
+
 Python package \lstinline=gps= is a tool for communication with SiRF GPS receivers.
 It connects to the gps receiver and switches it between NMEA and binary SiRF protocol.
 Also the package provides higher level access to SiRF messages.
@@ -10,6 +12,9 @@ Other than that, the package alecorded data stream may also be opened transparen
 
 \section{average\_position.py}
 \label{sec:usage-average-position-py}
+
+\input{plots/average-position.tex}
+
 \verb=average_position.py= is a script that calculates a mean position from recorded
 GPS data of a static receiver.
 It takes complete fix estimation from \verb=MeasureNavigationDataOut= message and simply
@@ -18,15 +23,25 @@ calculates a mean of its \(x\), \(y\) and \(z\) coordinates.
 This pre-calculated value can later be used to speed up UERE calculations.
 
 \section{checksum.py}
+\label{sec:usage-checksum-py}
+
+\input{plots/checksum.tex}
+
 \verb=checksum.py= calculates CRC32 checksum of SiRF binary data to verify
 correctness of record files.
 
 \section{record.py}
+
+\input{plots/record.tex}
+
 The script \verb=record.py= records stores SiRF binary messages from a GPS (or from a recording).
 The recording can then be opened by the \lstinline=gps= package in the same way as a real GPS
 device.
 
 \section{wgs84\_errors.py}
+
+\input{plots/wgs84-errors.tex}
+
 \verb=wgs84_errors.py= calculates error models of pre-processed WGS84 data.
 It takes a recording calculates center of weight from them, and projects all the fixes to plane
 using orthogonal projection.
@@ -35,6 +50,9 @@ Then positions of the fixes, histogram of errors depending on HDOP (see
 \ref{sec:gps-dop}), and dependency of mean error on HDOP are ploted, 
 
 \section{old\_sv\_state.py}
+
+\input{plots/old-sv-state.tex}
+
 Calculates position errors obtained by using older SV state received from
 the GPS rather than the latest value.
 

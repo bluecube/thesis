@@ -16,9 +16,14 @@ would probably be written in C or C++, for increased performance and better port
 to embedded systems, using libraries like GPSTk \cite{tolman04} for the low level GPS access.
 
 \section{Design}
-\begin{itemize}
-\item Record / replay
-\end{itemize}
+Program created for this thesis is designed as a set of python packages and
+several executable scripts.
+
+Detailed description of these parts can be found in \cref{chap:usage},
+but the general idea is, to record all data advance and later processed these
+recordings.
+Each of the scripts processes the recorded data in some way of values and
+outputs calculated values and graphs seen through this text.
 
 \section{SiRF III}
 \label{sec:impl-sirf}
@@ -27,8 +32,8 @@ Unlike the WGS84 position / velocity data that can be retrieved from the GPS rec
 NMEA protocol, pseudoranges and other lower level details must be obtained
 in a receiver specific manner.
 
-Implementation part of this thesis was performed with a GPS receiver containing
-a SiRF III chipset, and the following sections describe specifics of working with
+All experiments were performed with a GPS receiver containing
+a SiRF III chip set, and the following sections describe specifics of working with
 this hardware.
 SiRF III is a fairly high quality consumer receiver found in many
 \enquote{black boxes} on the market.
@@ -38,7 +43,7 @@ which provides access to much more of the chip's features.
 There is a single publicly available piece of documentation concerning this
 interface \cite{sirf-protocol}, but details about workings of the chip are hard
 to find and must be pieced together from forum posts (especially the thread
-\cite{gpspassion-sirf} at gpspassion forums) and trial and error.
+\cite{gpspassion-sirf} at GpsPasSion forums) and trial and error.
 
 
 \begin{itemize}
@@ -181,7 +186,8 @@ be indistinguishable from receiver clock inaccuracies and will be
 removed also during localization in a similar way.
 
 \subsection{Applied corrections}
-The web site \cite{sam-www} was very useful when implementing clock corrections.
+The web site \cite{sam-www} was very useful when implementing corrections for
+pseudorange measurements.
 
 \begin{itemize}
 \item Ionospheric correction taken from SiRF. Where does it come from? SBAS?

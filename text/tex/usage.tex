@@ -13,7 +13,7 @@ Other than that, the package alecorded data stream may also be opened transparen
 \section{average\_position.py}
 \label{sec:usage-average-position-py}
 
-\input{plots/average-position.tex}
+\input{generated/average-position.tex}
 
 \verb=average_position.py= is a script that calculates a mean position from recorded
 GPS data of a static receiver.
@@ -25,14 +25,14 @@ This pre-calculated value can later be used to speed up UERE calculations.
 \section{checksum.py}
 \label{sec:usage-checksum-py}
 
-\input{plots/checksum.tex}
+\input{generated/checksum.tex}
 
 \verb=checksum.py= calculates CRC32 checksum of SiRF binary data to verify
 correctness of record files.
 
 \section{record.py}
 
-\input{plots/record.tex}
+\input{generated/record.tex}
 
 The script \verb=record.py= records stores SiRF binary messages from a GPS (or from a recording).
 The recording can then be opened by the \lstinline=gps= package in the same way as a real GPS
@@ -40,7 +40,7 @@ device.
 
 \section{wgs84\_errors.py}
 
-\input{plots/wgs84-errors.tex}
+\input{generated/wgs84-errors.tex}
 
 \verb=wgs84_errors.py= calculates error models of pre-processed WGS84 data.
 It takes a recording calculates center of weight from them, and projects all the fixes to plane
@@ -51,7 +51,7 @@ Then positions of the fixes, histogram of errors depending on HDOP (see
 
 \section{old\_sv\_state.py}
 
-\input{plots/old-sv-state.tex}
+\input{generated/old-sv-state.tex}
 
 Calculates position errors obtained by using older SV state received from
 the GPS rather than the latest value.

@@ -81,6 +81,11 @@ for line in lines():
         graphics = prefix_build_path(graphics)
         add_to_deps(graphics)
 
+    listing = match_file('lstinputlisting', line)
+    if listing:
+        listing = prefix_build_path(listing)
+        add_to_deps(listing)
+
     bibresource = match_file('addbibresource', line)
     if bibresource:
         bibresource = prefix_build_path(bibresource)

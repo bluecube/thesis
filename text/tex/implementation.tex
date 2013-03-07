@@ -8,13 +8,6 @@ specifics of the GPS receiver used.
 Detailed usage information for the tools described in this chapter are located in
 \cref{chap:usage}.
 
-Python programming language was chosen for the implementation,
-because of the speed of development and large number of available libraries.
-As mentioned above, it is intended only as a proof of
-concept and for further experimenting; a \enquote{real world} implementation
-would probably be written in C or C++, for increased performance and better portability
-to embedded systems, using libraries like GPSTk \cite{tolman04} for the low level GPS access.
-
 \section{SiRF III}
 \label{sec:impl-sirf}
 
@@ -77,9 +70,16 @@ length to match the difference between previous pair of average errors.
 \end{figure}
 
 \section{Design}
+Python programming language was chosen for the implementation,
+because of the speed of development and large number of available libraries.
+As mentioned above, it is intended only as a proof of
+concept and for further experimenting and it does have performance problems
+when running on batch data; a \enquote{real world} implementation
+would probably be written in C or C++, for increased performance and better portability
+to embedded systems, using libraries like GPSTk \cite{tolman04} for the low level GPS access.
+
 Program created for this thesis is designed as a set of python packages and
 several executable scripts.
-
 Detailed description of these parts can be found in \cref{chap:usage},
 but the general idea is, to record all data advance and later processed these
 recordings.
@@ -106,8 +106,36 @@ SiRF binary protocol are implemented.
 \subsubsection{Processing the Protocol}
 Messages of the SiRF binary protocol are parsed from the input stream and
 representing objects are created based on classes in the file \verb=gps/sirf_messages.py=.
-The message parsing code uses introspection in python to enumerate messages
+The message parsing code uses introspection in python to enumerate message types
 available for parsing.
+
+\subsection{Recordings}
+Recordings of GPS messages are stored in a custom format containing sequence
+of timestamped binary SiRF messages, the whole stream compressed with gzip.
+A custom file format was chosen instead of one directly available in python,
+because it allows us to store data incrementally, without keeping all of the
+messages in memory.
+Even though parsing of the protocol is faster than when this was attempted
+using standard pickle file format, it is still optimized for simplicity
+and admittedly creates a performance bottleneck.
+
+Replaying is intended to be seamlessly interchangeable with a real GPS device,
+which proved to be very useful in the early phases of experimentation.
+
+\subsection{Interfaces to GPS Data}
+There are several levels of access to the data from GPS or replay are available,
+ranging from returning individual binary strings of unparsed data to an option based
+on observers that are notified every time a desired type of message is encountered.
+
+\subsection{Ephemeris}
+Since SiRF III sends complete calculated positions of satellites in its binary
+protocol, we are using these, although it is possible relatively easily to switch
+to a different ephemeris source.
+Apart from that a currently unused (and largely untested) scraper for precise
+ephemeris data from the IGS service \cite{orbit-data} is implemented.
+
+Both of these are based on the previously mentioned observer framework for processing
+received GPS messages.
 
 \section{Position Domain Error Model}
 Calculating error model in position domain is done in a fairly straightforward way.

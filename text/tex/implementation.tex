@@ -56,10 +56,27 @@ to find and must be pieced together from forum posts (especially the thread
 \end{itemize}
 
 \subsection{Communication With SiRF Chip}
-\begin{itemize}
-\item Detection / switching: SiRF binary <-> NMEA
-\item Parsing and building SiRF messages
-\end{itemize}
+The most basic function of the \verb=GPS= package is serial with the
+SiRF chip.
+
+\subsubsection{Serial Communication and Protocol Detection}
+Operations with serial port are performed by the pySerial library.
+Because the chip can work in several modes of communication, it is necessary to
+switch it to a known one before use, this is done by attempting to read messages
+from the GPS in two expected modes (4800 8N1 NMEA protocol and 115200 8N1 SiRF
+binary protocol). If neither of these fits, trying all other possible
+combinations of baud rate and protocol are tried.
+
+Once the GPS mode is detected, it is switched to 115200 8N1 SiRF binary.
+The rest of operations with GPS are performed in this mode.
+NMEA messages can be parsed, but only the ones necessary for switching to
+SiRF binary protocol are implemented.
+
+\subsubsection{Processing the Protocol}
+Messages of the SiRF binary protocol are parsed from the input stream and
+representing objects are created based on classes in the file \verb=gps/sirf_messages.py=.
+The message parsing code uses introspection in python to enumerate messages
+available for parsing.
 
 \subsection{Grouping of Reported Measurements}
 All measurements reported by the chipset are grouped and appear

@@ -30,7 +30,7 @@ arg_parser.add_argument('--receiver-pos', type=numpy.matrix, default=None, requi
     help="Ground truth receiver position.")
 arg_parser.add_argument('--hist-resolution', default=1, type=float,
     help="Width of the histogram bin.")
-arg_parser.add_argument('--fit-window', type=float, default=10 * 60,
+arg_parser.add_argument('--fit-window', type=float, default=2 * 60,
     help="Controls how large the window for smoothing clock offsets will be, in seconds.")
 arg_parser.add_argument('--no-show', action='store_true',
     help="Don't show the plots, only save them.")
@@ -38,7 +38,7 @@ arg_parser.add_argument('--plot-thinning', action='store', type=int, default=1,
     help="Only plot each N-th item.")
 arg_parser.add_argument('--plot-clock-corrections', action='store_true',
     help="Add vertical lines marking clock corrections.")
-arg_parser.add_argument('--outlier-threshold', action='store', type=float, default=150,
+arg_parser.add_argument('--outlier-threshold', action='store', type=float, default=250,
     help="Distance in meters from the smoothed pseudorange at which the point is considered an outlier")
 arguments = arg_parser.parse_args()
 

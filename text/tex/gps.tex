@@ -11,11 +11,14 @@ error sources of GPS measurements and methods of dealing with these errors.
 Lastly this chapter deals with communication with consumer grade GPS receivers
 and briefly also with other position systems than GPS.
 
-This chapter is based mainly on chapters 2 and 7 of \cite{kaplan06}, unless other source is cited.
-\questiontodo{Is this OK?}
+Unless other sources are cited, this chapter is based on chapters
+2 and 7 of \cite{kaplan06}.
+
 The document \cite{fyfe92} contains a specification of the GPS interface to user
-segment describing many of the gory details of GPS system, however this is mostly
-too low level to be of any use in this work.
+segment describing the gory details of GPS system,
+however since in this work we only interface with the GPS system through a
+consumer-grade receiver we are shielded from much of the low level details of
+the GPS.
 
 \section{Basic Description}
 
@@ -218,7 +221,7 @@ Precise ephemeris are satellite ephemeris data calculated by ground stations
 and distributed separately from the GPS broadcast.
 
 One of sources of precise ephemeris is for example \cite{orbit-data}, providing datasets with
-ost-processed data and also with predictions for next several hours.
+post-processed data and also with predictions for next several hours.
 While the quality of these predictions is lower than of the off-line data,
 they are still several times more precise than the broadcast ephemerides
 (\SI{5}{\centi\meter} RMS versus \SI{100}{\centi\meter} RMS, according to \cite{orbit-data}).

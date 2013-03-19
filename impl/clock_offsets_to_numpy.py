@@ -44,6 +44,7 @@ class _Worker:
             self.unmodified_last_time = measurement.gps_sw_time
             self.sv_ids.append(measurement.satellite_id)
             self.measurement_errors.append(error)
+            self.doppler_errors.append(me.doppler_error())
 
         self.measurements.clear()
 
@@ -106,6 +107,7 @@ class _Worker:
         self.sv_ids = []
         self.measurement_errors = []
         self.clock_correction_values  = []
+        self.doppler_errors = []
 
         self.last_avg_error = None
 
@@ -127,7 +129,6 @@ class _Worker:
 
         logging.info("- Convert to arrays...")
         self.times = numpy.array(self.times, dtype=numpy.float)
-        self.sv_ids = numpy.array(self.sv_ids, dtype=numpy.float)
         self.measurement_errors = numpy.array(self.measurement_errors, dtype=numpy.float)
         self.clock_correction_values = numpy.array(self.clock_correction_values, dtype=numpy.float)
 
@@ -145,6 +146,7 @@ class _Worker:
                 self.times,
                 self.sv_ids,
                 self.measurement_errors,
+                self.doppler_errors,
                 clock_offsets,
                 clock_drifts
                 ),
@@ -152,6 +154,7 @@ class _Worker:
                 ('times', numpy.float),
                 ('sv_ids', numpy.float),
                 ('errors', numpy.float),
+                ('velocity_errors', numpy.float),
                 ('clock_offsets', numpy.float),
                 ('clock_drifts', numpy.float)])
 

@@ -50,12 +50,13 @@ errors = data['errors'][::arguments.plot_thinning]
 clock_offsets = data['clock_offsets'][::arguments.plot_thinning]
 clock_drifts = data['clock_drifts'][::arguments.plot_thinning]
 errors -= clock_offsets
+velocity_errors = data['velocity_errors'][::arguments.plot_thinning]
+velocity_errors -= clock_drifts
 
 logging.info("Plotting")
 
 fig1 = plt.figure()
 error_plot = fig1.add_subplot(1, 1, 1)
-
 error_plot.scatter(times, errors, c=sv_ids, marker='.', s=40, alpha=0.7,
     edgecolors='none', rasterized=True)
 error_plot.set_title('Measurement errors')
@@ -100,6 +101,16 @@ matplotlib_settings.common_plot_settings(drifts_plot, set_limits=False)
 #matplotlib_settings.common_plot_settings(offsets_plot, set_limits=False)
 #offsets_plot.set_xlabel(r'GPS Software time [\si{\second}]')
 #offsets_plot.set_ylabel(r'[\si{\meter}]')
+
+fig4 = plt.figure()
+velocity_plot = fig4.add_subplot(1, 1, 1)
+velocity_plot.scatter(times,velocity_errors, c=sv_ids, marker='.', s=40, alpha=0.7,
+    edgecolors='none', rasterized=True)
+velocity_plot.set_title('Velocity errors')
+velocity_plot.set_xlabel(r'Time/\si{\second}')
+velocity_plot.set_ylabel(r'Error/\si{\meter\per\second}')
+matplotlib_settings.common_plot_settings(velocity_plot, set_limits=False)
+
 
 if not arguments.no_show:
     plt.show()

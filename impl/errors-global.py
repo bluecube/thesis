@@ -27,12 +27,16 @@ arg_parser = argparse.ArgumentParser(
 arg_parser.add_argument('fixes', help="Data obtained from clock_offsets_to_numpy.py")
 arg_parser.add_argument('--hist-resolution', default=1, type=float,
     help="Width of the histogram bin.")
+arg_parser.add_argument('--velocity-hist-resolution', default=0.05, type=float,
+    help="Width of the velocity histogram bin.")
 arg_parser.add_argument('--no-show', action='store_true',
     help="Don't show the plots, only save them.")
 arg_parser.add_argument('--plot-thinning', action='store', type=int, default=1,
     help="Only plot each N-th item.")
 arg_parser.add_argument('--outlier-threshold', action='store', type=float, default=250,
     help="X axis scaling for histogram")
+arg_parser.add_argument('--velocity-outlier-threshold', action='store', type=float, default=4,
+    help="X axis scaling for velocity error histogram")
 arguments = arg_parser.parse_args()
 
 logging.info("Retreiving fixes")
@@ -80,14 +84,6 @@ drifts_plot.set_xlabel(r'Time/\si{\second}')
 drifts_plot.set_ylabel(r'Drift/\si{\meter\per\second}')
 matplotlib_settings.common_plot_settings(drifts_plot, set_limits=False)
 
-#fig3 = plt.figure()
-#offsets_plot = fig3.add_subplot(1, 1, 1)
-#offsets_plot.plot(times, clock_offsets, label="Clock offset (from system time)")
-#offsets_plot.plot(times, clock_correction_values, label="Clock corrections")
-#matplotlib_settings.common_plot_settings(offsets_plot, set_limits=False)
-#offsets_plot.set_xlabel(r'GPS Software time [\si{\second}]')
-#offsets_plot.set_ylabel(r'[\si{\meter}]')
-
 fig4 = plt.figure()
 velocity_plot = fig4.add_subplot(1, 1, 1)
 velocity_plot.scatter(times,velocity_errors, c=sv_ids, marker='.', s=40, alpha=0.7,
@@ -97,6 +93,18 @@ velocity_plot.set_xlabel(r'Time/\si{\second}')
 velocity_plot.set_ylabel(r'Error/\si{\meter\per\second}')
 matplotlib_settings.common_plot_settings(velocity_plot, set_limits=False)
 
+
+fig5 = plt.figure()
+velocity_error_histogram = fig5.add_subplot(1, 1, 1)
+mu, sigma = matplotlib_settings.plot_hist(velocity_error_histogram,
+                                          velocity_errors,
+                                          arguments.velocity_hist_resolution,
+                                          arguments.velocity_outlier_threshold)
+print("Velocity mean: {}".format(mu))
+print("Velocity sigma: {}".format(sigma))
+velocity_error_histogram.set_title('Velocity errors')
+velocity_error_histogram.set_xlabel(r'Error/\si{\meter\per\second}')
+velocity_error_histogram.set_ylabel(r'Count')
 
 if not arguments.no_show:
     plt.show()

@@ -39,11 +39,6 @@ logging.info("Retreiving fixes")
 
 data = numpy.load(arguments.fixes)
 
-mu = numpy.mean(data['errors'])
-sigma = numpy.std(data['errors'])
-print("Mean: {}".format(mu))
-print("Sigma: {}".format(sigma))
-
 times = data['times'][::arguments.plot_thinning]
 sv_ids = (data['sv_ids'] / data['sv_ids'].max())[::arguments.plot_thinning]
 errors = data['errors'][::arguments.plot_thinning]
@@ -64,26 +59,17 @@ error_plot.set_xlabel(r'Time/\si{\second}')
 error_plot.set_ylabel(r'Error/\si{\meter}')
 matplotlib_settings.common_plot_settings(error_plot, set_limits=False)
 
-res = arguments.hist_resolution
-bin_half_count = int(math.floor(arguments.outlier_threshold * 1.05 / res))
-    # extra 5% makes the histogram look a little nicer and not that cut off
-bins = [res * x - (res / 2) for x in range(-bin_half_count, bin_half_count + 2)]
 fig2 = plt.figure()
 error_histogram = fig2.add_subplot(1, 1, 1)
-n, bins, patches = error_histogram.hist(data['errors'], bins=bins, alpha=0.7)
-
-bincenters = 0.5 * (bins[1:] + bins[:-1])
-y = matplotlib.mlab.normpdf(bincenters, mu, sigma) * len(data['errors'])
-error_histogram.plot(bincenters, y, 'r--')
-
+mu, sigma = matplotlib_settings.plot_hist(error_histogram,
+                                          errors,
+                                          arguments.hist_resolution,
+                                          arguments.outlier_threshold)
+print("Mean: {}".format(mu))
+print("Sigma: {}".format(sigma))
 error_histogram.set_title('Measurement errors')
 error_histogram.set_xlabel(r'Error/\si{\meter}')
 error_histogram.set_ylabel(r'Count')
-matplotlib_settings.common_plot_settings(error_histogram,
-    min_x = -arguments.outlier_threshold,
-    max_x = arguments.outlier_threshold,
-    min_y = 0,
-    max_y = numpy.max(n))
 
 fig3 = plt.figure()
 drifts_plot = fig3.add_subplot(1, 1, 1)

@@ -1,6 +1,8 @@
 import matplotlib as m
 import matplotlib.ticker
 import os
+import numpy
+import math
 
 #m.rcParams['axes.unicode_minus'] = False
 m.rcParams['text.usetex'] = True
@@ -53,3 +55,26 @@ def common_plot_settings(plot, min_x = None, max_x = None, min_y = None, max_y =
         margin = (max_y - min_y) * margins
         plot.set_ylim([min_y - margin, max_y + margin])
 
+def plot_hist(subplot, data, res, threshold):
+    masked_data = numpy.ma.array(data, mask=(numpy.abs(data) > threshold))
+    print numpy.ma.count(masked_data), len(masked_data)
+    mu = numpy.ma.mean(masked_data)
+    sigma = numpy.ma.std(masked_data)
+
+    bin_half_count = int(math.floor(threshold * 1.05 / res))
+        # extra 5% makes the histogram look a little nicer and not that cut off
+    bins = [res * x - (res / 2) for x in range(-bin_half_count, bin_half_count + 2)]
+
+    n, bins, patches = subplot.hist(data, bins=bins, alpha=0.7)
+
+    bincenters = 0.5 * (bins[1:] + bins[:-1])
+    y = matplotlib.mlab.normpdf(bincenters, mu, sigma) * sum(n) * res
+    subplot.plot(bincenters, y, 'r--')
+
+    common_plot_settings(subplot,
+        min_x = -threshold,
+        max_x = threshold,
+        min_y = 0,
+        max_y = numpy.max(n))
+
+    return mu, sigma

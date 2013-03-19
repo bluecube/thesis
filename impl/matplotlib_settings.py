@@ -59,7 +59,7 @@ def plot_hist(subplot, data, res, threshold):
     masked_data = numpy.ma.array(data, mask=(numpy.abs(data) > threshold))
     print numpy.ma.count(masked_data), len(masked_data)
     mu = numpy.ma.mean(masked_data)
-    sigma = numpy.ma.std(masked_data)
+    sigma = numpy.ma.std(masked_data - mu)
 
     bin_half_count = int(math.floor(threshold * 1.05 / res))
         # extra 5% makes the histogram look a little nicer and not that cut off

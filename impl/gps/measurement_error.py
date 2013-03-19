@@ -69,6 +69,11 @@ class MeasurementError:
         self._receiver_state = receiver_state
         self._set_receiver_pos(receiver_state.pos)
 
+        velocity_diff = self._sv_state.velocity - receiver_state.velocity
+        self._relative_velocity = \
+            math.fsum(x*y for x, y in zip(velocity_diff.flat, self._user_to_sv.flat)) / \
+            self._geom_range
+
     def _tropo_delay(self):
         """ Tropospheric delay from hopfield model, based on default meteorologic parameters
         and saved receiver and SV position.
@@ -125,4 +130,7 @@ class MeasurementError:
         return error
 
     def doppler_error(self):
-        raise NotImplementedError()
+        corrected_reported_velocity = (
+            self._measurement.carrier_freq -
+            C * (self._receiver_state.clock_drift - self._sv_state.clock_drift))
+        return corrected_reported_velocity - self._relative_velocity

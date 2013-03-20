@@ -57,7 +57,6 @@ def common_plot_settings(plot, min_x = None, max_x = None, min_y = None, max_y =
 
 def plot_hist(subplot, data, res, threshold):
     masked_data = numpy.ma.array(data, mask=(numpy.abs(data) > threshold))
-    print numpy.ma.count(masked_data), len(masked_data)
     mu = numpy.ma.mean(masked_data)
     sigma = numpy.ma.std(masked_data - mu)
 

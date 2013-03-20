@@ -26,13 +26,13 @@ CLOCK_CORRECTION_THRESHOLD = 1e6 # Distance jump in meters that is considered as
 arg_parser = argparse.ArgumentParser(
     description="Plot ")
 arg_parser.add_argument('fixes', help="Data obtained from clock_offsets_to_numpy.py")
-arg_parser.add_argument('--hist-resolution', default=1, type=float,
+arg_parser.add_argument('--hist-resolution', default=0.2, type=float,
     help="Width of the histogram bin.")
 arg_parser.add_argument('--no-show', action='store_true',
     help="Don't show the plots, only save them.")
 arg_parser.add_argument('--plot-thinning', action='store', type=int, default=1,
     help="Only plot each N-th item.")
-arg_parser.add_argument('--outlier-threshold', action='store', type=float, default=250,
+arg_parser.add_argument('--outlier-threshold', action='store', type=float, default=20,
     help="X axis scaling for histogram")
 arg_parser.add_argument('--time-threshold', action='store', type=float, default=2,
     help="Time difference in seconds that is still counted as successive measurement.")

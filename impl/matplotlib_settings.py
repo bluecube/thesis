@@ -64,7 +64,8 @@ def plot_hist(subplot, data, res, threshold):
         # extra 5% makes the histogram look a little nicer and not that cut off
     bins = [res * x - (res / 2) for x in range(-bin_half_count, bin_half_count + 2)]
 
-    n, bins, patches = subplot.hist(data, bins=bins, alpha=0.7)
+    compressed = numpy.ma.array(data).compressed()
+    n, bins, patches = subplot.hist(compressed, bins=bins, alpha=0.7)
 
     bincenters = 0.5 * (bins[1:] + bins[:-1])
     y = matplotlib.mlab.normpdf(bincenters, mu, sigma) * sum(n) * res

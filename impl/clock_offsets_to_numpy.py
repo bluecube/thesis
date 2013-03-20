@@ -85,12 +85,13 @@ class _Worker:
         drifts, offsets = util.windowed_least_squares(x, y, width)
 
         del drifts
-        mask = numpy.abs(y - offsets) < arguments.outlier_threshold
+        mask = numpy.abs(y - offsets) > self._outlier_threshold
         del offsets
 
         return util.windowed_least_squares(x, y, width, mask)
 
     def do(self, source_filename, receiver_pos, fit_window, outlier_threshold):
+        self._outlier_threshold = outlier_threshold
         source = gps.open_gps(source_filename)
         self.receiver_state = gps.StationState(
             pos = receiver_pos,
@@ -139,8 +140,6 @@ class _Worker:
             fit_window)
         clock_offsets -= self.clock_correction_values
 
-        del self.clock_correction_values
-
         return numpy.fromiter(
             itertools.izip(
                 self.times,
@@ -148,15 +147,17 @@ class _Worker:
                 self.measurement_errors,
                 self.doppler_errors,
                 clock_offsets,
-                clock_drifts
+                clock_drifts,
+                self.clock_correction_values
                 ),
             dtype=[
                 ('times', numpy.float),
-                ('sv_ids', numpy.float),
+                ('sv_ids', numpy.uint8),
                 ('errors', numpy.float),
                 ('velocity_errors', numpy.float),
                 ('clock_offsets', numpy.float),
-                ('clock_drifts', numpy.float)])
+                ('clock_drifts', numpy.float),
+                ('clock_corrections', numpy.float)])
 
 def open_source(source_filename, receiver_pos, fit_window, outlier_threshold):
     try:

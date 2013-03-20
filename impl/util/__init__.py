@@ -32,7 +32,7 @@ def windowed_least_squares(x, y, width, mask = None):
             if x[right] > x0 + width:
                 break;
 
-            if mask is None or mask[right]:
+            if mask is None or not mask[right]:
                 x_val = x[right]
                 y_val = y[right]
 
@@ -48,7 +48,7 @@ def windowed_least_squares(x, y, width, mask = None):
             if x[left] >= x0 - width:
                 break
 
-            if mask is None or mask[left]:
+            if mask is None or not mask[left]:
                 x_val = x[left]
                 y_val = y[left]
 

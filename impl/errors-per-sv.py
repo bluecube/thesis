@@ -28,8 +28,6 @@ logging.basicConfig(
     level = logging.INFO
 )
 
-CLOCK_CORRECTION_THRESHOLD = 1e6 # Distance jump in meters that is considered as clock correction.
-
 arg_parser = argparse.ArgumentParser(
     description="Equivalent of errors_global, but only for a single SV. The clock"
     "offset fitting here should cancel most residual errors for the channel.")

@@ -14,6 +14,15 @@ import matplotlib
 
 import util
 
+def fit_clock_offsets(x, y, width):
+    drifts, offsets = util.windowed_least_squares(x, y, width)
+
+    del drifts
+    mask = numpy.abs(y - offsets) > arguments.outlier_threshold
+    del offsets
+
+    return util.windowed_least_squares(x, y, width, mask)
+
 logging.basicConfig(
     format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level = logging.INFO
@@ -22,8 +31,11 @@ logging.basicConfig(
 CLOCK_CORRECTION_THRESHOLD = 1e6 # Distance jump in meters that is considered as clock correction.
 
 arg_parser = argparse.ArgumentParser(
-    description="Plot ")
+    description="Equivalent of errors_global, but only for a single SV. The clock"
+    "offset fitting here should cancel most residual errors for the channel.")
 arg_parser.add_argument('fixes', help="Data obtained from clock_offsets_to_numpy.py")
+arg_parser.add_argument('--only-sv', action='store', type=int, required=True,
+    help="Which SV to process")
 arg_parser.add_argument('--hist-resolution', default=1, type=float,
     help="Width of the histogram bin.")
 arg_parser.add_argument('--velocity-hist-resolution', default=0.05, type=float,
@@ -36,50 +48,87 @@ arg_parser.add_argument('--outlier-threshold', action='store', type=float, defau
     help="X axis scaling for histogram")
 arg_parser.add_argument('--velocity-outlier-threshold', action='store', type=float, default=4,
     help="X axis scaling for velocity error histogram")
-arg_parser.add_argument('--only-sv', action='append', type=int, default=None,
-    help="X axis scaling for velocity error histogram")
+arg_parser.add_argument('--fit-window', type=float, default=2 * 60,
+    help="Controls how large the window for smoothing clock offsets will be, in seconds.")
 arguments = arg_parser.parse_args()
 
 logging.info("Retreiving fixes")
 
 data = numpy.load(arguments.fixes)
 
-times = data['times'][::arguments.plot_thinning]
-sv_ids = data['sv_ids'][::arguments.plot_thinning]
-errors = data['errors'][::arguments.plot_thinning]- data['clock_offsets'][::arguments.plot_thinning]
+times = data['times']
+sv_ids = data['sv_ids']
+errors = data['errors'] + data['clock_corrections']
+velocity_errors = data['velocity_errors']
 
 logging.info("Processing")
-available_sv_ids = set(numpy.unique(sv_ids))
-if arguments.only_sv is not None:
-    selected_sv_ids = []
-    for sv_id in set(arguments.only_sv):
-        if sv_id not in available_sv_ids:
-            logging.warning("SV id {} is not available, skipping".format(sv_id))
-            continue
-        selected_sv_ids.append(sv_id)
-    selected_sv_ids.sort()
-else:
-    selected_sv_ids = sorted(available_sv_ids)
+if not arguments.only_sv in numpy.unique(sv_ids):
+    raise ValueError("This SV id is not usable")
+
+sv_id = arguments.only_sv
+mask = (sv_ids != sv_id)
+times = numpy.ma.array(times, mask=mask).compressed()
+errors = numpy.ma.array(errors, mask=mask).compressed()
+velocity_errors = numpy.ma.array(velocity_errors, mask=mask).compressed()
+
+clock_drifts, clock_offsets = fit_clock_offsets(times, errors, arguments.fit_window)
+
+errors -= clock_offsets
+velocity_errors -= clock_drifts
 
 logging.info("Plotting")
 
-for sv_id in selected_sv_ids:
-    fig = plt.figure()
-    plot = fig.add_subplot(1, 1, 1)
-    mask = sv_ids != sv_id
+fig1 = plt.figure()
+error_plot = fig1.add_subplot(1, 1, 1)
+error_plot.scatter(times[::arguments.plot_thinning], errors[::arguments.plot_thinning],
+    marker='.', s=40, alpha=0.7, edgecolors='none', rasterized=True)
+error_plot.set_title('Measurement errors for SV {}'.format(sv_id))
+error_plot.set_xlabel(r'Time/\si{\second}')
+error_plot.set_ylabel(r'Error/\si{\meter}')
+matplotlib_settings.common_plot_settings(error_plot, set_limits=False)
 
-    mu, sigma = matplotlib_settings.plot_hist(plot,
-        numpy.ma.array(errors, mask=mask),
-        arguments.hist_resolution,
-        arguments.outlier_threshold)
+fig2 = plt.figure()
+error_histogram = fig2.add_subplot(1, 1, 1)
+mu, sigma = matplotlib_settings.plot_hist(error_histogram,
+                                          errors,
+                                          arguments.hist_resolution,
+                                          arguments.outlier_threshold)
+print("Mean: {}".format(mu))
+print("Sigma: {}".format(sigma))
+error_histogram.set_title('Measurement errors for SV {}'.format(sv_id))
+error_histogram.set_xlabel(r'Error/\si{\meter}')
+error_histogram.set_ylabel(r'Count')
 
-    print("SV ID {}".format(sv_id))
+fig3 = plt.figure()
+drifts_plot = fig3.add_subplot(1, 1, 1)
+drifts_plot.plot(times[::arguments.plot_thinning], clock_drifts[::arguments.plot_thinning],
+    '-', alpha=0.7)
+drifts_plot.set_title('Receiver clock drifts for SV {}'.format(sv_id))
+drifts_plot.set_xlabel(r'Time/\si{\second}')
+drifts_plot.set_ylabel(r'Drift/\si{\meter\per\second}')
+matplotlib_settings.common_plot_settings(drifts_plot, set_limits=False)
 
-    print("Mean: {}".format(mu))
-    print("Sigma: {}".format(sigma))
-    plot.set_title('Measurement errors for SV ID {}'.format(sv_id))
-    plot.set_xlabel(r'Error/\si{\meter}')
-    plot.set_ylabel(r'Count')
+fig4 = plt.figure()
+velocity_plot = fig4.add_subplot(1, 1, 1)
+velocity_plot.scatter(times[::arguments.plot_thinning], velocity_errors[::arguments.plot_thinning],
+    marker='.', s=40, alpha=0.7, edgecolors='none', rasterized=True)
+velocity_plot.set_title('Velocity errors for SV {}'.format(sv_id))
+velocity_plot.set_xlabel(r'Time/\si{\second}')
+velocity_plot.set_ylabel(r'Error/\si{\meter\per\second}')
+matplotlib_settings.common_plot_settings(velocity_plot, set_limits=False)
+
+
+fig5 = plt.figure()
+velocity_error_histogram = fig5.add_subplot(1, 1, 1)
+mu, sigma = matplotlib_settings.plot_hist(velocity_error_histogram,
+                                          velocity_errors,
+                                          arguments.velocity_hist_resolution,
+                                          arguments.velocity_outlier_threshold)
+print("Velocity mean: {}".format(mu))
+print("Velocity sigma: {}".format(sigma))
+velocity_error_histogram.set_title('Velocity errors for SV {}'.format(sv_id))
+velocity_error_histogram.set_xlabel(r'Error/\si{\meter\per\second}')
+velocity_error_histogram.set_ylabel(r'Count')
 
 if not arguments.no_show:
     plt.show()

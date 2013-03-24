@@ -148,7 +148,6 @@ An attempt at mitigating this could be done by estimating the error as part of
 the robot's state, possibly removing atmospheric effects and some of the low pass
 filtering properties of the Kalman filter in the receiver.
 These options, however, will not be explored in this work.
-\todo{possibilities}\todo{Mention if we end up doing this in measurement domain}
 
 \section{Measurement Domain Integration}
 \label{sec:measurement-domain}
@@ -168,6 +167,11 @@ The main reason for attempting to use the GPS in this way is to add more informa
 into the localization process and to have more control over assumptions made during
 processing of the GPS data.
 
+To improve accuracy, we also track residual errors for each individual satellite.
+Main cause for these errors are in ionosphere, but this treatment should be also
+capable of alleviating other errors that change slowly over time, like satellite
+clock offsets.
+
 \subsection{Static Environment Assumption}
 \label{sec:gps-mcl-static-env}
 Monte Carlo Localization assumes that the environment is static, but we need to
@@ -175,7 +179,18 @@ localize according to moving satellites.
 To avoid this problem we will hide satellite motion into the robot state and sensor model.
 
 \subsection{Robot State}
+Unlike the position domain integration approach, this method requires
+a specific way of storing the robot state in MCL samples.
 
+Firstly of all, the whole GPS operations work in ECEF coordinate system, meaning
+that the robot position and velocity also must be stored in this coordinate system.
+Next, the GPS needs to estimate a receiver clock offset as a position together
+with position, so this is another variable which must exist in the state.
+
+The state variables will also have to contain velocities in ECEF and clock drift.
+
+As mentioned in the previous text, residual errors for each satellite are also
+estimated, consisting of residual clock offset and residual clock drift.
 
 \subsection{Error distribution}
 Normal distribution (???)

@@ -197,9 +197,19 @@ each measurement time.
 
 First approach explored in this thesis was to fit a polynomial through these
 points, but it didn't fit the points well enough.
-
 Currently we fit a linear function to points from a sliding window centered
-around each of points as illustrated on \cref{fig:sliding-window-linear-regression}.
+around each of points as seen on \cref{fig:sliding-window-linear-regression}.
+
+An input of this procedure is a set of points \(\{x_i, y_i\}\), marking 
+time and potential clock offset of individual measurements.
+For each \(i\) we select points \(P_i = \{(x_j, y_j) : \lvert{}x_j - x_i\rvert < \frac{w}{2}\}\), where
+\(w\) is a width of the sliding window.
+The coefficients \(a_i\) and \(b_i\) of linear functions
+\(a_i (x - x_i) + b_i\) fitted through the points \(P_i\) using least squares
+are used as a clock drift and clock offset of the dataset.
+This calculation can be performed in \(\mathcal{O}(n)\) time, which is very
+important for the sizes of datasets we deal with in this work.
+
 
 \begin{figure}[h]
 	\centering
@@ -207,12 +217,6 @@ around each of points as illustrated on \cref{fig:sliding-window-linear-regressi
 	\caption{Sliding window linear regression.}
 	\label{fig:sliding-window-linear-regression}
 \end{figure}
-
-Here for point with time coordinate \(x_0\) the fitted line is drawn in red
-and the value \(y\) is returned as the clock offset of this point.
-Additionally slope of the line is returned and used as clock drift.
-\questiontodo{Maybe add the plot of clock drifts? Looks nice.}
-\todo{Add the plot of corrected measurement errors}
 
 The clock offset fitting step is done twice in our code, first run done on
 all data, then the errors are calculated for the first time and the second run
@@ -234,6 +238,9 @@ removed also during localization in a similar way.
 The web site \cite{sam-www} was very useful when implementing corrections for
 pseudorange measurements.
 
+\subsubsection{Ionospheric Corrections}
+
+\subsubsection{Tropospheric Corrections}
 \begin{itemize}
 \item Ionospheric correction taken from SiRF. Where does it come from? SBAS?
     Estimated values transmitted with the navigation data?

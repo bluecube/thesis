@@ -123,9 +123,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.2795931"
-     inkscape:cx="117.65728"
-     inkscape:cy="96.872727"
+     inkscape:zoom="12.895326"
+     inkscape:cx="197.36428"
+     inkscape:cy="57.405495"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -205,7 +205,7 @@
          y="292.36218"
          x="290"
          id="tspan6369"
-         sodipodi:role="line">window width</tspan></text>
+         sodipodi:role="line">\(w\)</tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:0.5625;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        d="m 345,382.36219 0,-85"
@@ -220,7 +220,7 @@
        sodipodi:nodetypes="cc" />
     <path
        style="fill:none;stroke:#000000;stroke-width:0.56199998;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 290,382.36219 0,-60"
+       d="m 290,382.36219 0,-54.99999"
        id="path8472-5-5"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />
@@ -247,7 +247,7 @@
          y="397.36218"
          x="290"
          id="tspan6369-0"
-         sodipodi:role="line">\(x_0\)</tspan></text>
+         sodipodi:role="line">\(x_i\)</tspan></text>
     <path
        sodipodi:type="arc"
        style="fill:none;stroke:#000000;stroke-width:0.56199998;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
@@ -261,14 +261,14 @@
     <text
        sodipodi:linespacing="125%"
        id="text6367-1-5"
-       y="327.36218"
-       x="293.22559"
-       style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
+       y="322.36221"
+       x="293"
+       style="font-size:12px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:DejaVu Sans;-inkscape-font-specification:DejaVu Sans"
        xml:space="preserve"><tspan
-         y="327.36218"
-         x="293.22559"
-         id="tspan6369-0-8"
-         sodipodi:role="line">\(y\)</tspan></text>
+         y="322.36221"
+         x="293"
+         sodipodi:role="line"
+         id="tspan3023">\((x_i, b_i)\)</tspan></text>
     <path
        style="fill:none;stroke:#ff0000;stroke-width:1.625;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.69803922;stroke-dasharray:none"
        d="m 144.72363,89.117191 110,-15"

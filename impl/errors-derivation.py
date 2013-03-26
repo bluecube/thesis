@@ -21,8 +21,6 @@ logging.basicConfig(
     level = logging.INFO
 )
 
-CLOCK_CORRECTION_THRESHOLD = 1e6 # Distance jump in meters that is considered as clock correction.
-
 arg_parser = argparse.ArgumentParser(
     description="Plot ")
 arg_parser.add_argument('fixes', help="Data obtained from clock_offsets_to_numpy.py")

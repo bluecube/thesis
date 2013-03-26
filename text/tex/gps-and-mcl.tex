@@ -182,7 +182,7 @@ To avoid this problem we will hide satellite motion into the robot state and sen
 Unlike the position domain integration approach, this method requires
 a specific way of storing the robot state in MCL samples.
 
-Firstly of all, the whole GPS operations work in ECEF coordinate system, meaning
+First of all, the whole GPS operations work in ECEF coordinate system, meaning
 that the robot position and velocity also must be stored in this coordinate system.
 Next, the GPS needs to estimate a receiver clock offset as a position together
 with position, so this is another variable which must exist in the state.

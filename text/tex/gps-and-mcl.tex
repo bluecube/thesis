@@ -28,9 +28,9 @@ of the platform intended to carry the unit for example ignoring speeds
 below a certain threshold or limiting allowed accelerations.
 
 It would also be possible for position domain integration to utilize speed information
-from the GPS (NMEA message GPRMC contains velocity in knots and track angle \cite{depriest})
-For this work, however, we choose not to utilize it.
-\questiontodo{better way to say this}
+from the GPS (NMEA message GPRMC contains velocity in knots and track angle \cite{depriest}).
+For this work, however, we choose not to utilize it, to avoid the complexity of converting
+track course and speed to reference frames usable for robot navigation.
 
 \subsection{Sample Format}
 For position domain integration we work in a two dimensional coordinate
@@ -156,7 +156,7 @@ Measurement domain integration takes each pseudorange measurement as an input
 and combines it with other sensor data.
 
 In Monte Carlo localization GPS data are used in a similar way as
-for example ultrasound ranging beacons are used in \cite{some-beacon-ref}\todo{Fix this ref!},
+for example ultrasound ranging beacons would be used,
 taking each measured pseudorange after a correction for measurement errors
 and after clock correction modifying the sample weight based on the measured distance
 compared to expected distance.

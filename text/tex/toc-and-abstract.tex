@@ -3,8 +3,12 @@
 \IfSubStr*{\jobname}{print}{
 	\thispagestyle{empty}
 	{
+	\includepdf{img/assignment-front.pdf}
+	}
+	\thispagestyle{empty}
+	{
 	\centering
-	\missingfigure{Scanovane zadani}
+	\includepdf{img/assignment-back.pdf}
 	}
 	\newpage
 }{}

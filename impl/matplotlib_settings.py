@@ -57,8 +57,12 @@ def common_plot_settings(plot, min_x = None, max_x = None, min_y = None, max_y =
 
 def plot_hist(subplot, data, res, threshold):
     masked_data = numpy.ma.array(data, mask=(numpy.abs(data) > threshold))
+
     mu = numpy.ma.mean(masked_data)
     sigma = numpy.ma.std(masked_data - mu)
+
+    threshold = 4 * sigma
+    res = threshold / 100
 
     bin_half_count = int(math.floor(threshold * 1.05 / res))
         # extra 5% makes the histogram look a little nicer and not that cut off

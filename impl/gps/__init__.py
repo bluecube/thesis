@@ -1,7 +1,19 @@
+import warnings
+
 from . import sirf
 from . import sirf_messages
 from . import nmea
-from .gps import Gps
+try:
+    import serial
+except ImportError:
+    have_serial = False
+    warnings.warn("Serial port support is not available")
+else:
+    have_serial = True
+
+if have_serial:
+    from .gps import Gps
+
 from .gps_replay import GpsReplay
 from .rewindable_gps import RewindableGps
 from .ephemeris import StationState
@@ -20,12 +32,15 @@ def open_gps(*args, **kwargs):
     Factory function. Tries to open a gps as a replay and if this fails
     tries a real gps.
     """
-    try:
-        return gps_replay.GpsReplay(*args, **kwargs)
-    except IOError:
-        pass
-    except StopIteration:
-        pass
+    if have_serial:
+        try:
+            return gps_replay.GpsReplay(*args, **kwargs)
+        except IOError:
+            pass
+        except StopIteration:
+            pass
 
-    return gps.Gps(*args, **kwargs)
+        return gps.Gps(*args, **kwargs)
+    else:
+        return gps_replay.GpsReplay(*args, **kwargs)
 

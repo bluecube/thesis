@@ -1,7 +1,6 @@
 import operator
 import functools
 import time
-from . import serial_wrapper
 
 class NmeaMessageError(Exception):
     pass
@@ -22,7 +21,7 @@ def read_sentence(serial):
 
         if len(line) < 5:
             raise NmeaMessageError("Message too short.")
-        
+
         if line[-5] != b'*'[0]:
             raise NmeaMessageError("Missing '*'.")
 
@@ -36,10 +35,8 @@ def read_sentence(serial):
             raise NmeaMessageError("Checksum error")
 
         return line[1:-5].decode('ascii').split(',')
-    except serial_wrapper.SerialWrapperTimeout:
-        raise NmeaMessageError("Timed out.")
     finally:
-        serial.timeout = old_timeout      
+        serial.timeout = old_timeout
 
 def send_sentence(serial, fields):
     """

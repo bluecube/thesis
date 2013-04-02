@@ -2,7 +2,10 @@ import time
 import struct
 import logging
 
-from . import serial_wrapper
+try:
+    from . import serial_wrapper
+except ImportError:
+    pass
 from . import sirf_messages
 
 _logger = logging.getLogger('localization.gps')

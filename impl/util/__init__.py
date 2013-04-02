@@ -26,7 +26,8 @@ def windowed_least_squares(x, y, width, mask = None):
 
     bar = progressbar.ProgressBar(maxval = len(x))
 
-    for i, x0 in bar(enumerate(x)):
+    for i, x0 in enumerate(x):
+        bar.update(i)
 
         while right < len(x):
             if x[right] > x0 + width:
@@ -68,5 +69,6 @@ def windowed_least_squares(x, y, width, mask = None):
             slope[i] = (xy_sum * count - x_sum * y_sum) / (xx_sum * count - x_sum * x_sum)
             offset[i] = (slope[i] * (x0 * count  - x_sum) + y_sum) / count
 
+    bar.finish()
     return slope, offset
 

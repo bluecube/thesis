@@ -86,6 +86,17 @@ recordings.
 Each of the scripts processes the recorded data in some way of values and
 outputs calculated values and graphs seen through this text.
 
+For running the python code, python 2.7 is required.
+The following packages are used outside the standard library:
+\begin{compactitem}
+\item matplotlib
+\item numpy and scipy
+\item progressbar
+\item pyproj
+\item pyserial is required only if interfacing with a real
+    GPS receiver is intended. It is not necessary for working only with recordings.
+\end{compactitem}
+
 \subsection{Communication With SiRF Chip}
 The most basic function of the \verb=GPS= package is serial with the
 SiRF chip.

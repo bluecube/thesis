@@ -200,6 +200,99 @@ estimated, consisting of residual clock offset and residual clock drift.
 \subsection{Error distribution}
 Normal distribution (???)
 
+\subsubsection{Algorithm}
+
+\begin{figure}[tp]
+\begin{algorithm}[H]
+    \SetKwFunction{abs}{abs}
+    \SetKwFunction{exp}{exp}
+    \SetKwFunction{dotProduct}{dotProduct}
+    \SetKwFunction{norm}{norm}
+    \SetKwFunction{normpdf}{normpdf}
+    \SetKwFunction{tropoDelay}{tropoDelay}
+    \SetKwFunction{ionoDelay}{ionoDelay}
+
+    \SetKwData{samples}{samples}
+    \SetKwData{sample}{s}
+    \SetKwData{samplex}{sample}
+
+
+    \SetKwData{clockDrift}{clockDrift}
+    \SetKwData{clockOffset}{clockOffset}
+    \SetKwArray{residualDrift}{residualDrift}
+    \SetKwArray{residualOffset}{residualOffset}
+    \SetKwData{sv}{sv}
+    \SetKwData{svs}{svList}
+    \SetKwData{geometricDistance}{geometricDistance}
+    \SetKwData{pseudorange}{pseudorange}
+    \SetKwData{position}{position}
+    \SetKwData{velocity}{velocity}
+    \SetKwData{relativeVelocity}{relativeVelocity}
+    \SetKwData{userToSv}{userToSv}
+    \SetKwData{geomRange}{geomRange}
+    \SetKwData{geomVelocity}{geomVelocity}
+    \SetKwData{pseudorangeError}{pseudorangeError}
+    \SetKwData{velocityError}{velocityError}
+    \SetKwData{observation}{observation}
+    %\SetKwData{x}{x}
+    %\SetKwData{x}{x}
+
+    \function{predictGPS}{
+        \KwIn{list of samples}
+        \KwOut{modified list of samples}
+        \BlankLine
+        \ForEach{\sample \(\in\) \samples}{
+            \sample.\clockDrift \assign \sample.\clockDrift \(+\) \norm{\(\mu\) = \num{-0.0145}, \(\sigma\) = \num{8.0331}}\;
+            \sample.\clockOffset \assign \sample.\clockOffset \(+\) \sample.\clockDrift\;
+
+            \BlankLine
+            \ForEach{\sv \(\in\) \svs}{
+                \sample.\residualDrift{\sv} \assign \sample.\residualDrift{\sv} \(+\) \norm{\(\mu\) = \num{-0.0145}, \(\sigma\) = \num{8.0331}}\;
+                \sample.\residualOffset{\sv} \assign \sample.\residualOffset{\sv} \(+\) \sample.\residualDrift{\sv}\;
+            }
+        }
+        \BlankLine
+        \Return{\samples}\;
+    }
+
+    \BlankLine
+    \BlankLine
+    \BlankLine
+    \function{observationProbabilityGPS}{
+        \KwIn{sample, observation}
+        \KwOut{probability}
+
+        \BlankLine
+        \sv \assign \observation.\sv\;
+        \clockDrift = \samplex.\clockDrift + \samplex.\residualDrift{\sv}\;
+        \clockOffset = \samplex.\clockOffset + \samplex.\residualOffset{\sv}\;
+
+        \BlankLine
+        \pseudorange \assign \samplex.\pseudorange\\
+            \hspace{1em} \(+\) \(\speedoflight\) \(*\) \sv.\clockOffset\\
+            \hspace{1em} \(-\) \(\speedoflight\) \(*\) \clockOffset\\
+            \hspace{1em} \(-\) \ionoDelay{\sv, \samplex}\\
+            \hspace{1em} \(-\) \tropoDelay{\sv, \samplex}\;
+        \velocity \assign \samplex.\velocity\\
+            \hspace{1em} \(+\) \(\speedoflight\) \(*\) \sv.\clockDrift\\
+            \hspace{1em} \(-\) \(\speedoflight\) \(*\) \clockDrift\;
+
+        \BlankLine
+        \userToSv \assign \sv.\position \(-\) \samplex.\position\;
+        \relativeVelocity \assign \sv.\velocity \(-\) \samplex.\velocity\;
+
+        \geomRange \assign \abs{\userToSv}\;
+        \geomVelocity \assign \dotProduct{\relativeVelocity, \userToSv} / \geomRange\;
+
+        \BlankLine
+        \Return  \normpdf{\pseudorange \(-\) \geomRange, \(\mu\) = \num{-0.0145}, \(\sigma\) = \num{8.0331}} * \\
+             \hspace{1em} \normpdf{\velocity \(-\) \geomVelocity, \(\mu\) = \num{-0.4588}, \(\sigma\) = \num{1.1618}}\;
+    }
+\end{algorithm}
+\caption{Prediction and correction algorithms for measurement domain integration of GPS measurements}
+\label{algo:gps-measurement-domain}
+\end{figure}
+
 \subsubsection{Error correlation}
 \label{sec:measurement-domain-correlation}
 Keep atmospheric delays as part of the localization state?

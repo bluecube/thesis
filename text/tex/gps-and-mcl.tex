@@ -35,7 +35,7 @@ from the GPS (NMEA message GPRMC contains velocity in knots and track angle \cit
 For this work, however, we choose not to utilize it, to avoid the complexity of converting
 track course and speed to reference frames usable for robot navigation.
 
-\subsection{Sample Format}
+\subsection{Robot State}
 For position domain integration we work in a two dimensional coordinate
 system on a surface of Earth, with X axis going East and Y axis going North.
 WGS84 inputs are transformed to this reference frame using orthogonal projection
@@ -184,8 +184,9 @@ localize according to moving satellites.
 To avoid this problem we will hide satellite motion into the robot state and sensor model.
 
 \subsection{Robot State}
-Unlike the position domain integration approach, this method requires
-a specific way of storing the robot state in MCL samples.
+Unlike the position domain integration approach, this method requires specific
+way of storing the position and velocity of the robot and
+additional data in the robot state in MCL samples.
 
 First of all, the whole GPS operations work in ECEF coordinate system, meaning
 that the robot position and velocity also must be stored in this coordinate system.
@@ -194,10 +195,32 @@ with position, so this is another variable which must exist in the state.
 
 The state variables will also have to contain velocities in ECEF and clock drift.
 
-As mentioned in the previous text, residual errors for each satellite are also
-estimated, consisting of residual clock offset and residual clock drift.
+We also estimate residual errors of each satellite,
+consisting of residual clock offset and residual clock drift.
+These residual clock offsets cover all of the slowly changing errors that are present
+in each satellite's transmission and are not explicitly corrected elsewhere in the process.
+This includes satellite clock inaccuracies, unmodeled remains of ionospheric and
+tropospheric errors and to some extent also satellite ephemeris errors.
 
-\subsection{Error distribution}
+\subsection{Sensor Model}
+
+\subsubsection{Preprocessing}
+Preprocessing steps of the data stream is receiver specific,
+and discussed in \cref{sec:impl-sirf-grouping,sec:impl-sirf-jumps,sec:impl-sirf-ephemeris}.
+In short, this consists of integrating ephemeris, removing any inconsistencies in data caused by the
+receiver and converting the data to sequences of pseudoranges and Doppler measurements.
+
+\subsubsection{Clock Offsets and Drifts}
+Clock offse
+
+
+The only preprocessing step, these values are thresholded, discarding measurements that are too
+far from the expected position.
+\SI{150}{\meter} for pseudoranges and \SI{4}{\meter\per\second} for doppler velocity
+measurements.
+
+
+\subsubsection{Error distribution}
 Normal distribution (???)
 
 \subsubsection{Algorithm}
@@ -293,14 +316,7 @@ Normal distribution (???)
 \label{algo:gps-measurement-domain}
 \end{figure}
 
-\subsubsection{Error correlation}
-\label{sec:measurement-domain-correlation}
-Keep atmospheric delays as part of the localization state?
 
-\subsection{Preprocessing}
-\begin{itemize}
-\item ???
-\end{itemize}
 
 \subsection{Initial estimate}
 \begin{itemize}

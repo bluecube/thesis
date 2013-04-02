@@ -40,6 +40,7 @@ For position domain integration we work in a two dimensional coordinate
 system on a surface of Earth, with X axis going East and Y axis going North.
 WGS84 inputs are transformed to this reference frame using orthogonal projection
 this reported position and HDOP are used to modify weights of the samples.
+Details of this can be found in \cref{sec:impl-coordinates}.
 
 No other variables are required in the robot's state for this method.
 This makes it possible to seamlessly integrate it into existing localization framework.
@@ -91,7 +92,9 @@ and
 blue dots representing the measured data, yellow dots the DRMS values.
 Green line shows the theoretical linear model and red curve is the non linear model.
 Limited resolution of the HDOP values in input data is visible in the plot.
-Another interesting fact is, that only relatively low HDOP values were encountered.
+This figure also shows precision available when using simple NMEA data --
+position error of roughly \SI{10}{\meter} with most of the measuremnts.
+Another interesting fact is to note, that only relatively low HDOP values were encountered.
 \Cref{fig:hdop-hist} shows this in a more pronounced way.
 
 To obtain the final sensor model, we must express the PDF of Rayleight distribution:

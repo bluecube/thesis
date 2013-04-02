@@ -4,7 +4,6 @@ import struct
 import numpy
 import datetime
 
-from . import serial_wrapper
 from . import named_unpacker
 
 class _SirfMessageBase(object):
@@ -450,12 +449,14 @@ class SwitchToNmeaProtocol(_SirfSentMessageBase):
 
 
 class PollSoftwareVersion(_SirfSentMessageBase):
+    packer = struct.Struct('>BB')
+
     @classmethod
     def get_message_id(cls):
         return 132
 
     def to_bytes(self):
-        return serial_wrapper.to_bytes([self.get_message_id(), 0])
+        return self.packer.pack(self.get_message_id(), 0)
 
 
 class SetMessageRate(_SirfSentMessageBase):

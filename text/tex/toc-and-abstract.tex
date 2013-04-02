@@ -1,16 +1,8 @@
 %\pagestyle{empty}
 
 \IfSubStr*{\jobname}{print}{
-	\thispagestyle{empty}
-	{
 	\includepdf{img/assignment-front.pdf}
-	}
-	\thispagestyle{empty}
-	{
-	\centering
 	\includepdf{img/assignment-back.pdf}
-	}
-	\newpage
 }{}
 
 \vspace{10mm} 
@@ -20,7 +12,7 @@ Thank you.
 Also I would like to thank to the team of Roboauto Karlík for letting me
 record valuable real life data from their robot.
 
-\newpage
+\cleartorecto
 
 \vspace*{\fill}
 I declare that I carried out this master thesis independently, and only with the cited
@@ -33,10 +25,10 @@ work as a school work pursuant to Section 60 paragraph 1 of the Copyright Act.
 
 \vspace{10mm} 
 \noindent In~Prague, \today\hspace{\fill}Jakub Marek\\
-\newpage
+\cleartorecto
 
 \tableofcontents*
-\newpage
+\cleartorecto
 
 \noindent
 Title: \thetitle\\
@@ -61,7 +53,7 @@ Vedoucí diplomové práce: RNDr. David Obdržálek, Katedra softwarového inže
 \noindent Klíčová slova: robotika, gps, pseudorange, lokalizace
 %\end{otherlanguage}
 
-\newpage
+\cleartorecto
 
 %\pagestyle{plain}
 %\setcounter{page}{1}

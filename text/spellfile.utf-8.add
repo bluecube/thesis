@@ -43,6 +43,7 @@ HDOP
 roboauto
 8N1
 GPRMC
+unmodeled
 numpy
 scipy
 progressbar

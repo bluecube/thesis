@@ -39,6 +39,7 @@ to find and must be pieced together from forum posts (especially the thread
 \end{itemize}
 
 \subsection{Grouping of Reported Measurements}
+\label{sec:impl-sirf-grouping}
 All measurements reported by the chipset are grouped and appear
 to have to have been made simultaneously.
 Reportedly this is to simplify single point solving of the GPS position.
@@ -46,7 +47,12 @@ Reportedly this is to simplify single point solving of the GPS position.
 In later text we will refer to these measurements as groups and use average
 measurement error of the group in several calculations.
 
+\subsection{Ephemeris}
+\label{sec:impl-sirf-ephemeris}
+\todo{!!!}
+
 \subsection{Clock Jumps in SiRF Output}
+\label{sec:impl-sirf-jumps}
 According to \cite{sirf-protocol}, notes for message ID 28, SiRF chipset has a
 notion of nominal clock drift with corresponding velocity correction of \SI{18315.766}{\meter\per\second}.
 This causes the clock offset to consistently increase in time.

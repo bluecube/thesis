@@ -133,6 +133,14 @@ and admittedly creates a performance bottleneck.
 Replaying is intended to be seamlessly interchangeable with a real GPS device,
 which proved to be very useful in the early phases of experimentation.
 
+To save time on higher level experiments, some of them (for example all \verb=errors-*.py=)
+use pre-calculated data saved in numpy data dump format.
+Data in this format don't have to be parsed on every load and also some basic
+preprocessing steps are avoided.
+The preprocessed data files are created using scripts \verb=wgs84_fixes_to_numpy.py=
+for WGS84 positions of fixes and \verb=clock_offsets_to_numpy.py= for pseudorange
+and velocity data.
+
 \subsection{Interfaces to GPS Data}
 There are several levels of access to the data from GPS or replay are available,
 ranging from returning individual binary strings of unparsed data to an option based

@@ -58,10 +58,9 @@ is discussed in \cref{sec:position-domain-correlation}.
 	\label{fig:wgs84-hdop-error}
 \end{figure}
 
-Position domain integration has no requirements on the prediction phase
-and only 
-
-For modelling the error we basically follow \cite{www-wilson}.
+Because position domain integration as used here has no persistent variables in the
+robot state, it does not need any operations during the prediction step of MCL.
+Our error model for correction step for the correction phase follows \cite{www-wilson}.
 
 In this case we are operating only in two dimensions.
 The horizontal component of the position error  \(\vect{\delta R}\) is modelled using Rayleigh distribution

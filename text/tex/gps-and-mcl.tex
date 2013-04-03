@@ -256,9 +256,10 @@ Normal distribution (???)
     \SetKwData{geomVelocity}{geomVelocity}
     \SetKwData{pseudorangeError}{pseudorangeError}
     \SetKwData{velocityError}{velocityError}
+    \SetKwData{rangeError}{rangeError}
+    \SetKwData{velocityError}{velocityError}
     \SetKwData{observation}{observation}
-    %\SetKwData{x}{x}
-    %\SetKwData{x}{x}
+    \SetKwData{result}{result}
 
     \function{predictGPS}{
         \KwIn{list of samples}
@@ -308,8 +309,21 @@ Normal distribution (???)
         \geomVelocity \assign \dotProduct{\relativeVelocity, \userToSv} / \geomRange\;
 
         \BlankLine
-        \Return  \normpdf{\pseudorange \(-\) \geomRange, \(\mu\) = \num{-0.0145}, \(\sigma\) = \num{8.0331}} * \\
-             \hspace{1em} \normpdf{\velocity \(-\) \geomVelocity, \(\mu\) = \num{-0.4588}, \(\sigma\) = \num{1.1618}}\;
+        \result \assign \(1\)
+
+        \BlankLine
+        \rangeError \assign \pseudorange \(-\) \geomRange\;
+        \If{\abs{\rangeError} \(<\) \SI{150}{\meter}}{
+            \result \assign \result \(*\) \normpdf{\rangeError, \(\mu\) = \num{-0.0145}, \(\sigma\) = \num{8.0331}}\;
+        }
+
+        \BlankLine
+        \velocityError \assign \velocity \(-\) \geomVelocity\;
+        \If{\abs{\velocityError} \(<\) \SI{4}{\meter\per\second}}{
+            \result \assign \result \(*\) \normpdf{\velocityError, \(\mu\) = \num{-0.4588}, \(\sigma\) = \num{1.1618}}\;
+        }
+
+        \Return \result\;
     }
 \end{algorithm}
 \caption{Prediction and correction algorithms for measurement domain integration of GPS measurements}

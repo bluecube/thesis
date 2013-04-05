@@ -43,6 +43,7 @@ $(BUILD_DIR)/%.html: %.tex hevea/*
 	hevea -v -I . -I hevea/ -o $@ $<
 	cd $(@D); BIBINPUTS="..:$$BIBINPUTS" bibhva $(@F:.html=.haux)
 	hevea -v -I . -I hevea/ -o $@ $<
+	cd $(@D); TEXINPUTS="..:$$TEXINPUTS" imagen -pdf $(abspath $(@:%.html=%))
 
 $(BUILD_DIR)/%.pdf.dependencies: %.tex dependencies.py
 	$(DO_MAKE_DIR)

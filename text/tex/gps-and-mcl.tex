@@ -234,12 +234,15 @@ Normal distribution (???)
     \SetKwFunction{normpdf}{normpdf}
     \SetKwFunction{tropoDelay}{tropoDelay}
     \SetKwFunction{ionoDelay}{ionoDelay}
+    \SetKwFunction{time}{time}
 
     \SetKwData{samples}{samples}
     \SetKwData{sample}{s}
     \SetKwData{samplex}{sample}
 
 
+    \SetKwData{deltaT}{deltaT}
+    \SetKwData{lastTime}{lastTime}
     \SetKwData{clockDrift}{clockDrift}
     \SetKwData{clockOffset}{clockOffset}
     \SetKwArray{residualDrift}{residualDrift}
@@ -265,14 +268,16 @@ Normal distribution (???)
         \KwIn{list of samples}
         \KwOut{modified list of samples}
         \BlankLine
+        \deltaT \assign \time{} - \lastTime\;
+        \lastTime \assign \time{}\;
         \ForEach{\sample \(\in\) \samples}{
-            \sample.\clockDrift \assign \sample.\clockDrift \(+\) \norm{\(\mu\) = \num{-0.0145}, \(\sigma\) = \num{8.0331}}\;
-            \sample.\clockOffset \assign \sample.\clockOffset \(+\) \sample.\clockDrift\;
+            \sample.\clockDrift \assign \sample.\clockDrift \(+\) \norm{\(\mu\) = \num{-0.0145}, \(\sigma\) = \num{8.0331}} \(*\) \deltaT\;
+            \sample.\clockOffset \assign \sample.\clockOffset \(+\) \sample.\clockDrift \(*\) \deltaT\;
 
             \BlankLine
             \ForEach{\sv \(\in\) \svs}{
-                \sample.\residualDrift{\sv} \assign \sample.\residualDrift{\sv} \(+\) \norm{\(\mu\) = \num{-0.0145}, \(\sigma\) = \num{8.0331}}\;
-                \sample.\residualOffset{\sv} \assign \sample.\residualOffset{\sv} \(+\) \sample.\residualDrift{\sv}\;
+                \sample.\residualDrift{\sv} \assign \sample.\residualDrift{\sv} \(+\) \norm{\(\mu\) = \num{-0.0145}, \(\sigma\) = \num{8.0331}} \(*\) \deltaT\;
+                \sample.\residualOffset{\sv} \assign \sample.\residualOffset{\sv} \(+\) \sample.\residualDrift{\sv} \(*\) \deltaT\;
             }
         }
         \BlankLine

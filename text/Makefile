@@ -18,7 +18,7 @@ default: pdf
 	@echo 'Only built target pdf. use `make all` to rebuild everything.'
 
 .PHONY: all
-all: $(GOALS_WITH_PATH)
+all: pdf print-pdf html ebook
 
 .PHONY: pdf
 pdf: $(BUILD_DIR)/$(FILENAME).pdf
@@ -28,6 +28,9 @@ print-pdf: $(BUILD_DIR)/$(FILENAME)-print.pdf
 
 .PHONY: html
 html: $(BUILD_DIR)/$(FILENAME).html
+
+.PHONY: ebook
+ebook: $(BUILD_DIR)/$(FILENAME).epub $(BUILD_DIR)/$(FILENAME).mobi
 
 $(BUILD_DIR)/%.pdf: %.tex
 	$(DO_MAKE_DIR)
@@ -50,6 +53,14 @@ $(BUILD_DIR)/%.html.dependencies: %.tex dependencies.py
 	$(DO_MAKE_DIR)
 	echo -n "$(@:.dependencies=) $@: " > $@
 	./dependencies.py --build-dir=$(BUILD_DIR) $< >> $@
+
+$(BUILD_DIR)/%.epub: $(BUILD_DIR)/%.html
+	$(DO_MAKE_DIR)
+	ebook-convert $< $@
+
+$(BUILD_DIR)/%.mobi: $(BUILD_DIR)/%.html
+	$(DO_MAKE_DIR)
+	ebook-convert $< $@
 
 $(BUILD_DIR)/%.pdf: %.eps
 	$(DO_MAKE_DIR)

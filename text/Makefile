@@ -2,6 +2,7 @@ FILENAME = thesis
 
 GOALS = $(FILENAME).pdf
 GOALS += $(FILENAME)-print.pdf
+GOALS += $(FILENAME).html
 
 BUILD_DIR = build
 IMPL_DIR = $(realpath ../impl)
@@ -25,6 +26,9 @@ pdf: $(BUILD_DIR)/$(FILENAME).pdf
 .PHONY: print-pdf
 print-pdf: $(BUILD_DIR)/$(FILENAME)-print.pdf
 
+.PHONY: html
+html: $(BUILD_DIR)/$(FILENAME).html
+
 $(BUILD_DIR)/%.pdf: %.tex
 	$(DO_MAKE_DIR)
 	cd $(@D); TEXINPUTS="..:$$TEXINPUTS" pdflatex -file-line-error $(abspath $<)
@@ -32,12 +36,17 @@ $(BUILD_DIR)/%.pdf: %.tex
 	cd $(@D); TEXINPUTS="..:$$TEXINPUTS" pdflatex -file-line-error $(abspath $<)
 
 $(BUILD_DIR)/%.html: %.tex hevea/*
-	$(MAKE_DIR)
-	hevea -v -I . -I hevea/ -o $@ extra.hva $<
+	$(DO_MAKE_DIR)
+	hevea -v -I . -I hevea/ -o $@ $<
 	cd $(@D); BIBINPUTS="..:$$BIBINPUTS" bibhva $(@F:.html=.haux)
-	hevea -v -I . -I hevea/ -o $@ extra.hva $<
+	hevea -v -I . -I hevea/ -o $@ $<
 
 $(BUILD_DIR)/%.pdf.dependencies: %.tex dependencies.py
+	$(DO_MAKE_DIR)
+	echo -n "$(@:.dependencies=) $@: " > $@
+	./dependencies.py --build-dir=$(BUILD_DIR) $< >> $@
+
+$(BUILD_DIR)/%.html.dependencies: %.tex dependencies.py
 	$(DO_MAKE_DIR)
 	echo -n "$(@:.dependencies=) $@: " > $@
 	./dependencies.py --build-dir=$(BUILD_DIR) $< >> $@

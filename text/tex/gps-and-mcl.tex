@@ -61,10 +61,10 @@ is discussed in \cref{sec:position-domain-correlation}.
 
 Because position domain integration as used here has no persistent variables in the
 robot state, it does not need any operations during the prediction step of MCL.
-Our error model for correction step for the correction phase follows \cite{www-wilson}.
 
-In this case we are operating only in two dimensions.
-The horizontal component of the position error  \(\vect{\delta R}\) is modelled using Rayleigh distribution
+Our error model for correction step for the correction phase follows \cite{www-wilson}.
+We are operating only in two dimensions and
+the horizontal component of the position error  \(\vect{\delta R}\) is modelled using Rayleigh distribution
 parameterized with HDOP of the measurement:
 \begin{equation}
 	\Prob(\norm{\vect{\delta R}} < x \mid \HDOP) =
@@ -76,8 +76,11 @@ Parameter \(\sigma(\HDOP)\) of the distribution is chosen to fit the DRMS values
 	\sigma(\HDOP) = \frac{\mathrm{DRMS}(\HDOP)}{\sqrt{2}}
 \end{equation}
 
-Experimentally measured data were fitted to the theoretical linear model and to
+From experimentally measured data we projected to a plane we calculated
+distance errors as a difference of the point position from a mean position.
+These errors were then fitted to the theoretical linear model and to
 the non-linear model from \cite{www-wilson}.
+
 Both were fitted to the data using least squares weighted with counts of samples
 for each HDOP, resulting in the expressions
 \begin{equation}

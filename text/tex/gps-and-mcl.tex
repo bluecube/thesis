@@ -206,6 +206,15 @@ This includes satellite clock inaccuracies, unmodeled remains of ionospheric and
 tropospheric errors and to some extent also satellite ephemeris errors.
 
 \subsection{Sensor Model}
+As with the Position domain approach, the sensor model was derived from
+measurements in a month long data set (see \cref{chap:datasets}).
+
+During the test period the receiver was stationary and pseudorange and
+the \enquote{truth} for checking the errors was established as an average of ECEF
+positions reported by the receiver's internal software.
+Clock offsets and drifts, which do not stay constant during the experiment,
+were approximated by fitting a linear function to a sliding window of pseudorange
+measurements (\cref{sec:impl-clock-offsets}).
 
 \subsubsection{Preprocessing}
 Preprocessing steps of the data stream is receiver specific,

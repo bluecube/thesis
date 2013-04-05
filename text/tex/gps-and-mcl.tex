@@ -245,8 +245,8 @@ Normal distribution (???)
     \SetKwData{lastTime}{lastTime}
     \SetKwData{clockDrift}{clockDrift}
     \SetKwData{clockOffset}{clockOffset}
-    \SetKwArray{residualDrift}{residualDrift}
-    \SetKwArray{residualOffset}{residualOffset}
+    \SetKwArray{residualDrift}{svDrift}
+    \SetKwArray{residualOffset}{svOffset}
     \SetKwData{sv}{sv}
     \SetKwData{svs}{svList}
     \SetKwData{geometricDistance}{geometricDistance}
@@ -280,7 +280,6 @@ Normal distribution (???)
                 \sample.\residualOffset{\sv} \assign \sample.\residualOffset{\sv} \(+\) \sample.\residualDrift{\sv} \(*\) \deltaT\;
             }
         }
-        \BlankLine
         \Return{\samples}\;
     }
 
@@ -297,14 +296,9 @@ Normal distribution (???)
         \clockOffset = \samplex.\clockOffset + \samplex.\residualOffset{\sv}\;
 
         \BlankLine
-        \pseudorange \assign \samplex.\pseudorange\\
-            \hspace{1em} \(+\) \(\speedoflight\) \(*\) \sv.\clockOffset\\
-            \hspace{1em} \(-\) \(\speedoflight\) \(*\) \clockOffset\\
-            \hspace{1em} \(-\) \ionoDelay{\sv, \samplex}\\
-            \hspace{1em} \(-\) \tropoDelay{\sv, \samplex}\;
-        \velocity \assign \samplex.\velocity\\
-            \hspace{1em} \(+\) \(\speedoflight\) \(*\) \sv.\clockDrift\\
-            \hspace{1em} \(-\) \(\speedoflight\) \(*\) \clockDrift\;
+        \pseudorange \assign \samplex.\pseudorange \(+\) \(\speedoflight\) \(*\) \sv.\clockOffset \(-\) \(\speedoflight\) \(*\) \clockOffset\\
+            \hspace{1em} \(-\) \ionoDelay{\sv, \samplex} \(-\) \tropoDelay{\sv, \samplex}\;
+        \velocity \assign \samplex.\velocity \(+\) \(\speedoflight\) \(*\) \sv.\clockDrift \(-\) \(\speedoflight\) \(*\) \clockDrift\;
 
         \BlankLine
         \userToSv \assign \sv.\position \(-\) \samplex.\position\;
@@ -314,20 +308,15 @@ Normal distribution (???)
         \geomVelocity \assign \dotProduct{\relativeVelocity, \userToSv} / \geomRange\;
 
         \BlankLine
-        \result \assign \(1\)
-
-        \BlankLine
+        \result \assign \(1\)\;
         \rangeError \assign \pseudorange \(-\) \geomRange\;
         \If{\abs{\rangeError} \(<\) \SI{150}{\meter}}{
             \result \assign \result \(*\) \normpdf{\rangeError, \(\mu\) = \num{-0.0145}, \(\sigma\) = \num{8.0331}}\;
         }
-
-        \BlankLine
         \velocityError \assign \velocity \(-\) \geomVelocity\;
         \If{\abs{\velocityError} \(<\) \SI{4}{\meter\per\second}}{
             \result \assign \result \(*\) \normpdf{\velocityError, \(\mu\) = \num{-0.4588}, \(\sigma\) = \num{1.1618}}\;
         }
-
         \Return \result\;
     }
 \end{algorithm}

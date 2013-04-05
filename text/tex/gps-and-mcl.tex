@@ -217,15 +217,39 @@ were approximated by fitting a linear function to a sliding window of pseudorang
 measurements (\cref{sec:impl-clock-offsets}).
 
 \subsubsection{Preprocessing}
-Preprocessing steps of the data stream is receiver specific,
-and discussed in \cref{sec:impl-sirf-grouping,sec:impl-sirf-jumps,sec:impl-sirf-ephemeris}.
+Relatively large amount of work is dedicated to receiver-specific preprocessing
+of the GPS data.
 In short, this consists of integrating ephemeris, removing any inconsistencies in data caused by the
 receiver and converting the data to sequences of pseudoranges and Doppler measurements.
+These steps are and discussed in \cref{sec:impl-sirf-grouping,sec:impl-sirf-jumps,sec:impl-sirf-ephemeris}.
 
-\subsubsection{Clock Offsets and Drifts}
-Clock offse
+\subsubsection{Prediction}
+Clock drifts are modelled as a Gaussian random walk and clock offsets
+are obtained by integrating clock drifts.
+For each satellite a residual clock offset and residual clock drift are kept,
+which are added to the global values.
+\todo{Resetting residual errors for long unseen satellites}
+
+\Cref{fig:clock-drift-derivation,fig:residual-clock-drift-derivation}
+contain histograms of clock drifts derivation and residual
+clock drifts derivation.
+
+\begin{figure}[p]
+	\centering
+	\missingfigure{Derivation of clock drifts.}
+	\caption{Derivation of clock drifts.}
+	\label{fig:clock-drift-derivation}
+\end{figure}
+
+\begin{figure}[p]
+	\centering
+	\missingfigure{Derivation of residual clock drifts.}
+	\caption{Derivation of residual clock drifts.}
+	\label{fig:residual-clock-drift-derivation}
+\end{figure}
 
 
+\subsubsection{Correction}
 The only preprocessing step, these values are thresholded, discarding measurements that are too
 far from the expected position.
 \SI{150}{\meter} for pseudoranges and \SI{4}{\meter\per\second} for doppler velocity

@@ -25,6 +25,7 @@ def windowed_least_squares(x, y, width, mask = None):
     width /= 2
 
     bar = progressbar.ProgressBar(maxval = len(x))
+    bar.start()
 
     for i, x0 in enumerate(x):
         bar.update(i)

@@ -32,6 +32,8 @@ html: $(BUILD_DIR)/$(FILENAME).html
 .PHONY: ebook
 ebook: $(BUILD_DIR)/$(FILENAME).epub $(BUILD_DIR)/$(FILENAME).mobi
 
+export TEXINPUTS:=/home/cube/local/lib/hevea/:$(TEXINPUTS)
+
 $(BUILD_DIR)/%.pdf: %.tex
 	$(DO_MAKE_DIR)
 	cd $(@D); TEXINPUTS="..:$$TEXINPUTS" pdflatex -file-line-error $(abspath $<)

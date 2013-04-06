@@ -261,11 +261,14 @@ for every sampled state and set this probability as the sample's weight.
 Finally in the resampling phase throw away samples with low weights, and
 instead add copies of the highly weighted samples.
 
-To illustrate the concept, \cref{fig:mcl} shows MCL sample cloud of a simulated robot on a chessboard.
-Its travelled path is shown in green and the current sample cloud representing
-the belief is displayed as red dots.
-In the left half of the picture the robot uses color of the tile to improve its
-belief, on the right half the robot only keeps losing precision due to wheel slip.
+\Cref{fig:mcl} contains -- somewhat artificial -- example of two
+identical simulated robot on a chessboard.
+Red lines show paths travelled by the robots and blue dots represent MCL samples.
+Both of the robots use odometry data to estimate position, and the robot on the left
+also senses color of the tile.
+This example shows how the belief is represented as a set of points and how
+different shapes of the cloud represent different conditions in the localization
+process.
 
 \subsection{Algorithm}
 

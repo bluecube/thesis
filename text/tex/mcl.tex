@@ -227,7 +227,7 @@ Here \(\bar{x}_i\) and \(P_i\) are mean and covariance describing \(\Bel(X_i)\).
 
 \begin{figure}[tp]
 	\centering
-	\missingfigure{Obrazek! aspon ten z bakalarky}
+	\input{img/chessboard_mcl.pdf_tex}
 	\caption{Illustration of MCL sample cloud.}
 	\label{fig:mcl}
 \end{figure}
@@ -236,7 +236,6 @@ Monte Carlo Localization \cite{dellaert99} is a Monte Carlo method for
 robot localization.
 It is a version of Markov localization, that approximates the belief
 using a set of samples drawn from it.
-\todo{reference and describe figure \ref{fig:mcl} somewhere}
 
 Advantages of MCL include a
 possibility to represent arbitrary shapes of probability densities as opposed to
@@ -261,6 +260,12 @@ Correction calculates how probable the incoming measurement is
 for every sampled state and set this probability as the sample's weight.
 Finally in the resampling phase throw away samples with low weights, and
 instead add copies of the highly weighted samples.
+
+To illustrate the concept, \cref{fig:mcl} shows MCL sample cloud of a simulated robot on a chessboard.
+Its travelled path is shown in green and the current sample cloud representing
+the belief is displayed as red dots.
+In the left half of the picture the robot uses color of the tile to improve its
+belief, on the right half the robot only keeps losing precision due to wheel slip.
 
 \subsection{Algorithm}
 

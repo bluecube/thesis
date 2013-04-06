@@ -1,34 +1,35 @@
 \chapter{GPS}
 \label{chap:gps}
 
-This chapter contains a overview of Global Positioning System and
-its basic operation, that will be later used to develop methods for using GPS
-measurements in Monte Carlo localization.
+This chapter contains an overview of the Global Positioning System and
+the basics of its operation.
+This will be used to develop methods for using GPS
+measurements in Monte Carlo localization in \cref{chap:gps-and-mcl}.
 
-First principles of GPS are discussed, followed by description of methods for
+First, principles of GPS are discussed, followed by a description of methods for
 obtaining receiver position and velocity,
 error sources of GPS measurements and methods of dealing with these errors.
 Lastly this chapter deals with communication with consumer grade GPS receivers
-and briefly also with other position systems than GPS.
+and also briefly with worldwide positioning systems other than GPS.
 
 Unless other sources are cited, this chapter is based on chapters
 2 and 7 of \cite{kaplan06}.
 
-The document \cite{fyfe92} contains a specification of the GPS interface to user
-segment describing the gory details of GPS system,
-however since in this work we only interface with the GPS system through a
-consumer-grade receiver we are shielded from much of the low level details of
+The document \cite{fyfe92} contains a specification of the GPS user
+segment interface, describing in depth many parts of GPS system.
+However since in this work we only interface with the GPS system through a
+consumer-grade receiver, we are shielded from much of the low level details of
 the GPS.
 
 \section{Basic Description}
 
-Global Positioning System is a global navigation satellite system (GNSS)
-developed and operated by U.S. military.
+The Global Positioning System is a global navigation satellite system (GNSS)
+developed and operated by the U.S. military.
 GPS provides three dimensional position and velocity measurements as well as
 precise time source for every place on earth with direct satellite visibility.
 
 GPS consists of a constellation of at least 24 satellites (space vehicles, SVs),
-control segment and end-user receivers.
+a control segment and end-user receivers.
 
 The satellites are orbiting in six nearly circular orbits approximately \SI{20200}{\kilo\meter}
 above Earth surface.
@@ -42,12 +43,12 @@ civilian signals (Standard Positioning Service).
 The civilian signals are available worldwide without any limitations.
 
 
-GPS is often taken as a simple and reliable mean of navigation,
-but the especially the unencrypted signals are susceptible to spoofing attacks \cite{tippenhauer11}.
+GPS is often viewed as a simple and reliable means of navigation,
+but especially the unencrypted signals are susceptible to spoofing attacks \cite{tippenhauer11}.
 
 
-Control segment consists of a network of ground facilities and is responsible for
-monitoring the satellite constellation and send commands and data to the satellites.
+The control segment consists of a network of ground facilities and is responsible for
+monitoring the satellite constellation and for sending commands and data to the satellites.
 
 %\section{History}
 %Prior to development of GPS, a satellite navigation system called Transit was operational
@@ -61,26 +62,24 @@ monitoring the satellite constellation and send commands and data to the satelli
 \subsection{Time of Arrival measurements}
 
 GPS calculates position by measuring the time it takes for a signal
-emitted from a known position to reach reach the receiver.
+emitted from a known position to reach the receiver.
 
 Each GPS satellite transmits a pseudo random sequence (PRN signal),
 containing timing information.
 The receiver is able to replicate and match this sequence and therefore
 is able to determine the transmission time of the signal.
 
-If the position of satellites is known and all clock in the system are
+If the position of satellites is known and all clocks in the system are
 synchronized, the position of the receiver
 can be calculated as an intersection of at least three spheres centered around the satellites
-and with radius corresponding to signal time of flight.
+and with radius corresponding to time of flight of the signal.
 
 In reality, receiver clock offset needs to be calculated
 during localization witch adds a new dimension to position determination.
 
 \subsection{Time and GPS}
 
-One of the functions of GPS system is a dissemination of precise time.
-%This is necessary to calculate position
-
+One of the functions of the GPS system is a dissemination of precise time.
 There are three basic time frames appearing in the GPS system.
 
 \subsubsection{GPS System Time}
@@ -121,7 +120,8 @@ precise time after a fix is obtained by adding the offset to the receiver clock.
 \subsection{GPS Signals}
 GPS signals are transmitted using CDMA.
 Each signal at each satellite is assigned a unique pseudo random sequence, called PRN code and the carrier frequency is
-modulated using this sequence, possibly mixed navigation messages (see further).
+modulated using this sequence.
+Additionally navigation messages are also transmitted on this signal (see further).
 
 Legacy GPS satellites work on two frequencies, primary L1 (\SI{1575.42}{\mega\hertz}) and secondary L2 (\SI{1227.6}{\mega\hertz}).
 Unencrypted \SI{1}{\mega\hertz} C/A code is transmitted on L1, and encrypted military \SI{10}{\mega\hertz} P(Y) code is transmitted
@@ -133,7 +133,7 @@ that use the encrypted stream of P(Y) data and utilize timing of the bit stream.
 Semi-codeless techniques further exploit other properties of P(Y) code and its known relationships to C/A codes.
 
 Modernized GPS satellites provide three additional civilian signals:
-L2C, L5 and a military signal M. A fourth civilian signal and L1C is planned, that will be compatible with
+L2C, L5 and a military signal M. A fourth civilian signal L1C is planned, that will be compatible with
 European navigation system Galileo (see \ref{sec:galileo}).
 At the time of this writing, the signals L2C and L5 are partially supported and L1C is still only
 planned \cite{gps-modernization-www}.
@@ -144,32 +144,32 @@ These messages contain ephemeris and clock corrections for each satellite
 and other data, including meta data on the ephemeris values and estimated
 ionospheric parameters.
 
-See chapter 3.3 of \cite{rizos99} for brief overview of navigation messages,
+See chapter 3.3 of \cite{rizos99} for a brief overview of navigation messages,
 or section 20.3.3 of \cite{fyfe92} for the details.
 
 \subsubsection{PRN Sequences}
 As mentioned above, PRN sequences are unique to every signal and every satellite.
 
-C/A codes have a chipping rate -- that is the frequency of PRN code modulated on top
+C/A codes have a chipping rate -- the frequency of PRN code modulated on top
 of the carrier wave -- of \SI{1.023}{\mega\hertz} and P(Y) code has a chipping rate
 of \SI{10.23}{\mega\hertz}.
 
 Receivers typically employ a number of specialised hardware correlators
 that attempt to duplicate the PRN codes and match them to the received signal.
-Result of successful matching is an identification of the transmitting satellite,
+The result of a successful matching is an identification of the transmitting satellite,
 the transmission time \(\svtxtime\) (appearing in pseudorange definition \eqref{eq:pseudorange})
-modulo PRN code length and possibly also phase and Doppler shift of the carrier wave.
+modulo PRN code length and also phase and Doppler shift of the carrier wave.
 
 \subsection{Reference Frames}
 \label{sec:ref-frames}
 
 \subsubsection{ECEF}
 Earth-centered Earth-fixed is a Cartesian reference frame widely used in the GPS system.
-As the name suggests, origin of ECEF is in the Earth's center of mass, the \(XY\) plane coincident
-with equatorial plane, \(X\) axis in the direction of
-\ang{0} longitude, \(Y\) axis in direction of \ang{0} East and \(Z\) axis going
+As the name suggests, the origin of ECEF is in the Earth's center of mass, the \(XY\) plane is coincident
+with the equatorial plane.
+\(X\) axis in the direction of \ang{0} longitude, \(Y\) axis in the direction of \ang{90} East and \(Z\) axis going
 the direction of geographical North pole.
-%Figure \ref{fig:ecef} illustrates 
+Illustration of this can be seen in \cref{fig:ecef}.
 
 \begin{figure}[h]
 	\centering
@@ -184,17 +184,17 @@ in ECEF as well.
 All later GPS calculations in this work will be in ECEF reference frame.
 
 \subsubsection{WGS84}
-World Geodetic System 1984, defined in \cite{nima04}
-serves as Earth model for GPS.
+The World Geodetic System 1984, defined in \cite{nima04}
+serves as an Earth model for GPS.
 Exact values of the model have been updated several times in the past,
 but these changes have been too small to be problematic for most practical
 applications.
 
 The WGS84 reference ellipsoid is used to convert between ECEF coordinates and
 Latitude/Longitude geodetic coordinates.
-Procedure for this conversion can be found in \cite{nima04}.
+The exact procedure for this conversion can be found in \cite{nima04}.
 Height measured from the ellipsoid can be obtained during the conversion,
-however historically heights should be measured from sea level.
+however historically heights are measured from sea level.
 Sea level roughly corresponds to geoid -- a surface with constant gravity
 potential -- also defined in WGS84.
 
@@ -206,7 +206,7 @@ potential -- also defined in WGS84.
 \label{sec:gps-ephemeris}
 
 Ephemeris in the context of GPS means data describing satellite positions and velocities
-at given time.
+at a given time.
 Ephemeris data are transmitted in the \SI{50}{\bit\per\second} navigation messages,
 together with clock offset and clocks drift data of the satellites, ionospheric
 delay estimates and other data.
@@ -214,14 +214,15 @@ delay estimates and other data.
 Satellite orbits in the ephemeris messages are described using a set of Keplerian orbital parameters.
 Since in this work we will be only using ephemeris data in the ECEF reference frame, Keplerian parameter
 will not be discussed here.
-More details can be found for example in section 3.3.3 of \cite{rizos99}, or in \cite{kaplan06}.
+More details can be for example found in section 3.3.3 of \cite{rizos99}, or in \cite{kaplan06}.
 
 \subsubsection{Precise Ephemeris}
 Precise ephemeris are satellite ephemeris data calculated by ground stations
-and distributed separately from the GPS broadcast.
+and distributed separately from the GPS broadcast, usually with higher precision
+than the data available from GPS satellites.
 
-One of sources of precise ephemeris is for example \cite{orbit-data}, providing datasets with
-post-processed data and also with predictions for next several hours.
+One of the sources of precise ephemeris is for example \cite{orbit-data}, providing datasets with
+post-processed data and also with predictions for the next several hours.
 While the quality of these predictions is lower than of the off-line data,
 they are still several times more precise than the broadcast ephemerides
 (\SI{5}{\centi\meter} RMS versus \SI{100}{\centi\meter} RMS, according to \cite{orbit-data}).
@@ -236,21 +237,22 @@ before using them for navigation \cite{schenewerk03}.
 \subsection{Pseudorange}
 \label{sec:pseudorange}
 
-Pseudorange (\(\rho\)) is a distance corresponding to the time it took the ranging
+Pseudorange (\(\rho\)) is a distance corresponding to the time it takes the ranging
 signal to travel from SV to the receiver, including the clock offsets:
 \begin{equation}
 	\label{eq:pseudorange}
 	\rho = \speedoflight (\recrxtime - \svtxtime)
 \end{equation}
 Here \(\speedoflight\) is the speed of light, with value \SI{299792458}{\meter\per\second} used in GPS,
-\(\systxtime\) and \(\sysrxtime\) are transmission and receive times referenced to GPS system time.
-Similarly \(\svtxtime\) is transmit time according to satellite clock and
-\(\recrxtime\) is a receive times according to receiver's clock.
-Additionally, \(\svclockoffset\) and \(\recclockoffset\) will stand for the clock offset of the satellite
-and of the receiver, \(\geomrange\) for real geometric distance between the satellite and receiver
-and \(\geomrangedelays\) for the signal propagation delays.
+\(\recrxtime\) and \(\svtxtime\) are the receive time referenced to receiver internal clock
+and transmit time according to satellite clock.
+Similarly \(\systxtime\) and \(\sysrxtime\) are the transmit and receive times referenced
+to the GPS system time.
+Additionally, \(\svclockoffset\) and \(\recclockoffset\) stand for the clock offset of the satellite
+and of the receiver, \(\geomrange\) is the real geometric distance between the satellite and receiver
+and \(\geomrangedelays\) are the signal propagation delays.
 
-Especially in context of pseudoranges, GPS literature often treats distance and time
+Especially in the context of pseudoranges, GPS literature often treats distance and time
 interchangeably, converting between them using the speed of light \(\speedoflight\).
 In this work, we will occasionally follow this convention as well.
 
@@ -261,14 +263,14 @@ In this work, we will occasionally follow this convention as well.
 	\label{fig:pseudorange}
 \end{figure}
 
-In \eqref{eq:pseudorange}, the definition of pseudorange, the SV and receiver clocks can be
+In \eqref{eq:pseudorange} the definition of pseudorange, the SV and receiver clocks can be
 converted to system time by subtracting their clock offsets:
 \begin{equation}
 	\label{eq:pseudorange2}
 	\rho = \speedoflight (\sysrxtime - \systxtime) + \speedoflight (\recclockoffset - \svclockoffset)
 \end{equation}
 It should be noted that the clock offsets change in time, and that \(\recclockoffset\) is receiver clock
-offset in the time of receive and \(\svclockoffset\) applies to the time of transmission.
+offset in the time of receiving and \(\svclockoffset\) applies to the time of transmission.
 
 Real geometric range \(\geomrange\) can be described using the transmit and receive times:
 \begin{equation}
@@ -286,13 +288,13 @@ the basic equation for determining geometric distance from pseudorange measureme
 %		\speedoflight \geomrangedelays + \speedoflight \svclockoffset
 %\end{equation}
 
-\Cref{fig:pseudorange} summarizes relations between times in a single pseudorange measurement.
+\Cref{fig:pseudorange} summarizes the relations between times in a single pseudorange measurement.
 
 \subsection{Position}
 \label{sec:gps-position}
 
-If the position of satellites \(\svpos_i = \coord{x_{{\SV}i}}{y_{{\SV}i}}{z_{{\SV}i}}\) and satellite
-clock offsets \(\svclockoffset_i\) at time of transmission are known,
+If the position of satellites \(\svpos_i = \coord{x_{{\SV}i}}{y_{{\SV}i}}{z_{{\SV}i}}\) and the satellite
+clock offsets \(\svclockoffset_i\) at the time of transmission are known,
 calculating receiver position from the pseudorange measurements means solving a set of non-linear equations
 \begin{equation}
 	\label{eq:pseudorange3}
@@ -303,7 +305,8 @@ calculating receiver position from the pseudorange measurements means solving a 
 \end{equation}
 for receiver position \(\recpos = \coord{x_\REC}{y_\REC}{z_\REC}\) and receiver clock offset \(\recclockoffset\).
 
-This can be visualised as intersection of conical surfaces in four dimensions.
+This corresponds to an intersection of conical surfaces in four dimensions.
+\questiontodo{Draw a picture here?}
 
 Equations from \eqref{eq:pseudorange3} can be solved using various methods, including closed form solutions
 (for example \cite{leva96}), iterative solutions, linearization of the equations around
@@ -317,32 +320,32 @@ into the solution.
 
 Carrier phase tracking is a technique that depends on measuring the phase of carrier wave.
 L1 frequency has a wavelength of approximately \SI{19}{\centi\meter}.
-When the receiver can match the L1 with \SI{1}{\percent} accuracy, then the available precision
+Assuming the receiver can match the L1 with \SI{1}{\percent} accuracy, then the available precision
 is around \SI{2}{\milli\meter} compared to about \SI{3}{\meter} for code phase (pseudorange)
 tracking. More detailed description of the code phase tracking errors is in \cref{sec:gps-errors}.
 
 One of the main problems with the carrier phase tracking is integer ambiguity of the carrier wave.
-This problem arises because the carrier wave doesn't contain any code designed to resolve
-this kind of ambiguity.
+This problem arises because, unlike the PRN signals, the carrier wave doesn't contain any code designed to
+help the receiver distinguish between successive periods of the signal.
 
 Carrier phase measurements can be used to smooth pseudorange data.
 Details about this method can be found in section \enquote{Smooth} in \cite{sam-www}.
 
 \subsection{Velocity}
 The simplest way of obtaining receiver velocity is as a derivation of
-position, which is in turn obtained using one of the methods described in preceding paragraphs.
-This has the advantage of requiring only minimum of additional processing.
+position, which is obtained using any of the methods described in the preceding paragraphs.
+This has the advantage of requiring only a minimum of additional processing.
 
-When the receiver position is known, its velocity can also be obtained from Doppler shift of
+When the receiver position is known, its velocity can also be obtained from the Doppler shift of
 the received signal and known velocities of satellites.
-Received frequency can be approximated as
+The received frequency can be approximated as
 \begin{equation}
 	f = f_\SV \left(1 - \frac{\recsvvel}{\speedoflight}\right)
 	\label{eq:doppler}
 \end{equation}
 where \(f_\SV\) is the transmitted frequency and \(\recsvvel\) is the relative velocity
 between the satellite and the receiver.
-The relative velocity can be written as a dot product of unit vector pointing
+The relative velocity can be written as a dot product of an unit vector pointing
 from user to the satellite and velocity difference between the user and the satellite:
 \begin{equation}
 	\recsvvel = \frac{
@@ -379,13 +382,13 @@ together we obtain
 This equation arises for every satellite in view and
 as with pseudoranges and positions, there are several ways to obtain the receiver velocity
 from them.
-In this work we will only use this Doppler measurements as an input to Monte Carlo localisation
+In this work we will only use the Doppler measurements as an input to Monte Carlo localisation
 and we will not discuss the other methods.
 
 \section{Measurement errors}
 \label{sec:gps-errors}
 
-Previous text assumed that all measurements in the GPS system can be made exactly,
+Previous text assumed that all measurements in the GPS system can be made accurately,
 but practically all the segments of the GPS system introduce errors.
 
 \subsection{User Equivalent Range Error}
@@ -413,8 +416,8 @@ but practically all the segments of the GPS system introduce errors.
 %\label{tab:error-budget}
 %\end{table}
 
-User equivalent range error (UERE) characterizes effective accuracy of a pseudorange measurement.
-UERE characterized as a sum of errors caused by different parts of the GPS system.
+User equivalent range error (UERE) characterizes the effective accuracy of a pseudorange measurement.
+UERE is defined as a sum of errors caused by different parts of the GPS system.
 
 UERE and its components are usually assumed to be zero mean Gaussian variables,
 mutually independent both between the error components of a single measurement and between satellites.
@@ -423,25 +426,27 @@ mutually independent both between the error components of a single measurement a
 \label{sec:gps-dop}
 
 Dilution of precision (DOP) is a value that describes the effects of satellite geometry
-on the precision of calculated fix.
+on the precision of the calculated fix.
 There are several types of dilution of precision, specifying errors in different directions.
 These are PDOP (position in all directions), HDOP (horizontal error), VDOP (vertical error)
 or TDOP (time error).
 
-In theory standard deviation of the completed fix should have a linear dependency on
+In theory, standard deviation of the completed fix should have a linear dependency on
 UERE and DOP (see equation \eqref{eq:dop-def}), but real position error is typically slightly lower,
 since the ionospheric errors are correlated.
-Measured dependence of position error on HDOP is in \cref{fig:wgs84-hdop-error}.
+
+In \cref{sec:position-domain} we are discussing the dependence of position error on HDOP value
+and \cref{fig:wgs84-hdop-error} shows the experimental data.
 
 \subsubsection{Definition}
-Formal definition of DOP values is based on linearization of pseudorange equations
+The formal definition of DOP values is based on linearization of pseudorange equations
 in \cref{sec:gps-position}:
 \begin{equation}
 	\label{eq:dop1}
 	\vect{H}\vect{\Delta{}x} = \vect{\Delta{}\rho}
 \end{equation}
-Here \(\vect{H}\) is a matrix of unit vectors pointing from linearization point
-to the satellites, \(\vect{\Delta{}\rho}\) is a vector containing difference between
+Here \(\vect{H}\) is a matrix of unit vectors pointing from the linearization point
+to the satellites, \(\vect{\Delta{}\rho}\) is a vector containing the difference between
 pseudoranges in linearization point and the real measured pseudoranges and finally
 \(\vect{\Delta{}x}\) is a vector describing the offset of receiver position from the
 linearization point.
@@ -450,17 +455,17 @@ in a local reference frame with the \(z\) axis pointing up from the linearizatio
 
 Equation \eqref{eq:dop1} is solved for \(\vect{\Delta{}x}\) using least squares and
 as a next step, pseudorange and position errors are taken into account.
-This yields an expression relating position error to pseudorange error.
+This yields an expression relating position error to pseudorange error:
 \begin{equation}
 	\vect{\delta{}x} = (\vect{H}^T \vect{H})^{-1} \vect{H}^T \vect{\delta{}\rho}
 \end{equation}
-Where \(\vect{\delta{}x}\) and \(\vect{\delta{}\rho}\) are position error and pseudorange errors.
+Where \(\vect{\delta{}x}\) and \(\vect{\delta{}\rho}\) are position errors and pseudorange errors.
 
 As a next step, pseudorange and position errors are taken into account and after
-some modifications relations between position and pseudorange error are expressed.
+some modifications, relations between position and pseudorange error are expressed.
 All pseudorange errors are assumed to be independent, Gaussian and identically distributed.
 
-Covariance matrix of \(\vect{\delta{}x}\) can then be expressed as
+The covariance matrix of \(\vect{\delta{}x}\) can then be expressed as
 \begin{equation}
 	\cov(\vect{\delta{}x}) =
 		(\vect{H}^T \vect{H})^{-1} \sigma^2_\UERE =
@@ -485,7 +490,7 @@ DOP values are defined as follows:
 \end{subequations}
 
 \subsubsection{DRMS}
-Distance root mean square is an accuracy metric somewhat similar to
+Distance root mean square is an accuracy metric, somewhat similar to
 standard deviation of a distribution.
 It is a single value describing the accuracy of a 2D position fix.
 
@@ -505,7 +510,7 @@ DRMS from HDOP:
 \begin{equation}
 	\mathrm{DRMS} = \sqrt{(a \HDOP)^2 + b^2)}
 \end{equation}
-with \(a\) and \(b\) are parameters that are fitted to measured data.
+where \(a\) and \(b\) are parameters that are fitted to measured data.
 In \cref{sec:wgs84-hdop-error} we show how this expression fits our experimental data.
 
 \(2 \times \mathrm{DRMS}\) is often used as an approximation for a radius containing
@@ -513,27 +518,20 @@ In \cref{sec:wgs84-hdop-error} we show how this expression fits our experimental
 
 \subsection{Error sources}
 
-The following text describes major sources of the measurement errors and when possible
-also how to remove the error.
+The following text describes major sources of the measurement errors and also the way
+of removing or at least limiting them.
 Apart from errors mentioned in this section, there are many more sources, but they cause inaccuracies
 that are negligible for single receiver applications discussed in this thesis.
-Overview can be found in \cite{kouba09}.
-
-%Table \ref{tab:error-budget} contains example of error sizes, that are taken from
-%\cite{kaplan06}.
-%\todo{wtf is group delay?}
-%Values in this table are a little bit outdated due to development in both GPS space
-%segment and user receivers, but we include it, because breakdown of error values is otherwise hard to measure
-%without specialised hardware.
+An overview can be found in \cite{kouba09}.
 
 \subsubsection{Match Accuracy and Receiver Delays}
 
-When the receiver is matches the received signal to expected PRN codes an 
-important question arises of how accurate the matching is.
+When the receiver matches the received signal to expected PRN codes, an
+important question arises -- how accurate the matching is.
 Often cited value is \SI{1}{\percent}, which for \SI{1.023}{\mega\hertz}
 chipping rate gives about \SI{2.9}{\meter}.
-This kind of errors can be improved by smoothing with carrier phase measurements (see
-\cref{sec:gps-carrier-phase}).
+This kind of errors can be improved by using higher quality receiver hardware
+or by smoothing with carrier phase measurements (see \cref{sec:gps-carrier-phase}).
 
 Delays also occur in receiver signal processing, both in the electronics and in software,
 but if these delays are constant for all pseudorange measurements, they will be removed
@@ -548,36 +546,36 @@ together with receiver clock delay.
 	\label{fig:multipath}
 \end{figure}
 
-Multipath errors arise when the signal from satellite reaches the receiver
+Multipath errors appear when the signal from the satellite reaches the receiver
 through multiple paths of different length.
 They are typically caused by buildings surrounding the receiver position,
 reflective surfaces surrounding the antenna (e.g. wings in aircraft mounted GPS) or earth surface
-when including satellites with low elevation angle.
+when including satellites with low elevation angle in the solution.
 
 An illustration of this effect and of shadowing is shown in \cref{fig:multipath}.
-Signal drawn in green follows a direct path from the satellite to the receiver and is shadowed,
-and red multipath signal is reflected from a building, making its travelled path longer.
+The signal drawn in green follows a direct path from the satellite to the receiver and is shadowed,
+and the red multipath signal is reflected from a building, making its travelled path longer.
 
 If the signal following the direct path is received, GPS receivers can easily detect and remove large delays caused by multipath.
 A more problematic case arises when the multipath delay is relatively small, because this distorts
 receiver's attempts to correlate the received signal with the internal reference signal.
 
 Shadowing is another phenomenon related to multipath, caused by the signal passing through obstacles, like buildings or foliage.
-Shadowing combined with multipath affects relative received power of direct and multipath signals, in extreme cases
-even causing the multipath to be the only received signal from given satellite.
+Shadowing combined with multipath affects the relative received power of direct and multipath signals, in extreme cases
+even causing the multipath to be the only received signal from a given satellite.
 
 Multipath errors can be mitigated with hardware modifications, like antenna designs that suppress signals from suspicious angles,
 better antenna placement or coating nearby reflective surfaces with RF absorptive materials.
 Another option is to employ better signal processing in receivers.
 
-When only complete measurements are available (as is be the case in the implementation part of this thesis),
+When only complete measurements are available (as is the case in the implementation part of this thesis),
 satellites may be dropped from the solution if the elevation angle
 is too low to avoid this kind of errors.
-More involved method of dealing with multipath errors is described in \cite{viandier08},
+A more complex method of dealing with multipath errors is described in \cite{viandier08},
 where the error model of a satellite measurement is modified if it is suspected to be corrupted
 by multipath error.
 
-Section 6.3 of \cite{kaplan06} contains detailed discussion of multipath.
+Section 6.3 of \cite{kaplan06} contains a detailed discussion of multipath.
 
 \subsubsection{Atmospheric Delays}
 
@@ -587,12 +585,11 @@ GPS signals experience delays when travelling through the atmosphere.
 \paragraph{Tropospheric Delays}
 Tropospheric delays describe signal delays in the non-ionized layers of Earth's atmosphere.
 
-Troposphere is the non-ionized layer of atmosphere from Earth surface to
-approximately \SI{8}{\kilo\meter}.
+Troposphere is the non-ionized layer of atmosphere closest to the earth surface.
 The stratosphere -- another non-ionized layer of atmosphere -- causes the same
 type of delays and is usually included in the therm tropospheric delay.
 
-Tropospheric delays are modelled as consisting of a wet and dry components,
+Tropospheric delays are modelled as consisting of a wet and a dry component,
 and when left uncompensated, they amount to between \SI{2.4}{\meter} and \SI{25}{\meter}
 depending on satellite elevation angle, the dry component
 responsible for about \SI{90}{\percent} of the delay \cite{kaplan06}.
@@ -601,12 +598,12 @@ There are several models for estimating tropospheric delays depending on satelli
 elevation angle, altitude of the receiver, atmospheric pressure, temperature and
 water vapour pressure.
 
-In the implementation part of this work we use model outlined in \cite{navipedia-tropospheric}
+In the implementation part of this work we use the model outlined in \cite{navipedia-tropospheric}
 with hard-coded values for meteorologic parameters.
 
 \paragraph{Ionospheric Delays}
 
-Compared to tropospheric delays, signal delays caused in ionosphere are larger and
+Compared to tropospheric delays, signal delays caused in the ionosphere are larger and
 harder to predict.
 
 An interesting property of ionospheric delays is, that they are correlated,
@@ -625,18 +622,18 @@ messages \cite{fyfe92}.
 
 \subsubsection{Ephemeris and SV Clock Errors}
 
-Ephemeris and satellite clock corrections periodically uploaded by the control
+Ephemeris and satellite clock corrections are periodically uploaded by the control
 segment, however the residual errors increase with the age of upload.
 According to \cite{kaplan06}, \(1 \sigma\) pseudorange error is typically about \SI{0.8}{\meter}
 and up to \SI{4}{\meter} for clock errors.
 
-As discussed in \cref{sec:gps-ephemeris}, this class of errors can be avoided orat least decreased by using precise ephemeris
+As discussed in \cref{sec:gps-ephemeris}, this class of errors can be avoided or at least decreased by using precise ephemeris
 at the expense of requiring internet connection during operation.
 
 \subsubsection{Relativistic Effects}
 
 %\paragraph{Satellite Clock Frequency}
-The most famous effect of relativity is frequency shift of the satellite clock
+The most famous effect of relativity is the frequency shift of the satellite clock
 when received on the ground.
 This frequency shift happens because satellites are moving relative to the user
 and because satellite orbits are further from Earth's mass and therefore less
@@ -659,15 +656,15 @@ For more detailed description of how Kalman filters operate see section
 \label{sec:dgps}
 
 Differential GPS is a method to improve GPS accuracy using at least one reference station.
-DGPS exploit the correlations of GPS errors and is capable of removing or decreasing satellite clock errors,
+DGPS exploits the correlations of GPS errors and is capable of removing or decreasing satellite clock errors,
 ephemeris errors, tropospheric and ionospheric errors.
 
-DGPS systems may operate with baseline distances from a hundreds of meters to several thousand kilometers,
-may be used to calculate precise absolute positions or positions relative to positions.
+DGPS systems may operate with baseline distances from hundreds of meters to several thousand kilometers.
+They may be used to calculate precise absolute positions or positions relative to the reference station.
 Accuracy of DGPS may range from several decimeters for code based systems to several
 millimeters for carrier based systems.
 
-Reference stations must feed its data to the receivers, which use it to correct their own measurements.
+Reference stations must feed their data to the receivers, which use it to correct their own measurements.
 This need of infrastructure and reliable wireless connection makes DGPS impractical for many uses.
 
 %\cite{dana99}
@@ -679,7 +676,7 @@ use is discussed in \cite{rizos99}.
 Assisted GPS refers to techniques used typically on PDAs and cell phones, that improve operation of GPS by offloading
 work from the receiver chip to a remote assistance server.
 
-Assistance server has a good satellite reception and more computing power than the device
+The assistance server has a good satellite reception and more computing power than the device
 and can supply the client system with complete position fixes based on uploaded GPS signal sample,
 ephemeris data which can then be used to speed up cold start of the client device or
 ionospheric parameters, forming simple DGPS system and increasing the fix precision.
@@ -690,11 +687,11 @@ ionospheric parameters, forming simple DGPS system and increasing the fix precis
 %There are currently many different receiver chips available, differing in
 
 \section{Protocols}
-Most of the time a consumer GPS receivers is used as a black box that given power and possibly antenna connection
-provides position estimates.
+Most of the time a consumer GPS receiver is used as a black box that provides position
+estimates when power and possibly external antenna is connected.
 In more complicated use cases, such as measurement domain integration of GPS signals with
 other sensors discussed in section \ref{sec:measurement-domain} of this work,
-lower level data from the location estimation process are used, but only as provided
+lower level data from the location estimation process may be used, but only as provided
 by software in the GPS receiver.
 Many communication protocols providing position, velocity, clock data
 and other information are in use.
@@ -702,22 +699,22 @@ and other information are in use.
 \subsection{NMEA 0183}
 NMEA 0183 is a de-facto standard protocol for consumer grade GPS receivers.
 It is a text-based proprietary format developed by National Marine Electronics Organization,
-but has been reverse engineered and the specification is known \cite{depriest}.
+but has been reverse engineered and the specification is known and widely used \cite{depriest}.
 
 The protocol by itself is designed for communication of marine electronic
 equipment and isn't specific to GPS receivers.
 It consists of a large number of sentences, some of which are intended to be used
 for position, velocity and time solutions of GPS navigation.
 
-Problem with NMEA protocol is, that a different subset is implemented in almost every
+Problem with the NMEA protocol is, that a different subset is implemented in almost every
 receiver and there is no access to lower levels of the GPS signal processing.
 
 \subsection{Proprietary Protocols}
 Many GPS receivers extend the NMEA protocol using proprietary sentences or
-implement a custom protocols.
-Example of this is the SiRF binary protocol \cite{sirf-protocol}.
+implement custom protocols.
+An example of this is the SiRF binary protocol \cite{sirf-protocol}.
 
-Often the use of proprietary protocol is the only way to get complete functionality from
+The use of proprietary protocol is often the only way to get complete functionality from
 the receiver.
 
 \subsection{RINEX}
@@ -734,10 +731,10 @@ GPS is not the only GNSS currently operational.
 %Other countries than USA have also created navigation systems, but the major advantage of
 %GPS is that it i
 
-GLONASS \cite{glonass} is a Russian navigation system, similar in principle with GPS.
+GLONASS \cite{glonass} is a Russian navigation system, in principle similar to GPS.
 It is currently undergoing a modernization and is planned to be compatible with GPS and Galileo.
 
-Another example of current GNSS system is the Chinese BeiDou.
+Another example of a current GNSS system is the Chinese BeiDou.
 BeiDou uses two way distance measurements, which is a major difference from GPS and the other navigation
 systems mentioned in this section.
 This bidirectional system has the advantage of adding an ability to communicate between the
@@ -748,21 +745,21 @@ BeiDou is currently in development and only three satellites have been launched 
 \subsection{Galileo}
 \label{sec:galileo}
 
-Galileo \cite{galileo} is a project by European Union to create a global navigation system, which
-probably is of the most interest to GPS users.
+Galileo \cite{galileo} is a project by the European Union to create a global navigation system, which
+is probably of the most interest to current GPS users.
 
 It is designed to be independent of GPS and offer multiple levels of access worldwide
 including an open access navigation, however
 it will be compatible with GPS receivers that support the modernized L1C signals.
-Galileo constellation will consist of 30 satellites, and will provide several types of services,
-from free public service to including safety-critical.
+The Galileo constellation will consist of 30 satellites, and will provide several types of services,
+from free public service to safety-critical services.
 
-Technically, Galileo is fairly similar to GPS,
-compatibility is provided by using the same geodetic and time reference frames
-and, as mentioned above, by using a signal compatible with the GPS L1C.
-This means, that GPS receiver supporting this signal will be able to seamlessly
+Technically, Galileo is fairly similar to GPS.
+Their compatibility is provided by using the same geodetic and time reference frames
+and as mentioned above, by using a signal compatible with the GPS L1C.
+This means, that a GPS receiver supporting this signal will be able to seamlessly
 use both systems combined.
 
-Moreover measurements from Galileo satellites will suffer from the same errors as
+Moreover, measurements from Galileo satellites will suffer from the same errors as
 their GPS counterparts, which makes this system interchangeable withe GPS for the purposes
 of this work.

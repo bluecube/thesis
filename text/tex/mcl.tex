@@ -1,14 +1,14 @@
 \chapter{Monte Carlo Localization}
 \label{chap:mcl}
 
-The following chapter defines the localization problem, provides overview
+The following chapter defines the localization problem, provides an overview
 of Markov Localization and Kalman Filters and finally describes
-Monte Carlo Localization algorithm.
+the Monte Carlo Localization algorithm.
 
 \section{Localization}
 Localization of a mobile robot is a task of estimating position (and possibly
 also other state) of the robot based on performed actions and sensor readings.
-To reliably navigate its environment autonomous mobile robot needs
+To reliably navigate its environment, an autonomous mobile robot needs
 a relatively precise estimate of its position.
 
 Localization methods can be categorized according to many different criteria.
@@ -33,12 +33,12 @@ which are only capable of tracking the estimate locally.
 
 Markov Localization \cite{fox98,diard03} is a recursive probabilistic
 algorithm that estimates state of the robot based on its
-actions and possibly noisy measured sensor data.
+actions and possibly noisy measured data.
 
 \subsection{Assumptions}
 \label{sec:markov-assumptions}
 Markov localization assumes that the state of the robot only depends
-on state and action performed in the previous time frame:
+on the state and action performed in the previous time frame:
 	\begin{equation}
 		\Prob(X_i = x \mid X_{1, \dotsc, i - 1}, a_{1, \dotsc, i - 1},
 		o_{1, \dotsc, i - 1}) =
@@ -55,12 +55,12 @@ and that each observation only depends on the current state:
 
 \subsection{Derivation}
 
-The algorithm computes probability density of the robot state, called belief.
+The algorithm computes the probability density of the robot state, called belief.
 \begin{equation}
 	\label{eq:markov-belief-def}
 	\Bel(X_i = x) = \Prob(X_i = x \mid o_{1, \dotsc, i}, a_{1,\dotsc,i - 1})
 \end{equation}
-Here \(X_i\) is the random variable representing robot's state,
+Here \(X_i\) is the random variable representing the robot's state,
 \(o_i\) is the observed sensor input in time step \(i\) and \(a_i\)
 is the action the robot performs in the time step \(i\), after it
 measures \(o_i\).
@@ -77,7 +77,7 @@ Using Bayes rule, equation \eqref{eq:markov-belief-def} can be transformed to
 	}
 \end{equation}
 
-Note that denominator \(\Prob(o_i \mid o_{1, \dotsc, i-1}, a_{1, \dotsc, i-1})\) only
+Note that the denominator \(\Prob(o_i \mid o_{1, \dotsc, i-1}, a_{1, \dotsc, i-1})\) only
 serves as a normalization constant.
 In further equations it will be replaced by \(\eta^{-1}\).
 Other than that, we can use the independence assumptions made at the beginning
@@ -100,8 +100,8 @@ equation \eqref{eq:markov-derivation1} can be expanded in a following way:
 	\Prob(X_{i-1} = x' \mid o_{1, \dotsc, i-1}, a_{1, \dotsc, i-1})
 	\,\mathrm{d}x'
 \end{multline}
-After substituting definition of belief from equation \eqref{eq:markov-belief-def}
-and another use the independence assumptions we get
+After substituting the definition of belief from equation \eqref{eq:markov-belief-def}
+and another use of the independence assumptions we get
 \begin{equation}
 	\label{eq:markov-derivation4}
 	\Prob(X_i = x \mid o_{1, \dotsc, i}, a_{1, \dotsc, i - 1}) =
@@ -124,44 +124,44 @@ equation
 
 We will call the conditional density \(\Prob(o_i \mid X_i = x)\) \emph{sensor model} and
 the density \(\Prob(X_i = x \mid X_{i - 1}=x', a_{i - 1})\) \emph{motion model}.
-Sensor model describes the probability of observing \(o_i\) at given time.
-It implicitly contains map of the environment and models interactions of sensors with
-the map.
-Action model contains information about how the robot's actions relate to changes in its state.
+The sensor model describes the probability of observing \(o_i\) at given time.
+It implicitly contains a map of the environment and models interactions of sensors with
+the environment.
+The action model contains information about how the robot's actions relate to changes in its state.
 
 \subsection{Algorithm}
 The algorithm for Markov localization operates in two alternating phases:
-prediction phase, in witch the algorithm incorporate a performed action into the belief
-(and therefore predicts the state after the action and correction phase which updates
+prediction phase, in witch the algorithm incorporates a performed action into the belief
+(and therefore predicts the state after the action) and correction phase which updates
 the measurements based on the observed sensor measurements.
 
 \subsubsection{Prediction}
-	Prediction phase uses the action model to obtain predictive density based on the action performed
-	and previous belief, by integrating over all possible states at time \(i - 1\).
-	The following equation is an exact copy of \eqref{eq:markov-derivation4}, included here for completeness.
-	\begin{equation}
-		\label{eq:markov-prediction}
-		\Prob(X_i = x \mid o_{1, \dotsc, i}, a_{1, \dotsc, i - 1}) =
-		\int
-		\Prob(X_i = x \mid X_{i - 1}=x', a_{i - 1})
-		\Bel(X_{i-1} = x')
-		\,\mathrm{d}x'
-	\end{equation}
+The prediction phase uses the action model to obtain predictive density based on the action performed
+and the previous belief, by integrating over all possible states at time \(i - 1\).
+The following equation is an exact copy of \eqref{eq:markov-derivation4}, included here for completeness.
+\begin{equation}
+	\label{eq:markov-prediction}
+	\Prob(X_i = x \mid o_{1, \dotsc, i}, a_{1, \dotsc, i - 1}) =
+	\int
+	\Prob(X_i = x \mid X_{i - 1}=x', a_{i - 1})
+	\Bel(X_{i-1} = x')
+	\,\mathrm{d}x'
+\end{equation}
 
 \subsubsection{Correction}
-	Correction regenerates the belief based on the predictive density
-	and sensor model.
-	\begin{equation}
-		\label{eq:markov-correction}
-		\Bel(X_i = x) =
-		\eta \Prob(o_i \mid X_i = x)
-		\Prob(X_i = x \mid o_{1, \dotsc, i}, a_{1, \dotsc, i - 1})
-	\end{equation}
+In the correction phase, the belief is regenerated based on the predictive density
+and the sensor model.
+\begin{equation}
+	\label{eq:markov-correction}
+	\Bel(X_i = x) =
+	\eta \Prob(o_i \mid X_i = x)
+	\Prob(X_i = x \mid o_{1, \dotsc, i}, a_{1, \dotsc, i - 1})
+\end{equation}
 
 \subsection{Density Representations}
 The algorithm as described above doesn't tell us how to represent the probability
 densities encountered.
-Several specialisations of Markov localization exists differing mainly in how the
+Several specialisations of Markov localization exist, differing mainly in how the
 current state estimation is represented.
 Examples include Gaussian distribution in Kalman filters,
 %(together with other assumptions, see \ref{sec:kalman}),
@@ -173,32 +173,32 @@ using samples in Monte Carlo localization (see section \ref{sec:mcl-algorithm}).
 Kalman filter \cite{kalman60,welch95} is a popular state estimator, often used in robotics
 for localization.
 It can be viewed as a closed form solution of Markov localization where both the
-action model and measurement model are linear and Gaussian \cite{diard03}.
+action model and the measurement model are linear and Gaussian \cite{diard03}.
 
 \begin{gather}
 	\label{eq:kalman-action-model}
-	\Prob(X_i = x \mid X_{i-1} = x', a_{i - 1}) \sim \mathrm{N}(A_{i - 1}x' + B_{i - 1}a_{i - 1}, Q_{i - 1})
+	\Prob(X_i = x \mid X_{i-1} = x', a_{i - 1}) \sim \mathcal{N}(A_{i - 1}x' + B_{i - 1}a_{i - 1}, Q_{i - 1})
 	\\
 	\label{eq:kalman-measurement-model}
-	\Prob(o_{i} \mid X_i = x) \sim \mathrm{N}(H_{i}x, R_i)
+	\Prob(o_{i} \mid X_i = x) \sim \mathcal{N}(H_{i}x, R_i)
 \end{gather}
 In equations \eqref{eq:kalman-action-model} and \eqref{eq:kalman-measurement-model}
-the matrix \(A_i\) describes change of state if there was no control input and no noise,
+the matrix \(A_i\) describes the change of state if there was no control input and no noise,
 matrix \(B_i\) contains the influence of action \(a_i\) and \(H_i\) relates state to measured
 values.
-\(Q_i\) and \(R_i\) are covariance matrices of action model and measurement model.
+\(Q_i\) and \(R_i\) are covariance matrices of the action model and the measurement model.
 
 Because the initial belief, the action model and the measurement model are all Gaussian,
 belief will always remain Gaussian as well.
-This means, that only mean value and covariance matrix need to be stored, making
+This means, that only the mean value and covariance matrix need to be stored, making
 Kalman filter very efficient, requiring only several matrix operations in each step.
 
 Non linear motion and measurement models can be approximated
-using a first order Taylor expansion to form extended Kalman
+using a first order Taylor expansion to form an extended Kalman
 filter (EKF) \cite{welch95}.
 
-For illustration of Kalman filter operation, the update rules are included,
-for more detailed description see \cite{welch95}.
+For illustration of operations of a Kalman filter, the update rules are included.
+For more detailed description see \cite{welch95}.
 
 \subsubsection{Prediction}
 \begin{gather}
@@ -238,7 +238,7 @@ It is a version of Markov localization, that approximates the belief
 using a set of samples drawn from it.
 \todo{reference and describe figure \ref{fig:mcl} somewhere}
 
-Advantages of MCL include 
+Advantages of MCL include a
 possibility to represent arbitrary shapes of probability densities as opposed to
 Gaussian distribution in the widespread Kalman filters
 and the related ability to localize the robot globally.
@@ -255,7 +255,7 @@ of missing all samples during the correction phase and effectively ignoring the 
 
 Informally the basic MCL can be described as follows:
 Keep \(n\) samples of hypothetical robot states.
-In prediction phase move each sample according to the action performed + noise corresponding
+In the prediction phase move each sample according to the action performed + noise corresponding
 to uncertainty on the action's result (e.g. wheel slip).
 Correction calculates how probable the incoming measurement is
 for every sampled state and set this probability as the sample's weight.
@@ -336,7 +336,7 @@ instead add copies of the highly weighted samples.
 
 MCL keeps a set of samples \(S_i = \{s^k_{i} \mid k = 1,\dotsc,n\} \) drawn from the distribution
 \(\Prob(X_i = x \mid X_{i-1}, o_i, a_{i - 1})\) to represent the belief and performs
-prediction, correction and resampling phases every frame.
+prediction, correction and resampling phases for every time frame.
 
 Pseudocode in \cref{algo:mcl} contains the basic structure of Monte Carlo localization.
 The algorithm reads inputs from the environment by calling functions
@@ -344,7 +344,7 @@ The algorithm reads inputs from the environment by calling functions
 last measured observation.
 Output is made available to the rest of the robot's software in function \outputPosition{}.
 
-Prediction and correction steps in the algorithm, utilize the motion
+Prediction and correction steps in the algorithm utilize the motion
 model through \sampleFromActionModel{} and sensor model using \observationProbability{}.
 The function \sampleFromActionModel{} returns a random predicted sample based on a previous sample and an action,
 \observationProbability{} gives the probability of an observation in a given state.
@@ -354,77 +354,77 @@ a robot without knowledge of its previous location by starting with samples dist
 uniformly through the environment.
 
 \subsubsection{Prediction}
-	\begin{itemize}
-	\item
-	Create a new sample set \(S'_i = \{s'^k_{i}\} \)
-	by drawing a new sample \(s'^k_{i}\)
-	from the action model \(\Prob(X_i = x \mid X_{i-1} = s^k_{i-1}, a_{i - 1})\)
-	for every sample in \(S_{i-1}\).
-	\end{itemize}
+\begin{itemize}
+\item
+Create a new sample set \(S'_i = \{s'^k_{i}\} \)
+by drawing a new sample \(s'^k_{i}\)
+from the action model \(\Prob(X_i = x \mid X_{i-1} = s^k_{i-1}, a_{i - 1})\)
+for every sample in \(S_{i-1}\).
+\end{itemize}
 
-	This effectively is stratified sampling from the empirical predictive density
-	\begin{equation}
-		\label{eq:mcl-predictive-density}
-		\hat{\Prob}(X_i = x \mid X_{i - 1}, a_{i - 1}) =
-		\sum_{k = 1}^n \Prob(X_i = x \mid X_{i-1} = s^k_{i-1}, a_{i - 1})
-	\end{equation}
-	which is used instead of the predictive density from \eqref{eq:markov-prediction}.
+This is stratified sampling from the empirical predictive density
+\begin{equation}
+	\label{eq:mcl-predictive-density}
+	\hat{\Prob}(X_i = x \mid X_{i - 1}, a_{i - 1}) =
+	\sum_{k = 1}^n \Prob(X_i = x \mid X_{i-1} = s^k_{i-1}, a_{i - 1})
+\end{equation}
+which is used instead of the predictive density from \eqref{eq:markov-prediction}.
 
 \subsubsection{Correction}
-	\begin{itemize}
-	\item
-	Using the sensor model, calculate weight \(w^k_i = \Prob(o_i \mid X_i = s'^k_i)\)
-	for each sample \(s'^k_i\) in the predictive sample set \(S'_i\).
-	\end{itemize}
+\begin{itemize}
+\item
+Using the sensor model, calculate weight \(w^k_i = \Prob(o_i \mid X_i = s'^k_i)\)
+for each sample \(s'^k_i\) in the predictive sample set \(S'_i\).
+\end{itemize}
 
-	Ideally in the correction phase the algorithm would draw samples directly from
-	\(\Prob(o_i \mid X_i = x) \Prob(X_i = x \mid X_{i - 1}, a_{i - 1})\),
-	however there is no easy way to achieve this.
-	Instead, Monte Carlo localization 
-	uses SIR (sampling / importance resampling, \cite{smith92})
-	to approximate sampling from
-	\(\Prob(o_i \mid X_i = x) \hat{\Prob}(X_i = x \mid X_{i - 1}, a_{i - 1})\) using the set \(S'_i\).
-	This is achieved by weighting the samples as described earlier and resampling
-	according to these weights in the next phase.
+Ideally in the correction phase the algorithm would draw samples directly from
+\(\Prob(o_i \mid X_i = x) \Prob(X_i = x \mid X_{i - 1}, a_{i - 1})\),
+however there is no easy way to achieve this.
+Instead, Monte Carlo localization 
+uses SIR (sampling / importance resampling, \cite{smith92})
+to approximate sampling from
+\(\Prob(o_i \mid X_i = x) \hat{\Prob}(X_i = x \mid X_{i - 1}, a_{i - 1})\) using the set \(S'_i\).
+This is achieved by weighting the samples as described earlier and resampling
+according to these weights in the next phase.
 
-	The weights are obtained by dividing the target density divided by the available density:
-	\begin{equation}
-		w^k_i = 
-		\frac{
-			\Prob(o_i \mid X_i = s'^k_i) \hat{\Prob}(X_i = s'^k_i \mid X_{i - 1}, a_{i - 1})
-		}{
-			\hat{\Prob}(X_i =  s'^k_i \mid X_{i - 1}, a_{i - 1})
-		} = \Prob(o_i \mid X_i = s'^k_i)
-	\end{equation}
+The weights are obtained by dividing the target density by the available density:
+\begin{equation}
+	w^k_i = 
+	\frac{
+		\Prob(o_i \mid X_i = s'^k_i) \hat{\Prob}(X_i = s'^k_i \mid X_{i - 1}, a_{i - 1})
+	}{
+		\hat{\Prob}(X_i =  s'^k_i \mid X_{i - 1}, a_{i - 1})
+	} = \Prob(o_i \mid X_i = s'^k_i)
+\end{equation}
 
 \subsubsection{Resampling}
-	\begin{itemize}
-	\item
-	Draw \(n\) new samples \(s^k_{i+1}\) from \(S'_i\) by placing
-	weight \(\{w^k_i\}\) on \(s'^k_{i}\).
-	\end{itemize}
+\begin{itemize}
+\item
+Draw \(n\) new samples \(s^k_{i+1}\) from \(S'_i\) by placing
+weight \(\{w^k_i\}\) on \(s'^k_{i}\).
+\end{itemize}
 
-	Resampling phase is necessary to finalize the SIR procedure from the correction phase.
-	Resampling of the sample set can be done in \(\mathrm{O}(n)\), using the systematic
-	resampling algorithm described in \cite{arulampalam01}.
+The resampling phase is necessary to finalize the SIR procedure from the correction phase.
+It can be performed in \(\mathrm{O}(n)\), using the systematic
+resampling algorithm described in \cite{arulampalam01}.
 
 \subsection{Modifications}
 
 \subsubsection{Adaptive Sample Size}
 During global localization, or tracking failure MCL needs a relatively large number
 of samples to localize correctly, however when the robot is successfully localized
-a much less samples is necessary.
+much less samples are necessary.
 
 An improvement of the MCL algorithm is to vary the sample size dynamically.
 This can be done using likehood sampling \cite{fox99}, that works by 
 resampling not until a fixed number of samples is
 generated, but until the sum of unnormalized weights exceeds a given threshold.
-Another more involved approach, using KLD-sampling algorithm
+Another, more involved approach, using KLD-sampling algorithm
 (KLD stands for Kullback-Leibler distance) is described in \cite{fox03}.
 
 \subsubsection{Delayed Resampling}
 It is possible to keep sample weights during the whole operation of the algorithm.
-This means that resampling phase can be performed only once for several prediction and correction steps
+This means that the resampling phase can be performed only once for several prediction and correction steps
 for example to save computing power.
 Various criteria for starting resampling may be chosen, examples include a fixed number of
 prediction / correction steps, or when the effective number of particles drops under a predefined threshold.
@@ -435,5 +435,5 @@ This is explained in detail in \cite{arulampalam01}.
 Mixture MCL \cite{thrun99} is a modification of Monte Carlo Localization that
 solves the problem with too precise observations.
 The modified algorithm uses a dual algorithm to MCL -- sampling from
-observation model and correction from motion model -- and combines it with
+the observation model and correction from the motion model -- and combines it with
 regular Monte Carlo Localization.

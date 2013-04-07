@@ -181,6 +181,16 @@ Main cause for these errors are in ionosphere, but this treatment should be also
 capable of alleviating other errors that change slowly over time, like satellite
 clock offsets.
 
+As with the Position domain approach, the model was derived from
+measurements in a month long data set (see \cref{chap:datasets}).
+During the test period the receiver was stationary and pseudorange and
+the \enquote{truth} for checking the errors was established as an average of ECEF
+positions reported by the receiver's internal software.
+Clock offsets and drifts, which do not stay constant during the experiment,
+were approximated by fitting a linear function to a sliding window of pseudorange
+measurements (\cref{sec:impl-clock-offsets}).
+
+
 \subsection{Static Environment Assumption}
 \label{sec:gps-mcl-static-env}
 Monte Carlo Localization assumes that the environment is static, but we need to
@@ -192,9 +202,9 @@ Unlike the position domain integration approach, this method requires specific
 way of storing the position and velocity of the robot and
 additional data in the robot state in MCL samples.
 
-First of all, the whole GPS operations work in ECEF coordinate system, meaning
-that the robot position and velocity also must be stored in this coordinate system.
-Next, the GPS needs to estimate a receiver clock offset as a position together
+First of all, all of the GPS calculations are performed in ECEF coordinate system,
+which means that it is the simplest to store the position and velocity of the robot in this coordinate system.
+Next, the GPS needs to estimate a receiver clock offset together
 with position, so this is another variable which must exist in the state.
 
 The state variables will also have to contain velocities in ECEF and clock drift.
@@ -205,24 +215,23 @@ These residual clock offsets cover all of the slowly changing errors that are pr
 in each satellite's transmission and are not explicitly corrected elsewhere in the process.
 This includes satellite clock inaccuracies, unmodeled remains of ionospheric and
 tropospheric errors and to some extent also satellite ephemeris errors.
+While this is not strictly necessary and the localization can work when only
+estimating receiver clock offset and drift, this significantly improves precision.
+In the experimental data one sigma pseudorange error when estimating residual offsets is \SI{\pseudorangeErrorSigma}{\meter} and
+one sigma pseudorange error when not estimating residual offsets is \SI{\pseudorangeErrorNaiveSigma}{\meter}.
 
-\subsection{Sensor Model}
-As with the Position domain approach, the sensor model was derived from
-measurements in a month long data set (see \cref{chap:datasets}).
+To sum up, the following fields need to be added to robot state:
 
-During the test period the receiver was stationary and pseudorange and
-the \enquote{truth} for checking the errors was established as an average of ECEF
-positions reported by the receiver's internal software.
-Clock offsets and drifts, which do not stay constant during the experiment,
-were approximated by fitting a linear function to a sliding window of pseudorange
-measurements (\cref{sec:impl-clock-offsets}).
 
-\subsubsection{Preprocessing}
+\subsection{Preprocessing}
 Relatively large amount of work is dedicated to receiver-specific preprocessing
 of the GPS data.
 In short, this consists of integrating ephemeris, removing any inconsistencies in data caused by the
 receiver and converting the data to sequences of pseudoranges and Doppler measurements.
 These steps are and discussed in \cref{sec:impl-sirf-grouping,sec:impl-sirf-jumps,sec:impl-sirf-ephemeris}.
+
+
+\subsection{Sensor Model}
 
 \subsubsection{Prediction}
 Clock drifts are modelled as a Gaussian random walk and clock offsets

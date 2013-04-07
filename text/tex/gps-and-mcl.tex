@@ -190,7 +190,6 @@ Clock offsets and drifts, which do not stay constant during the experiment,
 were approximated by fitting a linear function to a sliding window of pseudorange
 measurements (\cref{sec:impl-clock-offsets}).
 
-
 \subsection{Static Environment Assumption}
 \label{sec:gps-mcl-static-env}
 Monte Carlo Localization assumes that the environment is static, but we need to
@@ -220,9 +219,6 @@ estimating receiver clock offset and drift, this significantly improves precisio
 In the experimental data one sigma pseudorange error when estimating residual offsets is \SI{\pseudorangeErrorSigma}{\meter} and
 one sigma pseudorange error when not estimating residual offsets is \SI{\pseudorangeErrorNaiveSigma}{\meter}.
 
-To sum up, the following fields need to be added to robot state:
-
-
 \subsection{Preprocessing}
 Relatively large amount of work is dedicated to receiver-specific preprocessing
 of the GPS data.
@@ -230,14 +226,21 @@ In short, this consists of integrating ephemeris, removing any inconsistencies i
 receiver and converting the data to sequences of pseudoranges and Doppler measurements.
 These steps are and discussed in \cref{sec:impl-sirf-grouping,sec:impl-sirf-jumps,sec:impl-sirf-ephemeris}.
 
+\subsection{Motion Model}
+Since GPS utilizes additional state variables, we also needs to specify the motion
+model that controls  these variables during the prediction phase of MCL.
 
-\subsection{Sensor Model}
-
-\subsubsection{Prediction}
-Clock drifts are modelled as a Gaussian random walk and clock offsets
-are obtained by integrating clock drifts.
-For each satellite a residual clock offset and residual clock drift are kept,
-which are added to the global values.
+Both receiver clock drifts and residual clock drifts are modelled as a Gaussian random walk,
+with the translation distance distribution
+\begin{equation}
+\mathcal{N}(\mu = \SI{\clockDriftRateMu}{\meter}, \sigma = \SI{\clockDriftRateSigma}{\meter})
+\end{equation}
+for the receiver clock drift and 
+\begin{equation}
+\mathcal{N}(\mu = \SI{\residualClockDriftRateMu}{\meter}, \sigma = \SI{\residualClockDriftRateSigma}{\meter})
+\end{equation}
+for the residual clock drifts.
+Clock offsets are obtained by integrating the clock drifts.
 \todo{Resetting residual errors for long unseen satellites}
 
 \Cref{fig:clock-drift-derivation,fig:residual-clock-drift-derivation}
@@ -259,17 +262,78 @@ clock drifts derivation.
 \end{figure}
 
 
-\subsubsection{Correction}
+\subsection{Sensor Model}
+Sensor model of the individual measurements calculates the probability of the individual
+
+\subsubsection{Thresholds}
+To avoid outliers that frequently appear in the received data (from several hundreds
+of meters to thousands of kilometers far from the expected measurement), we
+ignore measurements appearing further than a given threshold from the expected position.
+The decision whether to throw away a given measurement is made after all available corrections
+are applied.
+
+For pseudoranges we chose the threshold of \SI{\pseudorangeThreshold}{\meter}} and
+for velocity measurements \SI{\velocityThreshold}{\meter\per\second}.
+
+
+\subsubsection{Ephemeris}
+We treat ephemeris data -- especially position and velocity of the satellite transmitting
+the current ranging message -- as a part of a measurement.
+In reality this isn't so, but
+this approach works without problems when processing the GPS data from the receiver online,
+because the GPS contains current best estimate of the ephemeris periodically repeated
+in the broadcast navigation data.
+
+If only the pseudorange measurements were available, we would need to access the
+ephemeris data from the time of transmission.
+This might in fact improve quality of the localization if precise ephemeris
+was used instead (see \cref{sec:gps-ephemeris}).
+
+\subsubsection{Pseudorange}
+
+
+\subsubsection{Velocity}
+
+
+
 The only preprocessing step, these values are thresholded, discarding measurements that are too
 far from the expected position.
 \SI{150}{\meter} for pseudoranges and \SI{4}{\meter\per\second} for doppler velocity
 measurements.
 
+For each satellite a residual clock offset and residual clock drift are kept,
+which are added to the global values.
 
-\subsubsection{Error distribution}
-Normal distribution (???)
+\subsection{Initialization}
 
-\subsubsection{Algorithm}
+\subsection{Algorithm}
+\Cref{algo:gps-measurement-domain} sums up the measurement domain integration
+algorithm for Monte Carlo localization.
+
+The function \predictGPS{} contains the motion model.
+It is expected to be called from the function \sampleFromActionModel{} in \cref{algo:mcl}
+as a part of the prediction step.
+Only thing that this function does is advance the clock drift by a random amount
+and integrate the current drift to form a new clock offset.
+This is performed for bot the receiver clock drift and offset and for the
+clock drifts and offsets of individual satellites.
+Function \timeFunc{} returns the value of the system performing the localization
+and is not required to be synchronized to GPS time in any way.
+
+The sensor model in function \observationProbabilityGPS{} processes each measurement
+and constitutes a core of the algorithm.
+As a first step it calculates effective clock drift and clock offset for this
+measurement, which is a sum of the receiver clock drift and offset and of the 
+per-SV residual drift and offset.
+Next a corrected pseudorange and velocity are computed.
+For pseudoranges the delays introduced in the atmosphere must be compensated,
+here represented by the function \delays{}.
+Then the expected range and velocity are calculated.
+Range computation is trivially the length of the vector between the user and 
+satellite positions in ECEF coordinate frame, expected velocity is obtained
+as a dot product of unit vector from the user to satellite and velocity distance.
+Finally the probabilities are acquired from normal distribution pdf, if they
+are within threshold.
 
 \begin{figure}[tp]
 \begin{algorithm}[H]
@@ -278,9 +342,6 @@ Normal distribution (???)
     \SetKwFunction{dotProduct}{dotProduct}
     \SetKwFunction{norm}{norm}
     \SetKwFunction{normpdf}{normpdf}
-    \SetKwFunction{tropoDelay}{tropoDelay}
-    \SetKwFunction{ionoDelay}{ionoDelay}
-    \SetKwFunction{time}{time}
 
     \SetKwData{samples}{samples}
     \SetKwData{sample}{s}
@@ -308,14 +369,14 @@ Normal distribution (???)
     \SetKwData{rangeError}{rangeError}
     \SetKwData{velocityError}{velocityError}
     \SetKwData{observation}{observation}
-    \SetKwData{result}{result}
+    \SetKwData{result}{probability}
 
     \function{predictGPS}{
         \KwIn{list of samples}
         \KwOut{modified list of samples}
         \BlankLine
-        \deltaT \assign \time{} - \lastTime\;
-        \lastTime \assign \time{}\;
+        \deltaT \assign \timeFunc{} - \lastTime\;
+        \lastTime \assign \timeFunc{}\;
         \ForEach{\sample \(\in\) \samples}{
             \sample.\clockDrift \assign \sample.\clockDrift \(+\) \norm{\(\mu\) = \num{\clockDriftRateMu}, \(\sigma\) = \num{\clockDriftRateSigma}} \(*\) \deltaT\;
             \sample.\clockOffset \assign \sample.\clockOffset \(+\) \sample.\clockDrift \(*\) \deltaT\;
@@ -342,9 +403,9 @@ Normal distribution (???)
         \clockOffset = \samplex.\clockOffset + \samplex.\residualOffset{\sv}\;
 
         \BlankLine
-        \pseudorange \assign \samplex.\pseudorange \(+\) \(\speedoflight\) \(*\) \sv.\clockOffset \(-\) \(\speedoflight\) \(*\) \clockOffset\\
-            \hspace{1em} \(-\) \ionoDelay{\sv, \samplex} \(-\) \tropoDelay{\sv, \samplex}\;
-        \velocity \assign \samplex.\velocity \(+\) \(\speedoflight\) \(*\) \sv.\clockDrift \(-\) \(\speedoflight\) \(*\) \clockDrift\;
+        \pseudorange \assign \observation.\pseudorange \(+\) \(\speedoflight\) \(*\) \sv.\clockOffset \(-\) \(\speedoflight\) \(*\) \clockOffset\\
+            \hspace{1em} \(-\) \delays{\sv, \samplex}\;
+        \velocity \assign \observation.\velocity \(+\) \(\speedoflight\) \(*\) \sv.\clockDrift \(-\) \(\speedoflight\) \(*\) \clockDrift\;
 
         \BlankLine
         \userToSv \assign \sv.\position \(-\) \samplex.\position\;
@@ -356,30 +417,17 @@ Normal distribution (???)
         \BlankLine
         \result \assign \(1\)\;
         \rangeError \assign \pseudorange \(-\) \geomRange\;
-        \If{\abs{\rangeError} \(<\) \SI{150}{\meter}}{
+        \If{\abs{\rangeError} \(<\) \SI{\pseudorangeThreshold}{\meter}}{
             \result \assign \result \(*\) \normpdf{\rangeError, \(\mu\) = \num{\pseudorangeErrorMu}, \(\sigma\) = \num{\pseudorangeErrorSigma}}\;
         }
         \velocityError \assign \velocity \(-\) \geomVelocity\;
-        \If{\abs{\velocityError} \(<\) \SI{4}{\meter\per\second}}{
+        \If{\abs{\velocityError} \(<\) \SI{\velocityThreshold}{\meter\per\second}}{
             \result \assign \result \(*\) \normpdf{\velocityError, \(\mu\) = \num{\velocityErrorMu}, \(\sigma\) = \num{\velocityErrorSigma}}\;
         }
         \Return \result\;
     }
 \end{algorithm}
-\caption{Prediction and correction algorithms for measurement domain integration of GPS measurements}
+\caption{Motion and sensor models for measurement domain integration.}
 \label{algo:gps-measurement-domain}
 \end{figure}
 
-
-
-\subsection{Initial estimate}
-\begin{itemize}
-\item starting as position domain, later switching to measurement domain
-\end{itemize}
-
-\subsection{Simplifications}
-\begin{itemize}
-\item Ignoring altitude (???)
-\item Additional 1D kalman for altitude (???)
-\item Additional 1D kalman for receiver clock error (???)
-\end{itemize}

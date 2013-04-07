@@ -85,11 +85,11 @@ the non-linear model from \cite{www-wilson}.
 Both were fitted to the data using least squares weighted with counts of samples
 for each HDOP, resulting in the expressions
 \begin{equation}
-\mathrm{DRMS}(\HDOP) / \si{\meter} = \sigmaUere \HDOP
+\mathrm{DRMS}(\HDOP) / \si{\meter} = \num{\sigmaUere} \HDOP
 \end{equation}
 and
 \begin{equation}
-\mathrm{DRMS}(\HDOP) / \si{\meter} = \sqrt{(\WilsonParamA\HDOP)^2 + \WilsonParamB^2}
+\mathrm{DRMS}(\HDOP) / \si{\meter} = \sqrt{(\num{\WilsonParamA}\HDOP)^2 + \num{\WilsonParamB}^2}
 \end{equation}
 
 \Cref{fig:wgs84-hdop-error} is a visualisation of fitting of these two models,
@@ -134,7 +134,7 @@ fitted non-linear model.
         \hdop \assign \observation.\hdop\;
         \BlankLine
         \positionError \assign \abs{\projected \(-\) \sample}\;
-        \drmsSquared \assign \( ( \WilsonParamA\hdop )^2 + \WilsonParamB^2 \)\;
+        \drmsSquared \assign \( ( \num{\WilsonParamA}\hdop )^2 + \num{\WilsonParamB}^2 \)\;
         \BlankLine
         \Return 2 * \positionError / \drmsSquared * \exp{-\(\positionError^2\)/\drmsSquared} \;
     }
@@ -308,12 +308,12 @@ Normal distribution (???)
         \deltaT \assign \time{} - \lastTime\;
         \lastTime \assign \time{}\;
         \ForEach{\sample \(\in\) \samples}{
-            \sample.\clockDrift \assign \sample.\clockDrift \(+\) \norm{\(\mu\) = \clockDriftRateMu, \(\sigma\) = \clockDriftRateSigma} \(*\) \deltaT\;
+            \sample.\clockDrift \assign \sample.\clockDrift \(+\) \norm{\(\mu\) = \num{\clockDriftRateMu}, \(\sigma\) = \num{\clockDriftRateSigma}} \(*\) \deltaT\;
             \sample.\clockOffset \assign \sample.\clockOffset \(+\) \sample.\clockDrift \(*\) \deltaT\;
 
             \BlankLine
             \ForEach{\sv \(\in\) \svs}{
-                \sample.\residualDrift{\sv} \assign \sample.\residualDrift{\sv} \(+\) \norm{\(\mu\) = \residualClockDriftRateSigma, \(\sigma\) = \residualClockDriftRateMu} \(*\) \deltaT\;
+                sample.\residualDrift{\sv} \assign \sample.\residualDrift{\sv} \(+\) \norm{\(\mu\) = \num{\residualClockDriftRateMu}, \(\sigma\) = \num{\residualClockDriftRateSigma}} \(*\) \deltaT\;
                 \sample.\residualOffset{\sv} \assign \sample.\residualOffset{\sv} \(+\) \sample.\residualDrift{\sv} \(*\) \deltaT\;
             }
         }
@@ -348,11 +348,11 @@ Normal distribution (???)
         \result \assign \(1\)\;
         \rangeError \assign \pseudorange \(-\) \geomRange\;
         \If{\abs{\rangeError} \(<\) \SI{150}{\meter}}{
-            \result \assign \result \(*\) \normpdf{\rangeError, \(\mu\) = \pseudorangeErrorMu, \(\sigma\) = \pseudorangeErrorSigma}\;
+            \result \assign \result \(*\) \normpdf{\rangeError, \(\mu\) = \num{\pseudorangeErrorMu}, \(\sigma\) = \num{\pseudorangeErrorSigma}}\;
         }
         \velocityError \assign \velocity \(-\) \geomVelocity\;
         \If{\abs{\velocityError} \(<\) \SI{4}{\meter\per\second}}{
-            \result \assign \result \(*\) \normpdf{\velocityError, \(\mu\) = \velocityErrorMu, \(\sigma\) = \velocityErrorSigma}\;
+            \result \assign \result \(*\) \normpdf{\velocityError, \(\mu\) = \num{\velocityErrorMu}, \(\sigma\) = \num{\velocityErrorSigma}}\;
         }
         \Return \result\;
     }

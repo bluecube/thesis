@@ -263,22 +263,9 @@ clock drifts derivation.
 
 
 \subsection{Sensor Model}
-Sensor model of the individual measurements calculates the probability of the individual
-
-\subsubsection{Thresholds}
-To avoid outliers that frequently appear in the received data (from several hundreds
-of meters to thousands of kilometers far from the expected measurement), we
-ignore measurements appearing further than a given threshold from the expected position.
-The decision whether to throw away a given measurement is made after all available corrections
-are applied.
-
-For pseudoranges we chose the threshold of \SI{\pseudorangeThreshold}{\meter} and
-for velocity measurements \SI{\velocityThreshold}{\meter\per\second}.
-
-To handle the case of catastrophically wrong estimate in the Monte Carlo localization,
-thresholded values are assigned probability of \num{\pseudorangeThresholdProbability} for
-pseudoranges and \num{\velocityThresholdProbability} for velocities.
-
+Sensor model of the individual measurements calculates the probability of this
+measurement being observed under the condition that the state of the robot
+is characterized by the current state.
 
 \subsubsection{Ephemeris}
 We treat ephemeris data -- especially position and velocity of the satellite transmitting
@@ -293,22 +280,63 @@ ephemeris data from the time of transmission.
 This might in fact improve quality of the localization if precise ephemeris
 was used instead (see \cref{sec:gps-ephemeris}).
 
-\subsubsection{Pseudorange}
+\subsubsection{Expected Distance and Velocity}
+To calculate the probability, the algorithm needs to know the distance and relative
+velocity between the satellite and the potential position of the robot represented
+by the sample.
+Expected distance is simply a length of the vector between the position of the SV
+and the sample, expected velocity is calculated according to equation \eqref{eq:doppler-velocity}.
 
+\subsubsection{Thresholds}
+To avoid outliers that frequently appear in the received data (from several hundreds
+of meters to thousands of kilometers far from the expected measurement), we
+ignore measurements appearing further than a given threshold from the expected position.
+The decision whether to throw away a given measurement is made after all available corrections
+are applied.
 
-\subsubsection{Velocity}
+Values used for the threshold are \SI{\pseudorangeThreshold}{\meter} for pseudorange
+and \SI{\velocityThreshold}{\meter\per\second} for the velocity measurements.
 
+To handle the case of catastrophically wrong estimate in the Monte Carlo localization,
+thresholded values are assigned probability of \num{\pseudorangeThresholdProbability} for
+pseudoranges and \num{\velocityThresholdProbability} for velocities.
 
+\subsubsection{Error Distribution}
+After the 
 
-The only preprocessing step, these values are thresholded, discarding measurements that are too
-far from the expected position.
-\SI{150}{\meter} for pseudoranges and \SI{4}{\meter\per\second} for doppler velocity
-measurements.
+\begin{figure}[p]
+	\centering
+	\missingfigure{Derivation of residual clock drifts.}
+	\caption{Derivation of residual clock drifts.}
+	\label{fig:}
+\end{figure}
 
-For each satellite a residual clock offset and residual clock drift are kept,
-which are added to the global values.
+\begin{figure}[p]
+	\centering
+	\missingfigure{Derivation of residual clock drifts.}
+	\caption{Derivation of residual clock drifts.}
+	\label{fig:residual-clock-drift-derivation}
+\end{figure}
+
 
 \subsection{Initialization}
+The intended use of this algorithm is to improve position estimate when using
+a consumer grade GPS receiver, so we are not limited by the ability of this
+algorithm to bootstrap the position.
+For localizing the robot globally, we can we can initialize the position
+estimate from the solution provided by the receiver's software.
+The initial position estimate can be modelled as discussed in \cref{sec:position-domain}).
+
+Clock offsets and drifts can also be initialized from the data provided by the
+receiver (although there is no standardized way of doing this).
+
+As an alternative, clock offsets can be estimated from the positions.
+To do this we can assume that the next pseudorange measurement is error-free
+and obtain clock correction from equation \eqref{eq:pseudorange3}.
+Equation \eqref{eq:doppler2} can be used in a similar fashion to get receiver clock drift.
+
+Since the residual clock drifts and offsets are not necessary for the algorithm,
+they can be initialized to zero.
 
 \subsection{Algorithm}
 \Cref{algo:gps-measurement-domain} sums up the measurement domain integration

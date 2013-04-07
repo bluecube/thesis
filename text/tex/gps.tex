@@ -280,6 +280,7 @@ where \(\geomrangedelays\) are delays of the signal propagation.
 Together with \eqref{eq:pseudorange2}, the previous equation gives us
 the basic equation for determining geometric distance from pseudorange measurements:
 \begin{equation}
+    \label{eq:pseudorange4}
 	\geomrange + \speedoflight\geomrangedelays = \rho - \speedoflight (\recclockoffset - \svclockoffset)
 \end{equation}
 
@@ -373,6 +374,7 @@ using the receiver clock drift \(\recclockdrift\):
 By putting the equations \eqref{eq:doppler} and \eqref{eq:doppler-clock-drift}
 together we obtain
 \begin{equation}
+    \label{eq:doppler2}
 	\recsvvel
 	=
 	\speedoflight \left(1 - \frac{f_\REC}{f_\SV}\right) -

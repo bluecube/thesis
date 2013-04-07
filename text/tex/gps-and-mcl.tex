@@ -322,7 +322,7 @@ Normal distribution (???)
 
             \BlankLine
             \ForEach{\sv \(\in\) \svs}{
-                sample.\residualDrift{\sv} \assign \sample.\residualDrift{\sv} \(+\) \norm{\(\mu\) = \num{\residualClockDriftRateMu}, \(\sigma\) = \num{\residualClockDriftRateSigma}} \(*\) \deltaT\;
+                \sample.\residualDrift{\sv} \assign \sample.\residualDrift{\sv} \(+\) \norm{\(\mu\) = \num{\residualClockDriftRateMu}, \(\sigma\) = \num{\residualClockDriftRateSigma}} \(*\) \deltaT\;
                 \sample.\residualOffset{\sv} \assign \sample.\residualOffset{\sv} \(+\) \sample.\residualDrift{\sv} \(*\) \deltaT\;
             }
         }

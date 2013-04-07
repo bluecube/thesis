@@ -272,8 +272,12 @@ ignore measurements appearing further than a given threshold from the expected p
 The decision whether to throw away a given measurement is made after all available corrections
 are applied.
 
-For pseudoranges we chose the threshold of \SI{\pseudorangeThreshold}{\meter}} and
+For pseudoranges we chose the threshold of \SI{\pseudorangeThreshold}{\meter} and
 for velocity measurements \SI{\velocityThreshold}{\meter\per\second}.
+
+To handle the case of catastrophically wrong estimate in the Monte Carlo localization,
+thresholded values are assigned probability of \num{\pseudorangeThresholdProbability} for
+pseudoranges and \num{\velocityThresholdProbability} for velocities.
 
 
 \subsubsection{Ephemeris}
@@ -415,14 +419,19 @@ are within threshold.
         \geomVelocity \assign \dotProduct{\relativeVelocity, \userToSv} / \geomRange\;
 
         \BlankLine
-        \result \assign \(1\)\;
         \rangeError \assign \pseudorange \(-\) \geomRange\;
-        \If{\abs{\rangeError} \(<\) \SI{\pseudorangeThreshold}{\meter}}{
-            \result \assign \result \(*\) \normpdf{\rangeError, \(\mu\) = \num{\pseudorangeErrorMu}, \(\sigma\) = \num{\pseudorangeErrorSigma}}\;
+        \uIf{\abs{\rangeError} \(<\) \SI{\pseudorangeThreshold}{\meter}}{
+            \result \assign \normpdf{\rangeError, \(\mu\) = \num{\pseudorangeErrorMu}, \(\sigma\) = \num{\pseudorangeErrorSigma}}\;
+        }
+        \Else{
+            \result \assign \num{\pseudorangeThresholdProbability}
         }
         \velocityError \assign \velocity \(-\) \geomVelocity\;
-        \If{\abs{\velocityError} \(<\) \SI{\velocityThreshold}{\meter\per\second}}{
+        \uIf{\abs{\velocityError} \(<\) \SI{\velocityThreshold}{\meter\per\second}}{
             \result \assign \result \(*\) \normpdf{\velocityError, \(\mu\) = \num{\velocityErrorMu}, \(\sigma\) = \num{\velocityErrorSigma}}\;
+        }
+        \Else{
+            \result \assign \result \(*\) \num{\velocityThresholdProbability}
         }
         \Return \result\;
     }

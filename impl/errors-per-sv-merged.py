@@ -86,36 +86,39 @@ logging.info("Plotting")
 
 fig1 = plt.figure()
 error_histogram = fig1.add_subplot(1, 1, 1)
-mu, sigma = matplotlib_settings.plot_hist(error_histogram,
+mu, sigma, outliers = matplotlib_settings.plot_hist(error_histogram,
                                           all_errors,
                                           arguments.hist_resolution,
                                           arguments.outlier_threshold)
 print("Mean: {}".format(mu))
 print("Sigma: {}".format(sigma))
+print("Outlier probability: {}".format(outliers))
 error_histogram.set_title('Measurement errors')
 error_histogram.set_xlabel(r'Error/\si{\meter}')
 error_histogram.set_ylabel(r'Count')
 
 fig2 = plt.figure()
 velocity_error_histogram = fig2.add_subplot(1, 1, 1)
-mu, sigma = matplotlib_settings.plot_hist(velocity_error_histogram,
+mu, sigma, outliers = matplotlib_settings.plot_hist(velocity_error_histogram,
                                           all_velocity_errors,
                                           arguments.velocity_hist_resolution,
                                           arguments.velocity_outlier_threshold)
 print("Velocity mean: {}".format(mu))
 print("Velocity sigma: {}".format(sigma))
+print("Outlier probability: {}".format(outliers))
 velocity_error_histogram.set_title('Velocity errors')
 velocity_error_histogram.set_xlabel(r'Error/\si{\meter\per\second}')
 velocity_error_histogram.set_ylabel(r'Count')
 
 fig3 = plt.figure()
 clock_drifts_deriv_histogram = fig3.add_subplot(1, 1, 1)
-mu, sigma = matplotlib_settings.plot_hist(clock_drifts_deriv_histogram,
+mu, sigma, outliers = matplotlib_settings.plot_hist(clock_drifts_deriv_histogram,
                                           all_clock_drifts_deriv,
                                           0,
                                           1)
 print("Clock drift derivation mean: {}".format(mu))
 print("Clock drift derivation sigma: {}".format(sigma))
+print("Outlier probability: {}".format(outliers))
 clock_drifts_deriv_histogram.set_title('Clock drift derivations'.format(sv_id))
 clock_drifts_deriv_histogram.set_xlabel(r'Value/\si{\meter\per\second\squared}')
 clock_drifts_deriv_histogram.set_ylabel(r'Count')

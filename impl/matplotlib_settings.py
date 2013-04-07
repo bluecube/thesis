@@ -1,3 +1,5 @@
+from __future__ import division
+
 import matplotlib as m
 import matplotlib.ticker
 import os
@@ -58,8 +60,10 @@ def common_plot_settings(plot, min_x = None, max_x = None, min_y = None, max_y =
 def plot_hist(subplot, data, res, threshold):
     masked_data = numpy.ma.array(data, mask=(numpy.abs(data) > threshold))
 
+
     mu = numpy.ma.mean(masked_data)
     sigma = numpy.ma.std(masked_data - mu)
+    outliers = 1 - masked_data.count() / len(masked_data)
 
     threshold = 4 * sigma
     res = threshold / 100
@@ -81,4 +85,4 @@ def plot_hist(subplot, data, res, threshold):
         min_y = 0,
         max_y = numpy.max(n))
 
-    return mu, sigma
+    return mu, sigma, outliers

@@ -2,9 +2,9 @@
 
 % Autonomous outdoor robots are fun, although kinda hard.
 
-The ability to determine its position is important for autonomous or semi-autonomous robot,
+The ability to determine its position is important for autonomous or semi-autonomous robot
 not only for completing the its task, but also for a basic
-safe navigation though the environment.
+safe navigation through the environment.
 
 Outdoor robot may navigate large areas without detailed maps available.
 This limits
@@ -40,14 +40,14 @@ GPS as one of the primary sensors for robot localization.
 A relatively straightforward way of integrating the GPS data to any localization algorithm is
 to use WGS84 geodetic coordinates from the standard NMEA protocol.
 With this approach, however, Kalman filters, position smoothing and other filters typically
-employed in  consumer grade receivers assume, that the receiver is mounted in a car or carried on foot.
+employed in  consumer grade receivers assume that the receiver is mounted in a car or carried on foot.
 These assumptions are then used to modify the data, examples
 include minimum speed threshold or vertical speed limits.
 Additionally, based on NMEA data, measurement errors can only be characterized very roughly.
 
 A different approach, which will be explored in this work, uses raw
 pseudorange measurements from the GPS receiver.
-This is similar in principle to how IR/ultrasound ranging beacons are used for localization.
+In principle this is similar to how IR/ultrasound ranging beacons are used for localization.
 When using pseudorange measurements, localization algorithm can work with motion model
 which closely matches
 the real hardware, each pseudorange measurement can have an
@@ -60,7 +60,7 @@ independent error model and further modifications to improve precision can be us
 This work shows the two mentioned  methods of integrating GPS measurements
 into Monte Carlo Localization and compares their performance on a real robot.
 Also an overview of GPS system and Monte Carlo localization is included in
-this an thesis to provide context for the main topic.
+this thesis to provide context for the main topic.
 
 
 The rest of the text is organized as follows:

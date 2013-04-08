@@ -672,7 +672,7 @@ Differential GPS is often used in surveying (off-line, high precision) and this
 use is discussed in \cite{rizos99}.
 
 \section{Assisted GPS}
-Assisted GPS refers to techniques used typically on PDAs and cell phones, that improve operation of GPS by offloading
+Assisted GPS refers to the techniques used typically on PDAs and cell phones, that improve operation of GPS by offloading
 work from the receiver chip to a remote assistance server.
 
 The assistance server has a good satellite reception and more computing power than the device
@@ -692,8 +692,8 @@ In more complicated use cases, such as measurement domain integration of GPS sig
 other sensors discussed in section \ref{sec:measurement-domain} of this work,
 lower level data from the location estimation process may be used, but only as provided
 by software in the GPS receiver.
-Many communication protocols providing position, velocity, clock data
-and other information are in use.
+Many communication protocols are in use, which providing position, velocity, clock data
+and other information.
 
 \subsection{NMEA 0183}
 NMEA 0183 is a de-facto standard protocol for consumer grade GPS receivers.
@@ -705,7 +705,7 @@ equipment and isn't specific to GPS receivers.
 It consists of a large number of sentences, some of which are intended to be used
 for position, velocity and time solutions of GPS navigation.
 
-Problem with the NMEA protocol is, that a different subset is implemented in almost every
+The problem with the NMEA protocol is, that a different subset is implemented in almost every
 receiver and there is no access to lower levels of the GPS signal processing.
 
 \subsection{Proprietary Protocols}
@@ -713,7 +713,7 @@ Many GPS receivers extend the NMEA protocol using proprietary sentences or
 implement custom protocols.
 An example of this is the SiRF binary protocol \cite{sirf-protocol}.
 
-The use of proprietary protocol is often the only way to get complete functionality from
+The use of proprietary protocol is often the only way to get the complete functionality from
 the receiver.
 
 \subsection{RINEX}
@@ -722,7 +722,7 @@ The Receiver Independent Exchange Format \cite{rinex-format} is an exchange form
 for GPS and other satellite navigation systems.
 
 RINEX is typically used for post processing as it can contain various data that are not
-known during navigation, for example detailed ionospheric models, or high precision ephemeris.
+known during navigation, for example detailed ionospheric models or high precision ephemeris.
 
 \section{Similar Systems}
 
@@ -747,7 +747,7 @@ BeiDou is currently in development and only three satellites have been launched 
 Galileo \cite{galileo} is a project by the European Union to create a global navigation system, which
 is probably of the most interest to current GPS users.
 
-It is designed to be independent of GPS and offer multiple levels of access worldwide
+It is designed to be independent of GPS and to offer multiple levels of access worldwide
 including an open access navigation, however
 it will be compatible with GPS receivers that support the modernized L1C signals.
 The Galileo constellation will consist of 30 satellites, and will provide several types of services,
@@ -760,5 +760,5 @@ This means, that a GPS receiver supporting this signal will be able to seamlessl
 use both systems combined.
 
 Moreover, measurements from Galileo satellites will suffer from the same errors as
-their GPS counterparts, which makes this system interchangeable withe GPS for the purposes
+their GPS counterparts, which makes this system interchangeable with the GPS for the purposes
 of this work.

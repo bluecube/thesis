@@ -4,7 +4,9 @@
 %A proof of concept implementation of both approaches from \cref{chap:gps-and-mcl}
 %was created with this work.
 Tools required to analyze the error models for the GPS in Monte Carlo Localization
-were implemented with this work.
+were implemented with this work, these are
+available (together with sources of this text) in the git repository at
+\url{https://github.com/bluecube/thesis}.
 The following chapter describes this implementation, its design and
 specifics of the GPS receiver used.
 Detailed usage information for the tools described in this chapter are located in
@@ -96,7 +98,7 @@ problems when processing the raw data, because reported clock values
 can't be relied on being monotonic.
 Example of this is shown in \cref{fig:impl-clock-jumps}.
 
-We work around this problem by measure difference between consecutive average
+We work around this problem by measuring the difference between consecutive average
 measurement errors and when it becomes very large (larger than \SI{1e6}{\meter} proves as an
 appropriate value) we mark this measurement as a skip and estimate the skip
 length to match the difference between previous pair of average errors.
@@ -111,7 +113,7 @@ length to match the difference between previous pair of average errors.
 \section{Design}
 Python programming language was chosen for the implementation,
 because of the speed of development and large number of available libraries.
-As mentioned above, it is intended only as a proof of
+This code is intended only as a proof of
 concept and for further experimenting and it does have performance problems
 when running on batch data; a \enquote{real world} implementation
 would probably be written in C or C++, for increased performance and better portability

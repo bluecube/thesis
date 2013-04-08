@@ -132,5 +132,5 @@ class MeasurementError:
     def doppler_error(self):
         corrected_reported_velocity = (
             self._measurement.carrier_freq -
-            C * (self._receiver_state.clock_drift - self._sv_state.clock_drift))
+            C * (self._receiver_state.clock_drift))
         return corrected_reported_velocity - self._relative_velocity

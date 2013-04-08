@@ -147,7 +147,7 @@ Operations with serial port are performed by the pySerial library.
 Because the chip can work in several modes of communication, it is necessary to
 switch it to a known one before use, this is done by attempting to read messages
 from the GPS in two expected modes (4800 8N1 NMEA protocol and 115200 8N1 SiRF
-binary protocol). If neither of these fits, trying all other possible
+binary protocol). If neither of these fits, all other possible
 combinations of baud rate and protocol are tried.
 
 Once the GPS mode is detected, it is switched to 115200 8N1 SiRF binary.
@@ -172,7 +172,7 @@ Even though parsing of the protocol is faster than when this was attempted
 using standard pickle file format, it is still optimized for simplicity
 and admittedly creates a performance bottleneck.
 
-Replaying is intended to be seamlessly interchangeable with a real GPS device,
+Recording files are intended to be seamlessly interchangeable with a real GPS device,
 which proved to be very useful in the early phases of experimentation.
 
 To save time on higher level experiments, some of them (for example the error tests
@@ -259,12 +259,13 @@ It is now necessary to merge all the clock offsets to obtain clock offset for
 each measurement time.
 
 First approach explored in this thesis was to fit a polynomial through these
-points, but it didn't fit the points well enough.
+points, but it didn't fit the points well enough on large data sets.
 Currently we fit a linear function to points from a sliding window centered
 around each of points as seen on \cref{fig:sliding-window-linear-regression}.
 
-An input of this procedure is a set of points \(\{x_i, y_i\}\), marking 
-time and potential clock offset of individual measurements.
+An input of this procedure is a set of points \(\{x_i, y_i\}\).
+The value \(x_i\) meaning time of the measurement and 
+\(y_i\) a clock offset of individual measurements.
 For each \(i\) we select points \(P_i = \{(x_j, y_j) : \lvert{}x_j - x_i\rvert < \frac{w}{2}\}\), where
 \(w\) is a width of the sliding window.
 The coefficients \(a_i\) and \(b_i\) of linear functions
@@ -287,6 +288,8 @@ is performed only on measurements with error lower than a certain threshold.
 
 Empirically obtained values are \SI{10}{\minute} for the window width and
 \SI{150}{\meter} for outlier threshold.
+In this case we don't have to deal with problems of extremely large errors in estimation
+like in \cref{sec:gps-thresholds}.
 
 One might object, that this method of estimating receiver clock offset will
 also include other effects from different sources than receiver clock,
@@ -303,47 +306,21 @@ The web site \cite{sam-www} was very useful when implementing corrections for
 pseudorange measurements.
 
 \subsubsection{Ionospheric Corrections}
+Ionospheric corrections provided in the GPS navigation data were used, because
+it is very conveniently located in the SV state messages of SiRF~III.
 
 \subsubsection{Tropospheric Corrections}
-\begin{itemize}
-\item Ionospheric correction taken from SiRF. Where does it come from? SBAS?
-    Estimated values transmitted with the navigation data?
-\item Hopfield's tropospheric error model, implementation based on \cite{sam-www}.
-\end{itemize}
+We implemented tropospheric corrections based on the Hopfield's tropospheric model
+with the mapping function implemenation based on \cite{sam-www}.
 
-\subsection{Position Error Model}
-\Cref{fig:impl-error-histogam} shows the histogram of the corrected pseudorange
-errors.
-\begin{itemize}
-\item Statistical testing for being gaussian\ldots
-\item Modelling each satellite separately, based on previous error?
-      Estimating residual errors per satellite?
-\item Error based on signal strength?
-\end{itemize}
+%\section{Data from Karlík}
+%\begin{itemize}
+%\item Very briefly, parsing log formats from karlik
+%\item Which sensors we end up using
+%\end{itemize}
 
-\subsection{Velocity Error Model}
-\Cref{fig:impl-error-histogam} shows the histogram of the corrected pseudorange
-errors.
-\begin{itemize}
-\item Statistical testing for being gaussian\ldots
-\item \url{http://www.gpspassion.com/forumsen/topic.asp?TOPIC_ID=7685#70279}
-\end{itemize}
-
-\begin{figure}[tp]
-	\centering
-	\missingfigure{Histogram of pseudorange errors}
-	\caption{Histogram of pseudorange errors}
-	\label{fig:impl-error-histogam}
-\end{figure}
-
-\section{Data from Karlík}
-\begin{itemize}
-\item Very briefly, parsing log formats from karlik
-\item Which sensors we end up using
-\end{itemize}
-
-\section{Monte Carlo Localization}
-\begin{itemize}
-\item Used only for performance comparisons
-\item Basic version of the algorithm
-\end{itemize}
+%\section{Monte Carlo Localization}
+%\begin{itemize}
+%\item Used only for performance comparisons
+%\item Basic version of the algorithm
+%\end{itemize}

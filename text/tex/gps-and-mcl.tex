@@ -292,7 +292,6 @@ Other errors should be compensated as described in \cref{sec:gps-errors}
 In a similar way, velocities must be compensated for clock drifts 
 as in \eqref{eq:doppler2}.
 
-
 \subsubsection{Expected Distance and Velocity}
 To calculate the probability, the algorithm needs to know the distance and relative
 velocity between the satellite and the potential position of the robot represented
@@ -308,7 +307,6 @@ of meters to thousands of kilometers far from the expected measurement), we
 ignore measurements appearing further than a given threshold from the expected position.
 The decision whether to throw away a given measurement is made after all available corrections
 are applied.
-
 Values used for the threshold are \SI{\pseudorangeThreshold}{\meter} for pseudorange
 and \SI{\velocityThreshold}{\meter\per\second} for the velocity measurements.
 
@@ -317,20 +315,42 @@ thresholded values are assigned probability of \num{\pseudorangeThresholdProbabi
 pseudoranges and \num{\velocityThresholdProbability} for velocities.
 
 \subsubsection{Error Distribution}
-After the 
+To obtain probability of a measurement that is within the threshold, we evaluate
+PDF of normal distribution.
+For pseudoranges it is
+\begin{equation}
+\normalDistribution(\mu = \SI{\pseudorangeErrorMu}{\meter}, \sigma = \SI{\pseudorangeErrorSigma}{\meter})
+\end{equation}
+and for the velocities
+\begin{equation}
+\normalDistribution(\mu = \SI{\velocityErrorMu}{\meter}, \sigma = \SI{\velocityErrorSigma}{\meter})
+\end{equation}
+
+\Cref{fig:pseudorange-hist,fig:velocity-hist} show the histograms of pseudorange
+and velocity measurements.
+\Cref{fig:pseudorange-errors} contains a plot of pseudorange errors in time.
+Detecting the blocks with larger errors and switching to different error distribution
+is one of the major improvements to be made in follow up work.
 
 \begin{figure}[p]
 	\centering
 	\missingfigure{Derivation of residual clock drifts.}
-	\caption{Derivation of residual clock drifts.}
-	\label{fig:}
+	\caption{Histogram of pseudorange errors.}
+	\label{fig:pseudorane-hist}
 \end{figure}
 
 \begin{figure}[p]
 	\centering
 	\missingfigure{Derivation of residual clock drifts.}
-	\caption{Derivation of residual clock drifts.}
-	\label{fig:residual-clock-drift-derivation}
+	\caption{Histogram of velocity errors.}
+	\label{fig:velocity-hist}
+\end{figure}
+
+\begin{figure}[p]
+	\centering
+	\missingfigure{Pseudorange measurement errors of a single satellite.}
+	\caption{Pseudorange measurement errors of a single satellite.}
+	\label{fig:pseudorange-errors}
 \end{figure}
 
 

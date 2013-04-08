@@ -1,21 +1,21 @@
 \chapter{GPS and Monte Carlo Localization}
 \label{chap:gps-and-mcl}
 
-This chapter discusses using GPS data as an input to to the Monte Carlo localization,
+This chapter discusses using GPS data as an input to the Monte Carlo localization,
 concentrating on problems common to all GPS receivers.
 Specific problems and implementation decisions encountered with the SiRF receiver
 during the implementation part are addressed in \cref{chap:implementation}.
 
 As discussed in \cref{chap:mcl}, Monte Carlo localization accepts two kinds of
 inputs -- motion model and sensor model used in prediction and correction phases.
-Of these two we will consider mainly just correction inputs as GPS doesn't provide any
+We will mainly consider just correction inputs as GPS doesn't provide any
 a priori data about motion of the robot.
 Prediction inputs will be used in the measurement domain integration part to manage
 estimates of clock offsets, though.
 
 First we will concentrate on the approach based on high level data that are available
 from the standard WGS84 protocol,
-second we will use individual pseudorange measurements each as an independent
+second we will use the individual pseudorange measurements each as an independent
 correction input to MCL.
 
 \section{Position Domain Integration}
@@ -34,9 +34,9 @@ Also consumer-grade GPS receivers often employ filters tuned to specific propert
 of the platform intended to carry the unit.
 These may for example ignore speeds below a certain threshold or limit allowed accelerations.
 
-It would also be possible for position domain integration to utilize speed information
+It would also be possible for position domain integration to utilize the speed information
 from the GPS (NMEA message GPRMC contains velocity in knots and track angle \cite{depriest}).
-For this work, however, we choose not to utilize it, to avoid the complexity of converting
+For this work, however, we choose not to employ it, to avoid the complexity of converting
 track course and speed to reference frames usable for robot navigation.
 
 \subsection{Robot State}
@@ -63,7 +63,7 @@ is discussed in \cref{sec:position-domain-correlation}.
 	\label{fig:wgs84-hdop-error}
 \end{figure}
 
-Because position domain integration as used here has no persistent variables in the
+Since the position domain integration as used here has no persistent variables in the
 robot state, it does not need any operations during the prediction step of MCL.
 
 Our sensor model for the correction phase closely follows \cite{www-wilson}.

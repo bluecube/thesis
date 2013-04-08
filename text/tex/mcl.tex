@@ -182,7 +182,7 @@ action model and the measurement model are linear and Gaussian \cite{diard03}.
 	\label{eq:kalman-measurement-model}
 	\Prob(o_{i} \mid X_i = x) \sim \normalDistribution(H_{i}x, R_i)
 \end{gather}
-In the equations \cref{eq:kalman-action-model,eq:kalman-measurement-model}
+In \cref{eq:kalman-action-model,eq:kalman-measurement-model}
 the matrix \(A_i\) describes the change of state if there was no control input and no noise,
 matrix \(B_i\) contains the influence of action \(a_i\) and \(H_i\) relates state to measured
 values.
@@ -190,14 +190,14 @@ values.
 
 Because the initial belief, the action model and the measurement model are all Gaussian,
 belief will always remain Gaussian as well.
-This means, that only the mean value and covariance matrix need to be stored, making
+This means that only the mean value and covariance matrix need to be stored, making
 Kalman filter very efficient, requiring only several matrix operations in each step.
 
 Non linear motion and measurement models can be approximated
 using a first order Taylor expansion to form an extended Kalman
 filter (EKF) \cite{welch95}.
 
-For illustration of operations of a Kalman filter, the update rules are included.
+As an illustration of operations of a Kalman filter, the update rules are included.
 For more detailed description see \cite{welch95}.
 
 \subsubsection{Prediction}
@@ -258,13 +258,13 @@ In the prediction phase move each sample according to the action performed + noi
 to uncertainty on the action's result (e.g. wheel slip).
 Correction calculates how probable the incoming measurement is
 for every sampled state and set this probability as the sample's weight.
-Finally in the resampling phase throw away samples with low weights, and
-instead add copies of the highly weighted samples.
+Finally in the resampling phase throw away samples with low weights, and add
+copies of the highly weighted samples instead.
 
 \Cref{fig:mcl} contains -- somewhat artificial -- example of two
-identical simulated robot on a chessboard.
+identical simulated robots on a chessboard.
 Red lines show paths travelled by the robots and blue dots represent MCL samples.
-Both of the robots use odometry data to estimate position, and the robot on the left
+Both of the robots use odometry data to estimate position, the robot on the left
 also senses color of the tile.
 This example shows how the belief is represented as a set of points and how
 different shapes of the cloud represent different conditions in the localization
@@ -419,12 +419,12 @@ resampling algorithm described in \cite{arulampalam01}.
 \subsection{Modifications}
 
 \subsubsection{Adaptive Sample Size}
-During global localization, or tracking failure MCL needs a relatively large number
+During global localization or tracking failure MCL needs a relatively large number
 of samples to localize correctly, however when the robot is successfully localized
 much less samples are necessary.
 
 An improvement of the MCL algorithm is to vary the sample size dynamically.
-This can be done using likehood sampling \cite{fox99}, that works by 
+This can be done by using likehood sampling \cite{fox99}, that works by
 resampling not until a fixed number of samples is
 generated, but until the sum of unnormalized weights exceeds a given threshold.
 Another, more involved approach, using KLD-sampling algorithm

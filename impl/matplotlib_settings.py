@@ -59,8 +59,9 @@ def common_plot_settings(plot, min_x = None, max_x = None, min_y = None, max_y =
 
 def plot_hist(subplot, data, res, threshold):
     masked_data = numpy.ma.array(data, mask=(numpy.abs(data) > threshold))
+    mu = numpy.ma.mean(masked_data)
 
-
+    masked_data = numpy.ma.array(data, mask=(numpy.abs(data - mu) > threshold))
     mu = numpy.ma.mean(masked_data)
     sigma = numpy.ma.std(masked_data - mu)
     outliers = 1 - masked_data.count() / len(masked_data)
@@ -80,8 +81,8 @@ def plot_hist(subplot, data, res, threshold):
     subplot.plot(bincenters, y, 'r--')
 
     common_plot_settings(subplot,
-        min_x = -threshold,
-        max_x = threshold,
+        min_x = mu - threshold,
+        max_x = mu + threshold,
         min_y = 0,
         max_y = numpy.max(n))
 

@@ -184,7 +184,7 @@ in ECEF as well.
 All later GPS calculations in this work will be in ECEF reference frame.
 
 \subsubsection{WGS84}
-The World Geodetic System 1984, defined in \cite{nima04}
+The World Geodetic System 1984, defined in \cite{nima04},
 serves as an Earth model for GPS.
 Exact values of the model have been updated several times in the past,
 but these changes have been too small to be problematic for most practical
@@ -195,7 +195,7 @@ Latitude/Longitude geodetic coordinates.
 The exact procedure for this conversion can be found in \cite{nima04}.
 Height measured from the ellipsoid can be obtained during the conversion,
 however historically heights are measured from sea level.
-Sea level roughly corresponds to geoid -- a surface with constant gravity
+Sea level roughly corresponds to the geoid -- a surface with constant gravity
 potential -- also defined in WGS84.
 
 %with semi major axis \(a = \SI{6378137.0}{\meter}\)
@@ -205,10 +205,10 @@ potential -- also defined in WGS84.
 \subsection{Ephemeris}
 \label{sec:gps-ephemeris}
 
-Ephemeris in the context of GPS means data describing satellite positions and velocities
+Ephemeris in the context of GPS means the data describing satellite positions and velocities
 at a given time.
 Ephemeris data are transmitted in the \SI{50}{\bit\per\second} navigation messages,
-together with clock offset and clocks drift data of the satellites, ionospheric
+together with the clock offset and drift data of the satellites, ionospheric
 delay estimates and other data.
 
 Satellite orbits in the ephemeris messages are described using a set of Keplerian orbital parameters.
@@ -219,7 +219,7 @@ More details can be for example found in section 3.3.3 of \cite{rizos99}, or in 
 \subsubsection{Precise Ephemeris}
 Precise ephemeris are satellite ephemeris data calculated by ground stations
 and distributed separately from the GPS broadcast, usually with higher precision
-than the data available from GPS satellites.
+than the data available from the GPS satellites.
 
 One of the sources of precise ephemeris is for example \cite{orbit-data}, providing datasets with
 post-processed data and also with predictions for the next several hours.
@@ -237,15 +237,15 @@ before using them for navigation \cite{schenewerk03}.
 \subsection{Pseudorange}
 \label{sec:pseudorange}
 
-Pseudorange (\(\rho\)) is a distance corresponding to the time it takes the ranging
+Pseudorange (\(\rho\)) is a distance that corresponds to the time taken by the ranging
 signal to travel from SV to the receiver, including the clock offsets:
 \begin{equation}
 	\label{eq:pseudorange}
 	\rho = \speedoflight (\recrxtime - \svtxtime)
 \end{equation}
 Here \(\speedoflight\) is the speed of light, with value \SI{299792458}{\meter\per\second} used in GPS,
-\(\recrxtime\) and \(\svtxtime\) are the receive time referenced to receiver internal clock
-and transmit time according to satellite clock.
+\(\recrxtime\) and \(\svtxtime\) are the receive time referenced to the receiver internal clock
+and transmit time according to the satellite clock.
 Similarly \(\systxtime\) and \(\sysrxtime\) are the transmit and receive times referenced
 to the GPS system time.
 Additionally, \(\svclockoffset\) and \(\recclockoffset\) stand for the clock offset of the satellite
@@ -333,8 +333,8 @@ Carrier phase measurements can be used to smooth pseudorange data.
 Details about this method can be found in section \enquote{Smooth} in \cite{sam-www}.
 
 \subsection{Velocity}
-The simplest way of obtaining receiver velocity is as a derivation of
-position, which is obtained using any of the methods described in the preceding paragraphs.
+The simplest way of obtaining the receiver velocity is as a derivation of
+position, which is obtained by using any of the methods described in the preceding paragraphs.
 This has the advantage of requiring only a minimum of additional processing.
 
 When the receiver position is known, its velocity can also be obtained from the Doppler shift of
@@ -358,7 +358,7 @@ from user to the satellite and velocity difference between the user and the sate
 \end{equation}
 
 When calculating receiver velocities, the measured values also have to be corrected for
-clock drifts, both in satellite and in receiver.
+the clock drifts, both in satellite and in receiver.
 Clock drifts are specified in seconds per second and determine the rate of change of clock offset.
 Satellite clock drifts are transmitted together with their clock corrections, so we can ignore
 them in a similar fashion as satellite clock offsets, but receiver clock drifts must be determined
@@ -387,7 +387,7 @@ from them.
 In this work we will only use the Doppler measurements as an input to Monte Carlo localization
 and we will not discuss the other methods.
 
-\section{Measurement errors}
+\section{Measurement Errors}
 \label{sec:gps-errors}
 
 Previous text assumed that all measurements in the GPS system can be made accurately,
@@ -518,7 +518,7 @@ In \cref{sec:wgs84-hdop-error} we show how this expression fits our experimental
 \(2 \times \mathrm{DRMS}\) is often used as an approximation for a radius containing
 \SI{95}{\percent} of measurements.
 
-\subsection{Error sources}
+\subsection{Error Sources}
 \label{sec:gps-errors}
 
 The following text describes major sources of the measurement errors and also the way

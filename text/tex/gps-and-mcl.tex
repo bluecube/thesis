@@ -1,15 +1,17 @@
 \chapter{GPS and Monte Carlo Localization}
 \label{chap:gps-and-mcl}
 
-This chapter discusses using GPS data as an input to to Monte Carlo localization,
+This chapter discusses using GPS data as an input to to the Monte Carlo localization,
 concentrating on problems common to all GPS receivers.
 Specific problems and implementation decisions encountered with the SiRF receiver
 during the implementation part are addressed in \cref{chap:implementation}.
 
 As discussed in \cref{chap:mcl}, Monte Carlo localization accepts two kinds of
-inputs -- prediction and correction.
-Of these two we will consider only correction inputs as GPS doesn't provide any
+inputs -- motion model and sensor model used in prediction and correction phases.
+Of these two we will consider mainly just correction inputs as GPS doesn't provide any
 a priori data about motion of the robot.
+Prediction inputs will be used in the measurement domain integration part to manage
+estimates of clock offsets, though.
 
 First we will concentrate on the approach based on high level data that are available
 from the standard WGS84 protocol,
@@ -19,8 +21,9 @@ correction input to MCL.
 \section{Position Domain Integration}
 \label{sec:position-domain}
 Integrating the measurements in position domain means processing the complete
-fixes in ECEF reference frames (or WGS84 converted to ECEF, see \cref{sec:ref-frames})
-and treating the GPS receiver as a source of absolute position and velocity information.
+fixes and treating the GPS receiver as a source of absolute position and velocity information.
+This processing can be performed in ECEF reference frames, or, as is the case in this work,
+in 2D plane.
 
 This approach has the advantage of being very simple, because most of the work
 is done in the dedicated hardware of the GPS receiver.
@@ -28,8 +31,8 @@ On the other hand information are discarded when the fix is converted to the sim
 latitude / longitude / HDOP format, which may decrease the accuracy of the
 localization.
 Also consumer-grade GPS receivers often employ filters tuned to specific properties
-of the platform intended to carry the unit for example ignoring speeds
-below a certain threshold or limiting allowed accelerations.
+of the platform intended to carry the unit.
+These may for example ignore speeds below a certain threshold or limit allowed accelerations.
 
 It would also be possible for position domain integration to utilize speed information
 from the GPS (NMEA message GPRMC contains velocity in knots and track angle \cite{depriest}).
@@ -45,7 +48,7 @@ Details of this can be found in \cref{sec:impl-coordinates}.
 
 No other variables are required in the robot's state for this method.
 This makes it possible to seamlessly integrate it into existing localization framework.
-Adding another more state, however might improve the accuracy, one such option
+Adding  more state, however might improve the accuracy, one such option
 is discussed in \cref{sec:position-domain-correlation}.
 
 \subsection{Sensor Model}
@@ -63,7 +66,7 @@ is discussed in \cref{sec:position-domain-correlation}.
 Because position domain integration as used here has no persistent variables in the
 robot state, it does not need any operations during the prediction step of MCL.
 
-Our error model for correction step for the correction phase follows \cite{www-wilson}.
+Our sensor model for the correction phase closely follows \cite{www-wilson}.
 We are operating only in two dimensions and
 the horizontal component of the position error  \(\vect{\delta R}\) is modelled using Rayleigh distribution
 parameterized with HDOP of the measurement:
@@ -77,8 +80,8 @@ Parameter \(\sigma(\HDOP)\) of the distribution is chosen to fit the DRMS values
 	\sigma(\HDOP) = \frac{\mathrm{DRMS}(\HDOP)}{\sqrt{2}}
 \end{equation}
 
-From experimentally measured data we projected to a plane we calculated
-distance errors as a difference of the point position from a mean position.
+The experimentally measured data were projected to a plane and distance errors
+were calculated as a difference of the point position from a mean position.
 These errors were then fitted to the theoretical linear model and to
 the non-linear model from \cite{www-wilson}.
 
@@ -94,14 +97,14 @@ and
 
 \Cref{fig:wgs84-hdop-error} is a visualisation of fitting of these two models,
 blue dots representing the measured data, yellow dots the DRMS values.
-Green line shows the theoretical linear model and red curve is the non linear model.
+The green line shows the theoretical linear model and the red curve is the non linear model.
 Limited resolution of the HDOP values in input data is visible in the plot.
-This figure also shows precision available when using simple NMEA data --
-position error of roughly \SI{10}{\meter} with most of the measuremnts.
+This figure also shows the precision available when using simple NMEA data --
+position error of roughly \SI{10}{\meter} with most of the measurements.
 Another interesting fact is to note, that only relatively low HDOP values were encountered.
 \Cref{fig:hdop-hist} shows this in a more pronounced way.
 
-To obtain the final sensor model, we must express the PDF of Rayleight distribution:
+To obtain the final sensor model, we must express the PDF of Rayleigh distribution:
 \begin{equation}
     f(x) = \frac{x}{\sigma^2}e^{-x^2/2\sigma^2}
 \end{equation}
@@ -164,12 +167,12 @@ These options, however, will not be explored in this work.
 Measurement domain integration takes each pseudorange measurement as an input
 and combines it with other sensor data.
 
-In Monte Carlo localization GPS data are used in a similar way as
+In Monte Carlo localization, the GPS data are used in a similar way as
 for example ultrasound ranging beacons would be used,
 taking each measured pseudorange after a correction for measurement errors
 and after clock correction modifying the sample weight based on the measured distance
 compared to expected distance.
-GPS, of cause has the additional complexity of the receiver clock offset, which
+GPS, of cause, has the additional complexity of the receiver clock offset, which
 has to be known in order to transform pseudoranges to measured geometric ranges.
 
 The main reason for attempting to use the GPS in this way is to add more information
@@ -177,60 +180,57 @@ into the localization process and to have more control over assumptions made dur
 processing of the GPS data.
 
 To improve accuracy, we also track residual errors for each individual satellite.
-Main cause for these errors are in ionosphere, but this treatment should be also
+Main causes for these errors are in ionosphere, but this treatment should be also
 capable of alleviating other errors that change slowly over time, like satellite
-clock offsets.
+clock offsets and partially also ephemeris errors.
 
-As with the Position domain approach, the model was derived from
-measurements in a month long data set (see \cref{chap:datasets}).
-During the test period the receiver was stationary and pseudorange and
-the \enquote{truth} for checking the errors was established as an average of ECEF
-positions reported by the receiver's internal software.
-Clock offsets and drifts, which do not stay constant during the experiment,
-were approximated by fitting a linear function to a sliding window of pseudorange
-measurements (\cref{sec:impl-clock-offsets}).
-
-\subsection{Static Environment Assumption}
-\label{sec:gps-mcl-static-env}
-Monte Carlo Localization assumes that the environment is static, but we need to
-localize according to moving satellites.
-To avoid this problem we will hide satellite motion into the robot state and sensor model.
-
-\subsection{Robot State}
-Unlike the position domain integration approach, this method requires specific
-way of storing the position and velocity of the robot and
-additional data in the robot state in MCL samples.
-
-First of all, all of the GPS calculations are performed in ECEF coordinate system,
-which means that it is the simplest to store the position and velocity of the robot in this coordinate system.
-Next, the GPS needs to estimate a receiver clock offset together
-with position, so this is another variable which must exist in the state.
-
-The state variables will also have to contain velocities in ECEF and clock drift.
-
-We also estimate residual errors of each satellite,
-consisting of residual clock offset and residual clock drift.
-These residual clock offsets cover all of the slowly changing errors that are present
+To improve the precision of the localization, we also estimate residual errors of each satellite,
+covering all of the slowly changing errors that are present
 in each satellite's transmission and are not explicitly corrected elsewhere in the process.
 This includes satellite clock inaccuracies, unmodeled remains of ionospheric and
 tropospheric errors and to some extent also satellite ephemeris errors.
 While this is not strictly necessary and the localization can work when only
 estimating receiver clock offset and drift, this significantly improves precision.
-In the experimental data one sigma pseudorange error when estimating residual offsets is \SI{\pseudorangeErrorSigma}{\meter} and
-one sigma pseudorange error when not estimating residual offsets is \SI{\pseudorangeErrorNaiveSigma}{\meter}.
+In the experimental data estimation of residual errors decreased one sigma pseudorange error
+from \SI{\pseudorangeErrorNaiveSigma}{\meter} to \SI{\pseudorangeErrorSigma}{\meter}.
+
+As with the Position domain approach, the model was derived from
+measurements in a month long data set (see \cref{chap:datasets}).
+During the test period the receiver was stationary and
+the \enquote{true} position for checking the errors was established as an average of ECEF
+positions reported by the receiver's internal software.
+Clock offsets and drifts, which do not stay constant during the experiment,
+were approximated by fitting a linear function to a sliding window of pseudorange
+measurements (details are discussed in \cref{sec:impl-clock-offsets}).
+
+\subsection{Robot State}
+Unlike position domain integration, this method requires specific
+way of storing the position and velocity of the robot and
+additional state data in the samples used in MCL.
+
+First of all, all of the GPS calculations are performed in ECEF coordinate system,
+which means that it is convenient to store the position and velocity of the robot in this coordinate system.
+Next, we need to estimate a receiver clock offset together
+with position, so this is another variable which must exist in the state.
+To work with velocities, the state variables will also have to contain robot velocities in
+ECEF reference frame and the receiver clock drift.
+
+The residual errors are modelled as residual clock offset and residual clock drift
+one pair of variables for each satellite.
 
 \subsection{Preprocessing}
 Relatively large amount of work is dedicated to receiver-specific preprocessing
 of the GPS data.
-In short, this consists of integrating ephemeris, removing any inconsistencies in data caused by the
+In short, this consists of merging ephemeris to the measurements, removing
+any inconsistencies in data caused by the
 receiver and converting the data to sequences of pseudoranges and Doppler measurements.
 These steps are and discussed in \cref{sec:impl-sirf-grouping,sec:impl-sirf-jumps,sec:impl-sirf-ephemeris}.
 
 \subsection{Motion Model}
-Since GPS utilizes additional state variables, we also needs to specify the motion
-model that controls  these variables during the prediction phase of MCL.
+Since GPS utilizes additional state variables, we needs to specify the motion
+model that governs these variables during the prediction phase of MCL.
 
-Both receiver clock drifts and residual clock drifts are modelled as a Gaussian random walk,
+Both the receiver clock drift and the residual clock drifts are modelled as a Gaussian random walk,
 with the translation distance distribution
 \begin{equation}
 \normalDistribution(\mu = \SI{\clockDriftRateMu}{\meter}, \sigma = \SI{\clockDriftRateSigma}{\meter})
@@ -247,14 +247,14 @@ Clock offsets are obtained by integrating the clock drifts.
 contain histograms of clock drifts derivation and residual
 clock drifts derivation.
 
-\begin{figure}[p]
+\begin{figure}[htp]
 	\centering
 	\missingfigure{Derivation of clock drifts.}
 	\caption{Derivation of clock drifts.}
 	\label{fig:clock-drift-derivation}
 \end{figure}
 
-\begin{figure}[p]
+\begin{figure}[htp]
 	\centering
 	\missingfigure{Derivation of residual clock drifts.}
 	\caption{Derivation of residual clock drifts.}
@@ -264,13 +264,12 @@ clock drifts derivation.
 
 \subsection{Sensor Model}
 Sensor model of the individual measurements calculates the probability of this
-measurement being observed under the condition that the state of the robot
-is characterized by the current state.
+measurement being observed, conditioned by the robot state.
 
 \subsubsection{Ephemeris}
-We treat ephemeris data -- especially position and velocity of the satellite transmitting
-the current ranging message -- as a part of a measurement.
-In reality this isn't so, but
+We treat position and velocity of the satellite transmitting
+the current ranging message as part of the measurement.
+In reality these information are separate in the transmission, but
 this approach works without problems when processing the GPS data from the receiver online,
 because the GPS contains current best estimate of the ephemeris periodically repeated
 in the broadcast navigation data.
@@ -297,7 +296,8 @@ To calculate the probability, the algorithm needs to know the distance and relat
 velocity between the satellite and the potential position of the robot represented
 by the sample.
 Expected distance is simply a length of the vector between the position of the SV
-and the sample, expected velocity is calculated according to equation \eqref{eq:doppler-velocity}.
+and the sample.
+Expected velocity is calculated according to equation \eqref{eq:doppler-velocity}.
 Position and velocity errors are then calculated as a difference between the expected
 and real corrected pseudorange or velocity.
 
@@ -313,6 +313,8 @@ and \SI{\velocityThreshold}{\meter\per\second} for the velocity measurements.
 To handle the case of catastrophically wrong estimate in the Monte Carlo localization,
 thresholded values are assigned probability of \num{\pseudorangeThresholdProbability} for
 pseudoranges and \num{\velocityThresholdProbability} for velocities.
+These values correspond to the probabilities of a measurement being outside the
+threshold in the experimental data.
 
 \subsubsection{Error Distribution}
 To obtain probability of a measurement that is within the threshold, we evaluate
@@ -329,24 +331,25 @@ and for the velocities
 \Cref{fig:pseudorange-hist,fig:velocity-hist} show the histograms of pseudorange
 and velocity measurements.
 \Cref{fig:pseudorange-errors} contains a plot of pseudorange errors in time.
-Detecting the blocks with larger errors and switching to different error distribution
+In this plot blocks with larger errors are apparent.
+Detecting these blocks and switching to different error distribution inside them
 is one of the major improvements to be made in follow up work.
 
-\begin{figure}[p]
+\begin{figure}[htp]
 	\centering
 	\missingfigure{Derivation of residual clock drifts.}
 	\caption{Histogram of pseudorange errors.}
-	\label{fig:pseudorane-hist}
+	\label{fig:pseudorange-hist}
 \end{figure}
 
-\begin{figure}[p]
+\begin{figure}[htp]
 	\centering
 	\missingfigure{Derivation of residual clock drifts.}
 	\caption{Histogram of velocity errors.}
 	\label{fig:velocity-hist}
 \end{figure}
 
-\begin{figure}[p]
+\begin{figure}[htp]
 	\centering
 	\missingfigure{Pseudorange measurement errors of a single satellite.}
 	\caption{Pseudorange measurement errors of a single satellite.}
@@ -356,16 +359,15 @@ is one of the major improvements to be made in follow up work.
 
 \subsection{Initialization}
 The intended use of this algorithm is to improve position estimate when using
-a consumer grade GPS receiver, so we are not limited by the ability of this
-algorithm to bootstrap the position.
+a consumer grade GPS receiver, so we are not limited by the need to bootstrap the estimates.
 For localizing the robot globally, we can we can initialize the position
 estimate from the solution provided by the receiver's software.
 The initial position estimate can be modelled as discussed in \cref{sec:position-domain}).
 
-Clock offsets and drifts can also be initialized from the data provided by the
-receiver (although there is no standardized way of doing this).
-
-As an alternative, clock offsets can be estimated from the positions.
+Clock offsets and drifts can be initialized from the data provided by the
+receiver, although there is no standardized way of doing this.
+As an alternative, clock offsets can be estimated from the positions that were obtained in
+the previous step.
 To do this we can assume that the next pseudorange measurement is error-free
 and obtain clock correction from equation \eqref{eq:pseudorange4}.
 Equation \eqref{eq:doppler2} can be used in a similar fashion to get receiver clock drift.
@@ -377,35 +379,34 @@ they can be initialized to zero.
 \Cref{algo:gps-measurement-domain} sums up the measurement domain integration
 algorithm for Monte Carlo localization.
 
-The function \predictGPS{} contains the motion model.
-It is expected to be called from the function \sampleFromActionModel{} in \cref{algo:mcl}
+The motion model is implemented in function \predictGPS{}.
+It is expected to be called from the function \sampleFromActionModel{} in \cref{algo:mcl},
 as a part of the prediction step.
-Only thing that this function does is advance the clock drift by a random amount
-and integrate the current drift to form a new clock offset.
-This is performed for bot the receiver clock drift and offset and for the
+This function advances the clock drift by a random amount
+and integrates the current drift to form a new clock offset,
+both for the receiver clock drift and offset and for the
 clock drifts and offsets of individual satellites.
 Function \timeFunc{} returns the value of the system performing the localization
 and is not required to be synchronized to GPS time in any way.
 
 The sensor model in function \observationProbabilityGPS{} processes each measurement
-and constitutes a core of the algorithm.
+and constitutes a core of the measurement domain algorithm.
 As a first step it calculates effective clock drift and clock offset for this
-measurement, which is a sum of the receiver clock drift and offset and of the 
-per-SV residual drift and offset.
+measurement as is a sum of the receiver clock drift and offset and of the 
+per-SV residual clock drift and offset.
 Next a corrected pseudorange and velocity are computed.
-Here the expression for calculating the velocity is based on a reported velocity which
-is only corrected for receiver clock drift as used in SiRF, instead of the full calculation from
-reported frequency.
+Here the expression for calculating the velocity is based on a reported velocity
+as used in SiRF receiver, instead of the full calculation from reported frequency.
 For pseudoranges the delays introduced in the atmosphere must be compensated,
 here represented by the function \delays{}.
 Then the expected range and velocity are calculated.
 Range computation is trivially the length of the vector between the user and 
 satellite positions in ECEF coordinate frame, expected velocity is obtained
 as a dot product of unit vector from the user to satellite and velocity distance.
-Finally the probabilities are acquired from normal distribution pdf, if they
+Finally the probabilities are acquired from normal distribution PDF, if they
 are within threshold.
 
-\begin{figure}[tp]
+\begin{figure}[p]
 \begin{algorithm}[H]
     \SetKwFunction{abs}{abs}
     \SetKwFunction{exp}{exp}
@@ -486,14 +487,14 @@ are within threshold.
 
         \BlankLine
         \rangeError \assign \pseudorange \(-\) \geomRange\;
-        \uIf{\abs{\rangeError} \(<\) \SI{\pseudorangeThreshold}{\meter}}{
+        \uIf{\abs{\rangeError \(-\) \pseudorangeErrorMu} \(<\) \num{\pseudorangeThreshold}}{
             \result \assign \normpdf{\rangeError, \(\mu\) = \num{\pseudorangeErrorMu}, \(\sigma\) = \num{\pseudorangeErrorSigma}}\;
         }
         \Else{
             \result \assign \num{\pseudorangeThresholdProbability}
         }
         \velocityError \assign \velocity \(-\) \geomVelocity\;
-        \uIf{\abs{\velocityError} \(<\) \SI{\velocityThreshold}{\meter\per\second}}{
+        \uIf{\abs{\velocityError \(-\) \velocityErrorMu} \(<\) \num{\velocityThreshold}}{
             \result \assign \result \(*\) \normpdf{\velocityError, \(\mu\) = \num{\velocityErrorMu}, \(\sigma\) = \num{\velocityErrorSigma}}\;
         }
         \Else{

@@ -26,7 +26,7 @@ the GPS.
 The Global Positioning System is a global navigation satellite system (GNSS)
 developed and operated by the U.S. military.
 GPS provides three dimensional position and velocity measurements as well as
-precise time source for every place on earth with direct satellite visibility.
+precise time source for every place on Earth with direct satellite visibility.
 
 GPS consists of a constellation of at least 24 satellites (space vehicles, SVs),
 a control segment and end-user receivers.
@@ -428,17 +428,17 @@ mutually independent both between the error components of a single measurement a
 \subsection{Dilution of Precision}
 \label{sec:gps-dop}
 
-Dilution of precision (DOP) is a value that describes the effects of satellite geometry
+Dilution of precision (DOP) is a value that describes the effects of the satellite geometry
 on the precision of the calculated fix.
 There are several types of dilution of precision, specifying errors in different directions.
 These are PDOP (position in all directions), HDOP (horizontal error), VDOP (vertical error)
 or TDOP (time error).
 
 In theory, standard deviation of the completed fix should have a linear dependency on
-UERE and DOP (see equation \eqref{eq:dop-def}), but real position error is typically slightly lower,
+UERE and DOP (see equation \eqref{eq:dop-def}), but the actual position error is typically slightly lower,
 since the ionospheric errors are correlated.
 
-In \cref{sec:position-domain} we are discussing the dependence of position error on HDOP value
+In \cref{sec:position-domain} we are discussing dependence of the position error on HDOP value
 and \cref{fig:wgs84-hdop-error} shows the experimental data.
 
 \subsubsection{Definition}
@@ -522,7 +522,7 @@ In \cref{sec:wgs84-hdop-error} we show how this expression fits our experimental
 \subsection{Error Sources}
 \label{sec:gps-errors}
 
-The following text describes major sources of the measurement errors and also the way
+The following text describes the major sources of measurement errors and also a way
 of removing or at least limiting them.
 Apart from errors mentioned in this section, there are many more sources, but they cause inaccuracies
 that are negligible for single receiver applications discussed in this thesis.
@@ -553,7 +553,7 @@ together with receiver clock delay.
 Multipath errors appear when the signal from the satellite reaches the receiver
 through multiple paths of different length.
 They are typically caused by buildings surrounding the receiver position,
-reflective surfaces surrounding the antenna (e.g. wings in aircraft mounted GPS) or earth surface
+reflective surfaces surrounding the antenna (e.g. wings in an aircraft mounted GPS) or Earth's surface
 when including satellites with low elevation angle in the solution.
 
 An illustration of this effect and of shadowing is shown in \cref{fig:multipath}.
@@ -579,17 +579,12 @@ A more complex method of dealing with multipath errors is described in \cite{via
 where the error model of a satellite measurement is modified if it is suspected to be corrupted
 by multipath error.
 
-Section 6.3 of \cite{kaplan06} contains a detailed discussion of multipath.
+Section 6.3 of \cite{kaplan06} contains a detailed discussion of multipath effects.
 
-\subsubsection{Atmospheric Delays}
-
-GPS signals experience delays when travelling through the atmosphere.
-%For the purposes of GPS they are divided into tropospheric and ionospheric delays.
-
-\paragraph{Tropospheric Delays}
+\subsubsection{Tropospheric Delays}
 Tropospheric delays describe signal delays in the non-ionized layers of Earth's atmosphere.
 
-Troposphere is the non-ionized layer of atmosphere closest to the earth surface.
+Troposphere is the non-ionized layer of atmosphere closest to the surface of the Earth.
 The stratosphere -- another non-ionized layer of atmosphere -- causes the same
 type of delays and is usually included in the therm tropospheric delay.
 
@@ -603,9 +598,9 @@ elevation angle, altitude of the receiver, atmospheric pressure, temperature and
 water vapour pressure.
 
 In the implementation part of this work we use the model outlined in \cite{navipedia-tropospheric}
-with hard-coded values for meteorologic parameters.
+with hard-coded meteorologic parameters.
 
-\paragraph{Ionospheric Delays}
+\subsubsection{Ionospheric Delays}
 
 Compared to tropospheric delays, signal delays caused in the ionosphere are larger and
 harder to predict.
@@ -615,7 +610,7 @@ both in measurements from different satellite to a single receiver and in measur
 from a single satellite to multiple receivers.
 The later property is utilized in differential GPS (\cref{sec:dgps}).
 
-Because the ionospheric delay is a function of signal frequency and total electron
+Since the ionospheric delay is a function of signal frequency and total electron
 count in atmosphere \cite{kaplan06}, it can be almost completely
 eliminated when using multi frequency receivers.
 Single frequency receivers, are however forced to use less accurate
@@ -639,8 +634,8 @@ at the expense of requiring internet connection during operation.
 %\paragraph{Satellite Clock Frequency}
 The most famous effect of relativity is the frequency shift of the satellite clock
 when received on the ground.
-This frequency shift happens because satellites are moving relative to the user
-and because satellite orbits are further from Earth's mass and therefore less
+This frequency shift happens because of the satellites velocity relative to the user
+and also because satellite orbits are further from Earth's mass and therefore less
 affected by the spacetime curvature caused by it.
 
 To compensate, satellite clock frequency is set to
@@ -668,7 +663,7 @@ They may be used to calculate precise absolute positions or positions relative t
 Accuracy of DGPS may range from several decimeters for code based systems to several
 millimeters for carrier based systems.
 
-Reference stations must feed their data to the receivers, which use it to correct their own measurements.
+Reference stations must feed their data to the receivers, which correct their own measurements base on them.
 This need of infrastructure and reliable wireless connection makes DGPS impractical for many uses.
 
 %\cite{dana99}

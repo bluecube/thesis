@@ -177,10 +177,10 @@ action model and the measurement model are linear and Gaussian \cite{diard03}.
 
 \begin{gather}
 	\label{eq:kalman-action-model}
-	\Prob(X_i = x \mid X_{i-1} = x', a_{i - 1}) \sim \mathcal{N}(A_{i - 1}x' + B_{i - 1}a_{i - 1}, Q_{i - 1})
+	\Prob(X_i = x \mid X_{i-1} = x', a_{i - 1}) \sim \normalDistribution(A_{i - 1}x' + B_{i - 1}a_{i - 1}, Q_{i - 1})
 	\\
 	\label{eq:kalman-measurement-model}
-	\Prob(o_{i} \mid X_i = x) \sim \mathcal{N}(H_{i}x, R_i)
+	\Prob(o_{i} \mid X_i = x) \sim \normalDistribution(H_{i}x, R_i)
 \end{gather}
 In equations \eqref{eq:kalman-action-model} and \eqref{eq:kalman-measurement-model}
 the matrix \(A_i\) describes the change of state if there was no control input and no noise,

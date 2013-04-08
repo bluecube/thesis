@@ -233,11 +233,11 @@ model that controls  these variables during the prediction phase of MCL.
 Both receiver clock drifts and residual clock drifts are modelled as a Gaussian random walk,
 with the translation distance distribution
 \begin{equation}
-\mathcal{N}(\mu = \SI{\clockDriftRateMu}{\meter}, \sigma = \SI{\clockDriftRateSigma}{\meter})
+\normalDistribution(\mu = \SI{\clockDriftRateMu}{\meter}, \sigma = \SI{\clockDriftRateSigma}{\meter})
 \end{equation}
 for the receiver clock drift and 
 \begin{equation}
-\mathcal{N}(\mu = \SI{\residualClockDriftRateMu}{\meter}, \sigma = \SI{\residualClockDriftRateSigma}{\meter})
+\normalDistribution(\mu = \SI{\residualClockDriftRateMu}{\meter}, \sigma = \SI{\residualClockDriftRateSigma}{\meter})
 \end{equation}
 for the residual clock drifts.
 Clock offsets are obtained by integrating the clock drifts.

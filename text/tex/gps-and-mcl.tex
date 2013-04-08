@@ -280,12 +280,27 @@ ephemeris data from the time of transmission.
 This might in fact improve quality of the localization if precise ephemeris
 was used instead (see \cref{sec:gps-ephemeris}).
 
+\subsubsection{Corrections}
+Pseudoranges and velocities reported by the receiver must be compensated before
+use for receiver and satellite clock offset and drift and possibly also for other
+sources of errors.
+
+For pseudoranges, the clock offsets are compensated according to \cref{eq:pseudorange4}.
+Other errors should be compensated as described in \cref{sec:gps-errors}
+(our implementation uses only ionospheric and tropospheric corrections, see \cref{sec:impl-corrections}.
+
+In a similar way, velocities must be compensated for clock drifts 
+as in \eqref{eq:doppler2}.
+
+
 \subsubsection{Expected Distance and Velocity}
 To calculate the probability, the algorithm needs to know the distance and relative
 velocity between the satellite and the potential position of the robot represented
 by the sample.
 Expected distance is simply a length of the vector between the position of the SV
 and the sample, expected velocity is calculated according to equation \eqref{eq:doppler-velocity}.
+Position and velocity errors are then calculated as a difference between the expected
+and real corrected pseudorange or velocity.
 
 \subsubsection{Thresholds}
 To avoid outliers that frequently appear in the received data (from several hundreds
@@ -332,7 +347,7 @@ receiver (although there is no standardized way of doing this).
 
 As an alternative, clock offsets can be estimated from the positions.
 To do this we can assume that the next pseudorange measurement is error-free
-and obtain clock correction from equation \eqref{eq:pseudorange3}.
+and obtain clock correction from equation \eqref{eq:pseudorange4}.
 Equation \eqref{eq:doppler2} can be used in a similar fashion to get receiver clock drift.
 
 Since the residual clock drifts and offsets are not necessary for the algorithm,
@@ -358,6 +373,9 @@ As a first step it calculates effective clock drift and clock offset for this
 measurement, which is a sum of the receiver clock drift and offset and of the 
 per-SV residual drift and offset.
 Next a corrected pseudorange and velocity are computed.
+Here the expression for calculating the velocity is based on a reported velocity which
+is only corrected for receiver clock drift as used in SiRF, instead of the full calculation from
+reported frequency.
 For pseudoranges the delays introduced in the atmosphere must be compensated,
 here represented by the function \delays{}.
 Then the expected range and velocity are calculated.
@@ -437,7 +455,7 @@ are within threshold.
         \BlankLine
         \pseudorange \assign \observation.\pseudorange \(+\) \(\speedoflight\) \(*\) \sv.\clockOffset \(-\) \(\speedoflight\) \(*\) \clockOffset\\
             \hspace{1em} \(-\) \delays{\sv, \samplex}\;
-        \velocity \assign \observation.\velocity \(+\) \(\speedoflight\) \(*\) \sv.\clockDrift \(-\) \(\speedoflight\) \(*\) \clockDrift\;
+        \velocity \assign \observation.\velocity \(-\) \(\speedoflight\) \(*\) \clockDrift\;
 
         \BlankLine
         \userToSv \assign \sv.\position \(-\) \samplex.\position\;

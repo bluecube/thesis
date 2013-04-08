@@ -330,6 +330,13 @@ and for the velocities
 
 \Cref{fig:pseudorange-hist,fig:velocity-hist} show the histograms of pseudorange
 and velocity measurements.
+It is possible, that the odd shape of velocity measurements probability distribution
+is caused by a error in the SiRF binary protocol manual, however we didn't manage
+to confirm this.
+This effect is discussed in slightly more detail in \cref{sec:impl-carrier-freq},
+but meanwhile we are using the mentioned normal distribution as a very simple
+(and slightly incorrect) workaround.
+
 \Cref{fig:pseudorange-errors} contains a plot of pseudorange errors in time.
 In this plot blocks with larger errors are apparent.
 Detecting these blocks and switching to different error distribution inside them

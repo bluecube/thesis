@@ -1,46 +1,53 @@
 \chapter{Implementation}
 \label{chap:implementation}
 
-A proof of concept implementation of both approaches from \cref{chap:gps-and-mcl}
-was created with this work.
+%A proof of concept implementation of both approaches from \cref{chap:gps-and-mcl}
+%was created with this work.
+Tools required to analyze the error models for the GPS in Monte Carlo Localization
+were implemented with this work.
 The following chapter describes this implementation, its design and
 specifics of the GPS receiver used.
 Detailed usage information for the tools described in this chapter are located in
 \cref{chap:usage}.
 
-\section{SiRF III}
+\section{\sirf}
 \label{sec:impl-sirf}
 
-Unlike the WGS84 position / velocity data that can be retrieved from the GPS receiver in a standard
-NMEA protocol, pseudoranges and other lower level details must be obtained
-in a receiver specific manner.
-
 All experiments were performed with a GPS receiver containing
-a SiRF III chip set, and the following sections describe specifics of working with
+a \sirf chip set, and the following sections describe specifics of working with
 this hardware.
-SiRF III is a fairly high quality consumer receiver found in many
+\sirf is a fairly high quality consumer receiver found in many
 \enquote{black boxes} on the market.
 Apart from the standard NMEA, it can be switched to a proprietary binary protocol
 which provides access to much more of the chip's features.
+This mode was used exclusively for all our experiments.
 
 There is a single publicly available piece of documentation concerning this
 interface \cite{sirf-protocol}, but details about workings of the chip are hard
 to find and must be pieced together from forum posts (especially the thread
 \cite{gpspassion-sirf} at GpsPasSion forums) and trial and error.
 
-\subsection{Pseudorange Measurements}
-\begin{itemize}
-\item Pseudorange does not contain ionospheric, tropospheric or clock corrections
-\item Relativistic errors are already taken care of \todo{Really?}
-\item SV positions given in ECEF, instead of orbit parameters (Doesn't really belong here)
-\item Carrier phases are not reported, but are used to smooth pseudorange measurements
-    This sucks.
-\item \ldots
-\end{itemize}
+\subsection{Messages}
+The SiRF protocol consists of input and output binary messages.
+During regular operation, a group of messages is transmitted approximately every second,
+containing equivalents of data available in NMEA, ECEF positions of a current
+fix and many other details.
+Messages describing positions of satellites and individual measurements can be
+enabled on demand.
 
-\subsection{Grouping of Reported Measurements}
-\label{sec:impl-sirf-grouping}
-All measurements reported by the chipset are grouped and appear
+Messages from a GPS (or from a recording, see \cref{sec:impl-recordings}) can be
+parsed and viewed using the tool \verb=print-all.py=.
+
+\subsection{Measurements}
+The \sirf chip reports each measurement in a separate messages containing
+time of receipt, ID of the satellite that transmitted the message, pseudorange,
+carrier frequency and other values.
+Time of receipt is given as a time of GPS week, relative to the receiver clock.
+Pseudoranges returned by the \sirf chip are not corrected for atmospheric delays,
+but they are smoothed by carrier phase, according to \cite{sirf-protocol}.
+Raw carrier phase measurements, on the other hand, aren't reported at all.
+
+Measurements reported by the chipset are grouped and appear
 to have to have been made simultaneously.
 Reportedly this is to simplify single point solving of the GPS position.
 
@@ -49,7 +56,33 @@ measurement error of the group in several calculations.
 
 \subsection{Ephemeris}
 \label{sec:impl-sirf-ephemeris}
-\todo{!!!}
+Instead of providing the Keplerian parameters that are used in the GPS system,
+\sirf reports the calculated positions and velocities of the satellites in ECEF
+reference frame in given time.
+The times in which the satellite positions are sampled are usually different
+from the times of measurements, so they have to be interpolated with linear functions
+before use.
+
+The experiment \verb=old-sv-state.py= calculates the difference between positions
+obtained from interpolating satellite positions from two successive linearization points, but in
+practice these are negligible.
+
+\subsection{Carrier Frequency}
+\label{sec:impl-carrier-freq}
+In the field named \enquote{carrier frequency} \sirf reports the equivalent relative velocity
+between the receiver and satellite.
+According to the manual, it must be compensated for receiver clock drift.
+Since the reported carrier frequency depends on both receiver clock offset and 
+the satellite clock offset, this means, that the reported carrier frequency must already
+be corrected for satellite clock drift.
+Still, this doesn't explain how the carrier frequency should fit to the Doppler
+effect formula shown in \cref{eq:doppler2}.
+
+This discrepancy suggests an error in the SiRF manual (an opinion which has already been
+suggested on the GpsPasSion forum).
+This would be an explanation for the unexpected probability distribution in
+\cref{fig:velocity-hist}, but we didn't investigate this and meanwhile
+settled for describing the distribution with a less than optimally fitting normal distribution.
 
 \subsection{Clock Jumps in SiRF Output}
 \label{sec:impl-sirf-jumps}
@@ -127,6 +160,7 @@ The message parsing code uses introspection in python to enumerate message types
 available for parsing.
 
 \subsection{Recordings}
+\label{sec:impl-recordings}
 Recordings of GPS messages are stored in a custom format containing sequence
 of timestamped binary SiRF messages, the whole stream compressed with gzip.
 A custom file format was chosen instead of one directly available in python,
@@ -154,7 +188,7 @@ ranging from returning individual binary strings of unparsed data to an option b
 on observers that are notified every time a desired type of message is encountered.
 
 \subsection{Ephemeris}
-Since SiRF III sends complete calculated positions of satellites in its binary
+Since \sirf sends complete calculated positions of satellites in its binary
 protocol, we are using these, although it is possible relatively easily to switch
 to a different ephemeris source.
 Apart from that a currently unused (and largely untested) scraper for precise

@@ -65,7 +65,7 @@ Here \(X_i\) is the random variable representing the robot's state,
 is the action the robot performs in the time step \(i\), after it
 measures \(o_i\).
 
-Using Bayes rule, equation \eqref{eq:markov-belief-def} can be transformed to
+Using Bayes rule, \cref{eq:markov-belief-def} can be transformed to
 \begin{equation}
 	\label{eq:markov-derivation1}
 	\Bel(X_i = x) =
@@ -91,7 +91,7 @@ of this section and simplify \eqref{eq:markov-derivation1} to
 %The equation \eqref{eq:markov-derivation1} has already been simplified using
 %the independence assumptions.
 By integrating over all possible states in time \(i - 1\), the rightmost term in
-equation \eqref{eq:markov-derivation1} can be expanded in a following way:
+\cref{eq:markov-derivation1} can be expanded in a following way:
 \begin{multline}
 	\label{eq:markov-derivation3}
 	\Prob(X_i = x \mid o_{1, \dotsc, i}, a_{1, \dotsc, i - 1}) = \\
@@ -100,7 +100,7 @@ equation \eqref{eq:markov-derivation1} can be expanded in a following way:
 	\Prob(X_{i-1} = x' \mid o_{1, \dotsc, i-1}, a_{1, \dotsc, i-1})
 	\,\mathrm{d}x'
 \end{multline}
-After substituting the definition of belief from equation \eqref{eq:markov-belief-def}
+After substituting the definition of belief from \cref{eq:markov-belief-def}
 and another use of the independence assumptions we get
 \begin{equation}
 	\label{eq:markov-derivation4}
@@ -182,7 +182,7 @@ action model and the measurement model are linear and Gaussian \cite{diard03}.
 	\label{eq:kalman-measurement-model}
 	\Prob(o_{i} \mid X_i = x) \sim \normalDistribution(H_{i}x, R_i)
 \end{gather}
-In equations \eqref{eq:kalman-action-model} and \eqref{eq:kalman-measurement-model}
+In the equations \cref{eq:kalman-action-model,eq:kalman-measurement-model}
 the matrix \(A_i\) describes the change of state if there was no control input and no noise,
 matrix \(B_i\) contains the influence of action \(a_i\) and \(H_i\) relates state to measured
 values.

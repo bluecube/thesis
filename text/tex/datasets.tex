@@ -2,7 +2,7 @@
 \label{chap:datasets}
 
 Three sets of measured GPS data were recorded for this work.
-All of them were recorded using a portable USB/serial receiver with SiRF 3 chip
+All of them were recorded using a portable USB/serial receiver with \sirf chip
 in the SiRF binary protocol.
 
 \begin{itemize}
@@ -13,16 +13,18 @@ During this period the receiver was stationary inside a room and had good signal
 reception. 
 It was used for modelling of the GPS measurements errors in \cref{chap:gps-and-mcl}.
 
-The dataset contains \num{2363458} measurement cycles and
-\num{22726200} pseudorange measurements.
+The dataset contains \num{\monthDatasetCycles} measurement cycles and
+\num{\monthDatasetMeasurements} pseudorange measurements.
+
+For testing, we also keep a recording of the first night of the dataset and of first week.
 
 \item
 The second dataset is considerably shorter, consisting of two recordings made during
 the Robotour competition \cite{robotour} on a Roboauto Karlík \cite{karlik} robot\todo{Better citations?}.
 %These data were used as an input for Monte Carlo Localization for performance comparison.
 
-In total the dataset contains \num{1531} GPS measurement cycles with
-\num{16261} pseudorange measurements, accompanied by sensor recordings from Karlík.
+In total the dataset contains \num{\karlikDatasetCycles} GPS measurement cycles with
+\num{\karlikDatasetMeasurements} pseudorange measurements, accompanied by sensor recordings from Karlík.
 
 \item
 The last dataset is for debugging purposes only and contains approximately

@@ -187,7 +187,7 @@ for WGS84 positions of fixes and the script \verb=clock_offsets_to_numpy.py= for
 and velocity data.
 
 \subsection{Interfaces to GPS Data}
-There are several levels of access to the data from GPS or replay are available,
+There are several levels of access to the data from GPS or replay available,
 ranging from returning individual binary strings of unparsed data to an option based
 on observers that are notified every time a desired type of message is encountered.
 
@@ -203,7 +203,7 @@ received GPS messages.
 
 \section{Position Domain Error Model}
 Calculating error model in position domain is done in a fairly straightforward way.
-The obtained WGS84 coordinates projected onto a two dimensional plane
+The obtained WGS84 coordinates are projected onto a two dimensional plane
 (details are discussed later).
 The fix data are not obtained from a NMEA model, but from message 41 in SiRF
 binary protocol.
@@ -212,8 +212,8 @@ while keeping the available values identical to what's found in NMEA protocol.
 
 Next, because the receiver was stationary during the whole recording, we want to
 calculate the ground truth position.
-To do this we assume that the reported point positions have mean in the real receiver position.
-This is reasonable assumption for long recordings,
+To do this we assume that the reported point position errors are zero mean.
+This is a reasonable assumption for long recordings,
 because the distribution of satellites in view during a longer period is
 virtually uniform which makes any potential biases in pseudorange measurements
 cancel out.
@@ -224,7 +224,7 @@ curves for each model are fitted.
 
 \subsection{Mapping Coordinate Frames}
 \label{sec:impl-coordinates}
-Conversion between WGS84 latitude and longitude and two dimensional euclidean
+Conversion between WGS84 latitude and longitude and two-dimensional euclidean
 plane necessary for localization is done using orthographic projection from
 the library PyProj \cite{www-pyproj}.
 
@@ -234,11 +234,11 @@ it's principle is simple to imagine.
 
 \section{Measurement Domain Error Model}
 The basic idea for determining error model for pseudorange measurements is
-similar to how error model for position domain is determined, but a complicated
+similar to how error model for position domain is determined, but it is complicated
 by several aspects of the pseudoranges.
 
 In contrast with the previous approach, the whole localization process is kept in
-the ECEF coordinate frame, because GPS of the amount of GPS data being processed.
+the ECEF coordinate frame, because of the amount of GPS data being processed.
 
 The main problem is determining receiver position from which the errors will be
 calculated.
@@ -251,7 +251,7 @@ position domain integration.
 \label{sec:impl-clock-offsets}
 Clock offset of the receiver, on the other hand, is not fixed during the recording
 and has to be estimated during the calculation.
-Because we know geometric component of each pseudorange measurement, we can
+Since we know geometric component of each pseudorange measurement, we can
 calculate the receiver clock offset under the condition that there is no measurement
 error.
 
@@ -293,7 +293,8 @@ Empirically obtained values are \SI{10}{\minute} for the window width and
 In this case we don't have to deal with problems of extremely large errors in estimation
 like in \cref{sec:gps-thresholds}.
 
-One might object, that this method of estimating receiver clock offset will
+A possible objection to this reasoning is, that this way the estimated
+receiver clock offset will
 also include other effects from different sources than receiver clock,
 for example atmospheric delays (imagine the user standing in a ball of material
 that slows down propagation of radio signals), or signal processing delays

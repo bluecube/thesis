@@ -2,8 +2,8 @@
 \label{chap:mcl}
 
 The following chapter defines the localization problem, provides an overview
-of Markov Localization and Kalman Filters and finally describes
-the Monte Carlo Localization algorithm.
+of Markov localization and Kalman filters and finally describes
+the Monte Carlo localization algorithm.
 
 \section{Localization}
 Localization of a mobile robot is a task of estimating position (and possibly
@@ -25,13 +25,13 @@ errors, or global localization, where the robot has to find its position from sc
 and recover from serious localization errors.
 
 In this work we will focus only on passive localization in static environment and
-since Monte Carlo Localization is a topic of this thesis we will be favoring
+since Monte Carlo localization is a topic of this thesis we will be favoring
 global localization, although typically GPS is used with Kalman filters
 which are only capable of tracking the estimate locally.
 
 \section{Markov Localization}
 
-Markov Localization \cite{fox98,diard03} is a recursive probabilistic
+Markov localization \cite{fox98,diard03} is a recursive probabilistic
 algorithm that estimates state of the robot based on its
 actions and possibly noisy measured data.
 
@@ -232,7 +232,7 @@ Here \(\bar{x}_i\) and \(P_i\) are mean and covariance describing \(\Bel(X_i)\).
 	\label{fig:mcl}
 \end{figure}
 
-Monte Carlo Localization \cite{dellaert99} is a Monte Carlo method for
+Monte Carlo localization \cite{dellaert99} is a Monte Carlo method for
 robot localization.
 It is a version of Markov localization, that approximates the belief
 using a set of samples drawn from it.
@@ -247,7 +247,7 @@ This algorithm is also fairly easy to implement and the action and sensor models
 in sampling and probability forms are simpler than covariance matrices in
 Kalman filters.
 
-On the other hand, Monte Carlo Localization is more CPU intensive than Kalman filters
+On the other hand, Monte Carlo localization is more CPU intensive than Kalman filters
 and the particle approximation doesn't work well with too precise sensors,
 because if the observation model PDF becomes too \enquote{sharp} peaks, it has a high probability
 of missing all samples during the correction phase and effectively ignoring the measurement.
@@ -440,8 +440,8 @@ This is explained in detail in \cite{arulampalam01}.
 
 \subsubsection{Mixture MCL}
 
-Mixture MCL \cite{thrun99} is a modification of Monte Carlo Localization that
+Mixture MCL \cite{thrun99} is a modification of Monte Carlo localization that
 solves the problem with too precise observations.
 The modified algorithm uses a dual algorithm to MCL -- sampling from
 the observation model and correction from the motion model -- and combines it with
-regular Monte Carlo Localization.
+regular Monte Carlo localization.

@@ -332,7 +332,7 @@ and for the velocities
 \Cref{fig:pseudorange-hist,fig:velocity-hist} show the histograms of pseudorange
 and velocity measurements.
 It is possible, that the odd shape of velocity measurements probability distribution
-is caused by a error in the SiRF binary protocol manual, however we didn't manage
+is caused by an error in the SiRF binary protocol manual, however we didn't manage
 to confirm this.
 This effect is discussed in slightly more detail in \cref{sec:impl-carrier-freq},
 but meanwhile we are using the mentioned normal distribution as a very simple
@@ -368,9 +368,9 @@ is one of the major improvements to be made in follow up work.
 \subsection{Initialization}
 The intended use of this algorithm is to improve position estimate when using
 a consumer grade GPS receiver, so we are not limited by the need to bootstrap the estimates.
-For localizing the robot globally, we can we can initialize the position
+For localizing the robot globally, we can initialize the position
 estimate from the solution provided by the receiver's software.
-The initial position estimate can be modelled as discussed in \cref{sec:position-domain}).
+The initial position estimate can be modelled as discussed in \cref{sec:position-domain}.
 
 Clock offsets and drifts can be initialized from the data provided by the
 receiver, although there is no standardized way of doing this.

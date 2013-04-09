@@ -12,7 +12,7 @@ with latitude, longitude and HDOP as the only values used in the localization.
 Error model was constructed from a set of experimentally measured data,
 giving one sigma precision of approximately \SI{10}{\meter}.
 
-A second method, working with GPS one level of abstraction lower was also developed,
+A second method, working with GPS one level of abstraction lower, was proposed and developed,
 making use of the individual pseudorange and velocity measurements
 of the GPS and comparing the reported and expected distances and relative velocities
 between the receiver and the GPS satellites.
@@ -29,3 +29,12 @@ by lack of documentation of the detailed workings of the \sirf chip.
 There is a large area for improvements and further work, mainly, as mentioned
 above, in the area of precision improvements of the low level algorithm,
 but admittedly also in testing and verification of the method's robustness.
+
+Even in its current state, this work could be of benefit to the designers of
+outdoor robots, allowing the either to simply use the first model, or, if they
+wish to dig deeper into the GPS system, to improve the localization precision
+and error characterization with the second method.
+The tools are made available on the internet to allow anyone interested in this
+topic to experiment on their own.
+Other than that, this thesis might serve as another piece of the fragmented
+informations about the \sirf chipset on the internet.

@@ -52,14 +52,14 @@ logging.info("Retreiving fixes")
 
 data = numpy.load(arguments.fixes)
 
-data['errors'] += data['clock_corrections']
-velocity_errors = data['velocity_errors']
+data['errors'] -= data['clock_offsets']
+data['velocity_errors'] -= data['clock_drifts']
 
 logging.info("Processing")
 
 all_errors = numpy.array([])
 all_velocity_errors = numpy.array([])
-all_clock_drifts_deriv = numpy.array([])
+all_residual_drifts_deriv = numpy.array([])
 
 for sv_id in numpy.unique(data['sv_ids']):
     logging.info("Processing SV ID {}".format(sv_id))
@@ -68,28 +68,35 @@ for sv_id in numpy.unique(data['sv_ids']):
     errors = numpy.ma.array(data['errors'], mask=mask).compressed()
     velocity_errors = numpy.ma.array(data['velocity_errors'], mask=mask).compressed()
 
-    clock_drifts, clock_offsets = fit_clock_offsets(times, errors, arguments.fit_window)
+    residual_drifts, residual_offsets = fit_clock_offsets(times, errors, arguments.fit_window)
 
-    errors -= clock_offsets
-    velocity_errors -= clock_drifts
+    errors -= residual_offsets
+    velocity_errors -= residual_drifts
 
     time_diffs = times[1:] - times[:-1]
-    clock_drifts_deriv = (clock_drifts[1:] - clock_drifts[:-1]) / time_diffs
-    clock_drifts_deriv = numpy.ma.array(clock_drifts_deriv, mask=time_diffs > arguments.time_threshold).compressed()
+    residual_drifts_deriv = (residual_drifts[1:] - residual_drifts[:-1]) / time_diffs
+    residual_drifts_deriv = numpy.ma.array(residual_drifts_deriv, mask=time_diffs > arguments.time_threshold).compressed()
 
     all_errors = numpy.append(all_errors, errors)
     all_velocity_errors = numpy.append(all_velocity_errors, velocity_errors)
-    all_clock_drifts_deriv = numpy.append(all_clock_drifts_deriv, clock_drifts_deriv)
-    print(len(all_errors), len(all_velocity_errors))
+    all_residual_drifts_deriv = numpy.append(all_residual_drifts_deriv, residual_drifts_deriv)
+
+time_diffs = data['times'][1:] - data['times'][:-1]
+
+mask = numpy.logical_or(time_diffs == 0, time_diffs > arguments.time_threshold)
+differences = data['clock_drifts'][1:] - data['clock_drifts'][:-1]
+differences = numpy.ma.array(differences, mask = mask).compressed()
+time_diffs = numpy.ma.array(time_diffs, mask = mask).compressed()
+clock_drifts_deriv = differences / time_diffs
 
 logging.info("Plotting")
 
 fig1 = plt.figure()
 error_histogram = fig1.add_subplot(1, 1, 1)
 mu, sigma, outliers = matplotlib_settings.plot_hist(error_histogram,
-                                          all_errors,
-                                          arguments.hist_resolution,
-                                          arguments.outlier_threshold)
+                                                    all_errors,
+                                                    arguments.hist_resolution,
+                                                    arguments.outlier_threshold)
 print("Mean: {}".format(mu))
 print("Sigma: {}".format(sigma))
 print("Outlier probability: {}".format(outliers))
@@ -111,11 +118,24 @@ velocity_error_histogram.set_xlabel(r'Error/\si{\meter\per\second}')
 velocity_error_histogram.set_ylabel(r'Count')
 
 fig3 = plt.figure()
-clock_drifts_deriv_histogram = fig3.add_subplot(1, 1, 1)
+residual_drifts_deriv_histogram = fig3.add_subplot(1, 1, 1)
+mu, sigma, outliers = matplotlib_settings.plot_hist(residual_drifts_deriv_histogram,
+                                                    all_residual_drifts_deriv,
+                                                    0,
+                                                    1)
+print("Residual clock drift derivation mean: {}".format(mu))
+print("Residual clock drift derivation sigma: {}".format(sigma))
+print("Outlier probability: {}".format(outliers))
+residual_drifts_deriv_histogram.set_title('Clock drift derivations'.format(sv_id))
+residual_drifts_deriv_histogram.set_xlabel(r'Value/\si{\meter\per\second\squared}')
+residual_drifts_deriv_histogram.set_ylabel(r'Count')
+
+fig4 = plt.figure()
+clock_drifts_deriv_histogram = fig4.add_subplot(1, 1, 1)
 mu, sigma, outliers = matplotlib_settings.plot_hist(clock_drifts_deriv_histogram,
-                                          all_clock_drifts_deriv,
-                                          0,
-                                          1)
+                                                    clock_drifts_deriv,
+                                                    0,
+                                                    1)
 print("Clock drift derivation mean: {}".format(mu))
 print("Clock drift derivation sigma: {}".format(sigma))
 print("Outlier probability: {}".format(outliers))

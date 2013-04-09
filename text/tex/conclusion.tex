@@ -1,40 +1,41 @@
 \chapter{Conclusion}
 \label{chap:conclusion}
 
-A goal of this work was to explore methods of utilizing a low cost GPS receiver
+A goal of this thesis was to explore methods of utilizing of a low cost GPS receiver
 for outdoor robot localization in the framework of the Monte Carlo localization algorithm.
 Two approaches to perform this task were selected.
 
 First, the \enquote{obvious} method of interfacing to the GPS receiver with the
 standard NMEA protocol was evaluated.
-According this approach the complete fixes in WGS84 coordinates are utilized,
+According this approach the complete fixes in WGS84 coordinates were used,
 with latitude, longitude and HDOP as the only values used in the localization.
 Error model was constructed from a set of experimentally measured data,
 giving one sigma precision of approximately \SI{10}{\meter}.
 
-A second method, working with GPS one level of abstraction lower, was proposed and developed,
-making use of the individual pseudorange and velocity measurements
-of the GPS and comparing the reported and expected distances and relative velocities
-between the receiver and the GPS satellites.
-Again an error model was calculated from recorded data and,
-at the current state, the second method offers a precision comparable to the simple
+Next a new method was developed, working with GPS one level of abstraction lower.
+This method makes use of the individual pseudorange and velocity measurements
+and compares the reported and expected distances and relative velocities between
+the receiver and the GPS satellites.
+To obtain the raw measurements for this method, communication with the GPS
+receiver had to be performed using the proprietary binary protocol,
+since such detailed data are not available in the standard NMEA.
+Again an error model was calculated from recorded data.
+At the current state, the second method offers a precision comparable to the simple
 approach, showing room for improvement in follow up work.
 
-To construct the error models and to visualize the data, a set of tools was developed.
+To construct the error models and to visualize the data, a set of tools was implemented.
 These consist of a library for communication with \sirf GPS receivers,
 and a group of individual scripts for experimenting with various aspects of the GPS signals.
 During development of these tools we overcame a number of obstacles caused mainly
 by lack of documentation of the detailed workings of the \sirf chip.
 
-There is a large area for improvements and further work, mainly, as mentioned
-above, in the area of precision improvements of the low level algorithm,
-but admittedly also in testing and verification of the method's robustness.
-
-Even in its current state, this work could be of benefit to the designers of
-outdoor robots, allowing the either to simply use the first model, or, if they
-wish to dig deeper into the GPS system, to improve the localization precision
-and error characterization with the second method.
-The tools are made available on the internet to allow anyone interested in this
-topic to experiment on their own.
-Other than that, this thesis might serve as another piece of the fragmented
-informations about the \sirf chipset on the internet.
+In the current state, this work could be of benefit to the designers of
+outdoor robots, allowing them to simply use the first method for modelling the
+error of GPS in NMEA mode.
+Our second method, however, currently provides similar precision as the simple
+approach, which means that it's increased complexity does not pay off for a realistic
+implementation yet.
+Other than this, we provide a framework for experiments with SiRF receivers
+for anyone interested.
+We also hope this thesis might serve as another piece of the fragmented
+information about the \sirf chipset on the internet.

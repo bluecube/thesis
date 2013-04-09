@@ -1,6 +1,13 @@
 \chapter{GPS}
 \label{chap:gps}
 
+The Global Positioning System is a global navigation satellite system (GNSS)
+developed and operated by the U.S. government.
+GPS provides three dimensional position and velocity measurements as well as
+precise time source for every place on Earth with direct satellite visibility.
+The GPS is not the only GNSS, in use, but arguably the only one in wide use.
+Very brief overview of other navigation systems can be found in \cref{sec:gps-alternatives}.
+
 This chapter contains an overview of the Global Positioning System and
 the basics of its operation.
 This will be used to develop methods for using GPS
@@ -22,12 +29,6 @@ consumer-grade receiver, we are shielded from much of the low level details of
 the GPS.
 
 \section{Basic Description}
-
-The Global Positioning System is a global navigation satellite system (GNSS)
-developed and operated by the U.S. military.
-GPS provides three dimensional position and velocity measurements as well as
-precise time source for every place on Earth with direct satellite visibility.
-
 GPS consists of a constellation of at least 24 satellites (space vehicles, SVs),
 a control segment and end-user receivers.
 
@@ -725,21 +726,19 @@ RINEX is typically used for post processing as it can contain various data that 
 known during navigation, for example detailed ionospheric models or high precision ephemeris.
 
 \section{Similar Systems}
+\label{sec:gps-alternatives}
 
 GPS is not the only GNSS currently operational.
-%Other countries than USA have also created navigation systems, but the major advantage of
-%GPS is that it i
+Other countries than USA have also created navigation systems, and several regional satellite
+navigation systems also exist.
+Section 1.5 of \cite{david} contains a more detailed overview.
 
 GLONASS \cite{glonass} is a Russian navigation system, in principle similar to GPS.
 It is currently undergoing a modernization and is planned to be compatible with GPS and Galileo.
 
-Another example of a current GNSS system is the Chinese BeiDou.
-BeiDou uses two way distance measurements, which is a major difference from GPS and the other navigation
-systems mentioned in this section.
-This bidirectional system has the advantage of adding an ability to communicate between the
-users and the control center in addition to dissemination of precision time and position.
-BeiDou is currently in development and only three satellites have been launched so far.
-
+Another example of a current GNSS system is the Chinese CNSS / COMPASS \cite{compass},
+also known as  BeiDou-II.
+The system is planned to be operational by 2020.
 
 \subsection{Galileo}
 \label{sec:galileo}

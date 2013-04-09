@@ -1,22 +1,30 @@
-\chapter{GPS and Monte Carlo Localization}
+\chapter{GPS Used in Monte Carlo Localization}
 \label{chap:gps-and-mcl}
 
-This chapter discusses using GPS data as an input to the Monte Carlo localization,
-concentrating on problems common to all GPS receivers.
-Specific problems and implementation decisions encountered with the SiRF receiver
+For an autonomous outdoor robot a GPS seems to be a good candidate for a source of
+absolute position information.
+Positions reported by low cost GPS receivers, however, suffer from large errors,
+which make it impractical to be used as a main localization sensor.
+Monte Carlo localization is an algorithm that has the ability to deal with noisy
+inputs and is relatively simple to both understand and implement.
+Moreover only a relatively simple model of the input sensor is necessary to work
+with MCL, enabling it to calculate the GPS position solutions without requiring
+a lot of theory otherwise necessary to use GPS at the lower level.
+
+In this chapter we will show two approaches to using GPS receivers with MCL.
+First we will concentrate on the approach based on high level data that are available
+from the standard WGS84 protocol.
+Next we will show an original algorithm that utilizes
+the individual pseudorange measurements each as an independent correction input.
+
+This chapter concentrates on tasks common to all GPS receivers,
+problems and implementation decisions encountered with the SiRF receiver
 during the implementation part are addressed in \cref{chap:implementation}.
 
-As discussed in \cref{chap:mcl}, Monte Carlo localization accepts two kinds of
-inputs -- motion model and sensor model used in prediction and correction phases.
-We will mainly consider just correction inputs as GPS doesn't provide any
-a priori data about motion of the robot.
-Prediction inputs will be used in the measurement domain integration part to manage
-estimates of clock offsets, though.
-
-First we will concentrate on the approach based on high level data that are available
-from the standard WGS84 protocol,
-second we will use the individual pseudorange measurements each as an independent
-correction input to MCL.
+GPS augmentation systems (like EGNOS or WAAS) were not used for tests in this
+thesis for the reasons of simplicity.
+Extending the algorithms provided here is an opportunity for further work,
+although they should not introduce dramatic changes.
 
 \section{Position Domain Integration}
 \label{sec:position-domain}

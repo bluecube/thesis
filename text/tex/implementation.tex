@@ -9,15 +9,15 @@ available (together with sources of this text) in the git repository at
 \url{https://github.com/bluecube/thesis}.
 The following chapter describes this implementation, its design and
 specifics of the GPS receiver used.
-Detailed usage information for the tools described in this chapter are located in
-\cref{chap:usage}.
 
 \section{\sirf}
 \label{sec:impl-sirf}
 
-All experiments were performed with a GPS receiver containing
+All experiments in this thesis were performed with a GlobalSat BR-355 serial GPS
+receiver -- a low cost GPS receiver containing
 a \sirf chip set, and the following sections describe specifics of working with
 this hardware.
+
 \sirf is a fairly high quality consumer receiver found in many
 \enquote{black boxes} on the market.
 Apart from the standard NMEA, it can be switched to a proprietary binary protocol
@@ -112,6 +112,13 @@ length to match the difference between previous pair of average errors.
 \end{figure}
 
 \section{Design}
+Software created for this thesis is designed as a python package handling communication
+with GPS and several executable scripts
+Each of the scripts processes the recorded data in some way of values and
+outputs calculated values and graphs seen through this text.
+Apart from that, the basic idea present through the implementation is, to record
+all data in advance and later processed these recordings.
+
 Python programming language was chosen for the implementation,
 because of the speed of development and large number of available libraries.
 This code is intended only as a proof of
@@ -119,14 +126,6 @@ concept and for further experimenting and it does have performance problems
 when running on batch data; a \enquote{real world} implementation
 would probably be written in C or C++, for increased performance and better portability
 to embedded systems, using libraries like GPSTk \cite{tolman04} for the low level GPS access.
-
-Program created for this thesis is designed as a set of python packages and
-several executable scripts.
-Detailed description of these parts can be found in \cref{chap:usage},
-but the general idea is, to record all data advance and later processed these
-recordings.
-Each of the scripts processes the recorded data in some way of values and
-outputs calculated values and graphs seen through this text.
 
 For running the python code, python 2.7 is required.
 The following packages are used outside the standard library:
@@ -175,6 +174,8 @@ and admittedly creates a performance bottleneck.
 
 Recording files are intended to be seamlessly interchangeable with a real GPS device,
 which proved to be very useful in the early phases of experimentation.
+
+The script \verb=record.py= stores data from a real serial GPS (or from other recording).
 
 To save time on higher level experiments, some of them (for example the error tests
 in files \verb=errors-*.py=)

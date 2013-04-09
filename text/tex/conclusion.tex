@@ -1,6 +1,31 @@
 \chapter{Conclusion}
 \label{chap:conclusion}
 
-\begin{itemize}
-\item Building error model for pseudoranges was a real PITA.
-\end{itemize}
+A goal of this work was to explore methods of utilizing a low cost GPS receiver
+for outdoor robot localization in the framework of the Monte Carlo localization algorithm.
+Two approaches to perform this task were selected.
+
+First, the \enquote{obvious} method of interfacing to the GPS receiver with the
+standard NMEA protocol was evaluated.
+According this approach the complete fixes in WGS84 coordinates are utilized,
+with latitude, longitude and HDOP as the only values used in the localization.
+Error model was constructed from a set of experimentally measured data,
+giving one sigma precision of approximately \SI{10}{\meter}.
+
+A second method, working with GPS one level of abstraction lower was also developed,
+making use of the individual pseudorange and velocity measurements
+of the GPS and comparing the reported and expected distances and relative velocities
+between the receiver and the GPS satellites.
+Again an error model was calculated from recorded data and,
+at the current state, the second method offers a precision comparable to the simple
+approach, showing room for improvement in follow up work.
+
+To construct the error models and to visualize the data, a set of tools was developed.
+These consist of a library for communication with \sirf GPS receivers,
+and a group of individual scripts for experimenting with various aspects of the GPS signals.
+During development of these tools we overcame a number of obstacles caused mainly
+by lack of documentation of the detailed workings of the \sirf chip.
+
+There is a large area for improvements and further work, mainly, as mentioned
+above, in the area of precision improvements of the low level algorithm,
+but admittedly also in testing and verification of the method's robustness.

@@ -5,6 +5,7 @@ import matplotlib.ticker
 import os
 import numpy
 import math
+import logging
 
 #m.rcParams['axes.unicode_minus'] = False
 m.rcParams['text.usetex'] = True
@@ -38,10 +39,8 @@ def ticker_format_func(x, pos):
 
 ticker_format = matplotlib.ticker.FuncFormatter(ticker_format_func)
 
-
-def common_plot_settings(plot, min_x = None, max_x = None, min_y = None, max_y = None, set_limits=True):
-    """Common settings for all plots in my thesis.
-    Should be applied after all drawing is done."""
+def _settings(plot):
+    """internal function used in common_plot_settings and maybe_save_plot"""
 
     legend = plot.legend()
     if legend is not None:
@@ -50,12 +49,47 @@ def common_plot_settings(plot, min_x = None, max_x = None, min_y = None, max_y =
     plot.xaxis.set_major_formatter(ticker_format)
     plot.yaxis.set_major_formatter(ticker_format)
 
+
+def common_plot_settings(plot, min_x = None, max_x = None, min_y = None, max_y = None, set_limits=True):
+    """Common settings for all plots in my thesis.
+    Should be applied after all drawing is done."""
+
+    _settings(plot)
+
     if set_limits:
         margin = (max_x - min_x) * margins
         plot.set_xlim([min_x - margin, max_x + margin])
 
         margin = (max_y - min_y) * margins
         plot.set_ylim([min_y - margin, max_y + margin])
+
+def maybe_save_plot(plot, command = None):
+    """Common part of saving plot.
+    If command is not None, then it is expected to be a filename,
+    optionally followed by comma separated coordinates (x0, y0, x1, y1)."""
+
+    _settings(plot)
+
+    if command is None:
+        return
+
+    command = command.split(',')
+    if len(command) != 5 and len(command) != 1:
+        raise ValueError("Plot saving argument must be filename optionally followed by four coordinates")
+
+    filename = command[0]
+
+    if len(command) == 5:
+        x0, y0, x1, y1 = command[1:]
+
+        margin = abs(x1 - x0) * margins
+        plot.set_xlim([min(x0, x1) - margin, max(x0, x1) + margin])
+
+        margin = abs(y1 - y0) * margins
+        plot.set_xlim([min(y0, y1) - margin, max(y0, y1) + margin])
+
+    plot.figure.savefig(filename)
+    logging.info("Saved " + filename)
 
 def plot_hist(subplot, data, threshold):
     masked_data = numpy.ma.array(data, mask=(numpy.abs(data) > threshold))

@@ -42,6 +42,14 @@ arg_parser.add_argument('--fit-window', type=float, default=2 * 60,
     help="Controls how large the window for smoothing clock offsets will be, in seconds.")
 arg_parser.add_argument('--time-threshold', action='store', type=float, default=2,
     help="Time difference in seconds that is still counted as successive measurement.")
+arg_parser.add_argument('--save-pseudorange-histogram', default=None,
+    help="Filename, optionally followed by comma separated (x0, y0, x1, y1) coordinates.")
+arg_parser.add_argument('--save-velocity-histogram', default=None,
+    help="Filename, optionally followed by comma separated (x0, y0, x1, y1) coordinates.")
+arg_parser.add_argument('--save-residual-drifts-derivation-histogram', default=None,
+    help="Filename, optionally followed by comma separated (x0, y0, x1, y1) coordinates.")
+arg_parser.add_argument('--save-clock-drifts-derivation-histogram', default=None,
+    help="Filename, optionally followed by comma separated (x0, y0, x1, y1) coordinates.")
 arguments = arg_parser.parse_args()
 
 logging.info("Retreiving fixes")
@@ -87,8 +95,7 @@ clock_drifts_deriv = differences / time_diffs
 
 logging.info("Plotting")
 
-fig1 = plt.figure()
-error_histogram = fig1.add_subplot(1, 1, 1)
+error_histogram = plt.figure().add_subplot(1, 1, 1)
 mu, sigma, outliers = matplotlib_settings.plot_hist(error_histogram,
                                                     all_errors,
                                                     arguments.outlier_threshold)
@@ -98,6 +105,8 @@ print("Outlier probability: {}".format(outliers))
 error_histogram.set_title('Measurement errors')
 error_histogram.set_xlabel(r'Error/\si{\meter}')
 error_histogram.set_ylabel(r'Count')
+matplotlib_settings.maybe_save_plot(error_histogram,
+                                    arguments.save_pseudorange_histogram)
 
 fig2 = plt.figure()
 velocity_error_histogram = fig2.add_subplot(1, 1, 1)
@@ -110,6 +119,8 @@ print("Outlier probability: {}".format(outliers))
 velocity_error_histogram.set_title('Velocity errors')
 velocity_error_histogram.set_xlabel(r'Error/\si{\meter\per\second}')
 velocity_error_histogram.set_ylabel(r'Count')
+matplotlib_settings.maybe_save_plot(velocity_error_histogram,
+                                    arguments.save_velocity_histogram)
 
 fig3 = plt.figure()
 residual_drifts_deriv_histogram = fig3.add_subplot(1, 1, 1)
@@ -122,6 +133,8 @@ print("Outlier probability: {}".format(outliers))
 residual_drifts_deriv_histogram.set_title('Clock drift derivations'.format(sv_id))
 residual_drifts_deriv_histogram.set_xlabel(r'Value/\si{\meter\per\second\squared}')
 residual_drifts_deriv_histogram.set_ylabel(r'Count')
+matplotlib_settings.maybe_save_plot(residual_drifts_deriv_histogram,
+                                    arguments.save_residual_drifts_derivation_histogram)
 
 fig4 = plt.figure()
 clock_drifts_deriv_histogram = fig4.add_subplot(1, 1, 1)
@@ -134,6 +147,8 @@ print("Outlier probability: {}".format(outliers))
 clock_drifts_deriv_histogram.set_title('Clock drift derivations'.format(sv_id))
 clock_drifts_deriv_histogram.set_xlabel(r'Value/\si{\meter\per\second\squared}')
 clock_drifts_deriv_histogram.set_ylabel(r'Count')
+matplotlib_settings.maybe_save_plot(clock_drifts_deriv_histogram,
+                                    arguments.save_clock_drifts_derivation_histogram)
 
 if not arguments.no_show:
     plt.show()

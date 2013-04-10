@@ -2,31 +2,119 @@
 This chapter provides an overview of the thesis in a form as condensed as possible.
 Intended for anyone who knows both GPS and MCL and dislikes reading long texts.
 
-\begin{itemize}
+\begin{compactitem}
 \item
-Using low level GPS data as a sequence of correction inputs to Monte Carlo Localization.
+Using low level GPS data as a sequence of correction inputs to MCL.
 
 \item
 Communication with GPS receiver
-\begin{itemize}
+\begin{compactitem}
     \item Standard NMEA protocol doesn't contain enough detail for advanced usage.
-    \item SiRF 3 chips with binary SiRF protocol is implemented, but the
-    approach should be adaptable to other receivers without major modifications
-    \item \Cref{sec:impl-sirf}
-\end{itemize}
+    \item Support for \sirf chips with binary SiRF protocol is implemented, but the
+    approach should be adaptable to other receivers without major modifications.
+    \item See \cref{sec:impl-sirf}.
+\end{compactitem}
 
 \item
 NMEA data as MCL input
-\begin{itemize}
+\begin{compactitem}
     \item Simpler, less CPU intensive, drops some information when the results are
-    wrapped in lat / lon / hdop for WGS84
-    \item Working in 2D, no need to modify MCL samples
+    wrapped in lat / lon / hdop for WGS84.
+    \item Working in 2D, no need to modify MCL samples.
     \item
         Fitting curve to measured data:
         \begin{equation*}
             \mathrm{DRMS}(\HDOP) = \sqrt{(\num{4.941}\HDOP)^2 + \num{3.568}^2}
         \end{equation*}
-    \item \Cref{fig:wgs84-hdop-error}, \cref{sec:wgs84-hdop-error}
-\end{itemize}
+    \item Sensor model based on Rayleigh distribution.
+    \item PDF:
+        \begin{equation*}
+            f(x) = \frac{x}{\sigma^2}e^{-x^2/2\sigma^2} =
+            \frac{2x}{\mathrm{DRMS}(\HDOP)^2}e^{-x^2/\mathrm{DRMS}(\HDOP)^2}
+        \end{equation*}
+    \item Approximately \SI{8}{\meter} DRMS error.
+    \item See \cref{fig:wgs84-hdop-error,sec:wgs84-hdop-error,algo:gps-position-domain}.
+\end{compactitem}
 
-\end{itemize}
+\item
+Pseudoranges as MCL input
+\begin{compactitem}
+    \item
+    Experimental, more complex, higher CPU usage.
+
+    \item
+    Working in ECEF coordinates, tracking clock offsets and residual errors.
+
+    \item
+    Needs modifications to MCL sample.
+
+    \item
+    Residual errors:
+    \begin{compactitem}
+        \item Per satellite.
+        \item Characterized as residual clock drift and residual clock offset
+              during processing individual measurements.
+        \item Residual clock drift and offset are added to receiver clock drift and offset.
+        \item Covers ionospheric and other low-frequency errors.
+    \end{compactitem}
+
+    \item
+    Motion model:
+    \begin{compactitem}
+        \item Updating clock drifts, clock offsets, residual drifts.
+        \item Clock drifts modelled as Gaussian random walk.
+        \begin{compactitem}
+            \item Receiver clock drifts:
+                  \(\normalDistribution(\mu = \SI{\clockDriftRateMu}{\meter\per\second\squared}, \sigma = \SI{\clockDriftRateSigma}{\meter\per\second\squared})\)
+            \item Residual clock drifts:
+                  \(\normalDistribution(\mu = \SI{\residualClockDriftRateMu}{\meter\per\second\squared}, \sigma = \SI{\residualClockDriftRateSigma}{\meter\per\second\squared})\)
+        \end{compactitem}
+        \item Clock offsets obtained by integrating clock drifts.
+        \item See \cref{fig:clock-drift-derivation,fig:residual-clock-drift-derivation}
+    \end{compactitem}
+
+    \item
+    Sensor model:
+    \begin{compactitem}
+        \item Range error:
+        \begin{compactitem}
+            \item \(\mathrm{rangeError} = \mathrm{correctedPseudorange} - \mathrm{geometricRange}\)
+            \item Correcting pseudorange for
+                receiver clock offset + residual clock offset,
+                satellite clock offset,
+                tropospheric errors.
+            \item Ionospheric errors not corrected explicitly (see \cref{sec:impl-corrections}).
+        \end{compactitem}
+        \item Velocity error:
+        \begin{compactitem}
+            \item \(\mathrm{velocityError} = \mathrm{correctedVelocity} - \mathrm{velocityDifference}\)
+            \item Correcting velocity for receiver clock drift + residual clock drift.
+            \item Encountered a bug in \sirf (see \cref{sec:impl-carrier-freq}).
+        \end{compactitem}
+        \item Thresholding
+        \begin{compactitem}
+            \item Not using the PDF model for very large errors, instead using
+                  fixed probability of exceeding threshold.
+            \item Threshold \SI{\pseudorangeThreshold}{\meter}, probability \num{\pseudorangeThresholdProbability} for pseudorange.
+            \item Threshold \SI{\velocityThreshold}{\meter\per\second}, probability \num{\velocityThresholdProbability} for velocity measurements.
+        \end{compactitem}
+
+        \item Probabilities for measurements within the thresholds:
+        \begin{compactitem}
+            \item Using PDF of normal distribution.
+            \item Range errors:
+                  \(\normalDistribution(\mu = \SI{\pseudorangeErrorMu}{\meter}, \sigma = \SI{\pseudorangeErrorSigma}{\meter})\)
+            \item Velocity errors:
+                  \(\normalDistribution(\mu = \SI{\velocityErrorMu}{\meter\per\second}, \sigma = \SI{\velocityErrorSigma}{\meter\per\second})\)
+            \item Better fitting probability distribution, or switching probability distributions are possible improvements.
+            \item See \cref{fig:pseudorange-errors,fig:pseudorange-hist,fig:velocity-hist}
+        \end{compactitem}
+    \end{compactitem}
+
+    \item
+    Similar precision to the simple model so far, possible improvements.
+
+    \item
+    See \cref{algo:gps-measurement-domain,sec:measurement-domain}.
+\end{compactitem}
+\end{compactitem}

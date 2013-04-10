@@ -12,7 +12,7 @@ Communication with GPS receiver
     \item Standard NMEA protocol doesn't contain enough detail for advanced usage.
     \item Support for \sirf chips with binary SiRF protocol is implemented, but the
     approach should be adaptable to other receivers without major modifications.
-    \item See \cref{sec:impl-sirf}.
+    \item \Cref{sec:impl-sirf}.
 \end{compactitem}
 
 \item
@@ -33,7 +33,7 @@ NMEA data as MCL input
             \frac{2x}{\mathrm{DRMS}(\HDOP)^2}e^{-x^2/\mathrm{DRMS}(\HDOP)^2}
         \end{equation*}
     \item Approximately \SI{8}{\meter} DRMS error.
-    \item See \cref{fig:wgs84-hdop-error,sec:wgs84-hdop-error,algo:gps-position-domain}.
+    \item \Cref{fig:wgs84-hdop-error,sec:wgs84-hdop-error,algo:gps-position-domain}.
 \end{compactitem}
 
 \item
@@ -70,7 +70,7 @@ Pseudoranges as MCL input
                   \(\normalDistribution(\mu = \SI{\residualClockDriftRateMu}{\meter\per\second\squared}, \sigma = \SI{\residualClockDriftRateSigma}{\meter\per\second\squared})\)
         \end{compactitem}
         \item Clock offsets obtained by integrating clock drifts.
-        \item See \cref{fig:clock-drift-derivation,fig:residual-clock-drift-derivation}
+        \item \Cref{fig:clock-drift-derivation,fig:residual-clock-drift-derivation}
     \end{compactitem}
 
     \item
@@ -107,7 +107,7 @@ Pseudoranges as MCL input
             \item Velocity errors:
                   \(\normalDistribution(\mu = \SI{\velocityErrorMu}{\meter\per\second}, \sigma = \SI{\velocityErrorSigma}{\meter\per\second})\)
             \item Better fitting probability distribution, or switching probability distributions are possible improvements.
-            \item See \cref{fig:pseudorange-errors,fig:pseudorange-hist,fig:velocity-hist}
+            \item \Cref{fig:pseudorange-errors,fig:pseudorange-hist,fig:velocity-hist}
         \end{compactitem}
     \end{compactitem}
 
@@ -115,6 +115,6 @@ Pseudoranges as MCL input
     Similar precision to the simple model so far, possible improvements.
 
     \item
-    See \cref{algo:gps-measurement-domain,sec:measurement-domain}.
+    \Cref{algo:gps-measurement-domain,sec:measurement-domain}.
 \end{compactitem}
 \end{compactitem}

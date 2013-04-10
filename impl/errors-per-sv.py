@@ -46,6 +46,10 @@ arg_parser.add_argument('--fit-window', type=float, default=2 * 60,
     help="Controls how large the window for smoothing clock offsets will be, in seconds.")
 arg_parser.add_argument('--time-threshold', action='store', type=float, default=2,
     help="Time difference in seconds that is still counted as successive measurement.")
+arg_parser.add_argument('--save-pseudorange-errors', default=None,
+    help="Filename, optionally followed by comma separated (x0, y0, x1, y1) coordinates.")
+arg_parser.add_argument('--save-velocity-errors', default=None,
+    help="Filename, optionally followed by comma separated (x0, y0, x1, y1) coordinates.")
 arguments = arg_parser.parse_args()
 
 logging.info("Retreiving fixes")
@@ -79,17 +83,15 @@ clock_drifts_deriv = numpy.ma.array(clock_drifts_deriv, mask=time_diffs > argume
 
 logging.info("Plotting")
 
-fig1 = plt.figure()
-error_plot = fig1.add_subplot(1, 1, 1)
+error_plot = plt.figure().add_subplot(1, 1, 1)
 error_plot.scatter(times[::arguments.plot_thinning], errors[::arguments.plot_thinning],
     marker='.', s=40, alpha=0.7, edgecolors='none', rasterized=True)
 error_plot.set_title('Measurement errors for SV {}'.format(sv_id))
 error_plot.set_xlabel(r'Time/\si{\second}')
 error_plot.set_ylabel(r'Error/\si{\meter}')
-matplotlib_settings.common_plot_settings(error_plot, set_limits=False)
+matplotlib_settings.maybe_save_plot(error_plot, arguments.save_pseudorange_errors)
 
-fig2 = plt.figure()
-error_histogram = fig2.add_subplot(1, 1, 1)
+error_histogram = plt.figure().add_subplot(1, 1, 1)
 mu, sigma, offsets = matplotlib_settings.plot_hist(error_histogram,
                                                    errors,
                                                    arguments.outlier_threshold)
@@ -99,8 +101,7 @@ error_histogram.set_title('Measurement errors for SV {}'.format(sv_id))
 error_histogram.set_xlabel(r'Error/\si{\meter}')
 error_histogram.set_ylabel(r'Count')
 
-fig3 = plt.figure()
-drifts_plot = fig3.add_subplot(1, 1, 1)
+drifts_plot = plt.figure().add_subplot(1, 1, 1)
 drifts_plot.plot(times[::arguments.plot_thinning], clock_drifts[::arguments.plot_thinning],
     '-', alpha=0.7)
 drifts_plot.set_title('Receiver clock drifts for SV {}'.format(sv_id))
@@ -108,18 +109,16 @@ drifts_plot.set_xlabel(r'Time/\si{\second}')
 drifts_plot.set_ylabel(r'Drift/\si{\meter\per\second}')
 matplotlib_settings.common_plot_settings(drifts_plot, set_limits=False)
 
-fig4 = plt.figure()
-velocity_plot = fig4.add_subplot(1, 1, 1)
+velocity_plot = plt.figure().add_subplot(1, 1, 1)
 velocity_plot.scatter(times[::arguments.plot_thinning], velocity_errors[::arguments.plot_thinning],
     marker='.', s=40, alpha=0.7, edgecolors='none', rasterized=True)
 velocity_plot.set_title('Velocity errors for SV {}'.format(sv_id))
 velocity_plot.set_xlabel(r'Time/\si{\second}')
 velocity_plot.set_ylabel(r'Error/\si{\meter\per\second}')
-matplotlib_settings.common_plot_settings(velocity_plot, set_limits=False)
+matplotlib_settings.maybe_save_plot(velocity_plot, arguments.save_velocity_errors)
 
 
-fig5 = plt.figure()
-velocity_error_histogram = fig5.add_subplot(1, 1, 1)
+velocity_error_histogram = plt.figure().add_subplot(1, 1, 1)
 mu, sigma, offset = matplotlib_settings.plot_hist(velocity_error_histogram,
                                                   velocity_errors,
                                                   arguments.velocity_outlier_threshold)
@@ -129,8 +128,7 @@ velocity_error_histogram.set_title('Velocity errors for SV {}'.format(sv_id))
 velocity_error_histogram.set_xlabel(r'Error/\si{\meter\per\second}')
 velocity_error_histogram.set_ylabel(r'Count')
 
-fig6 = plt.figure()
-clock_drifts_deriv_histogram = fig6.add_subplot(1, 1, 1)
+clock_drifts_deriv_histogram = plt.figure().add_subplot(1, 1, 1)
 mu, sigma, offset = matplotlib_settings.plot_hist(clock_drifts_deriv_histogram,
                                                   clock_drifts_deriv,
                                                   1)

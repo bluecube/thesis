@@ -80,13 +80,13 @@ def maybe_save_plot(plot, command = None):
     filename = command[0]
 
     if len(command) == 5:
-        x0, y0, x1, y1 = command[1:]
+        x0, y0, x1, y1 = (float(x) for x in command[1:])
 
         margin = abs(x1 - x0) * margins
         plot.set_xlim([min(x0, x1) - margin, max(x0, x1) + margin])
 
         margin = abs(y1 - y0) * margins
-        plot.set_xlim([min(y0, y1) - margin, max(y0, y1) + margin])
+        plot.set_ylim([min(y0, y1) - margin, max(y0, y1) + margin])
 
     plot.figure.savefig(filename)
     logging.info("Saved " + filename)

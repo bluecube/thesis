@@ -34,10 +34,6 @@ arg_parser = argparse.ArgumentParser(
 arg_parser.add_argument('fixes', help="Data obtained from clock_offsets_to_numpy.py")
 arg_parser.add_argument('--only-sv', action='store', type=int, required=True,
     help="Which SV to process")
-arg_parser.add_argument('--hist-resolution', default=1, type=float,
-    help="Width of the histogram bin.")
-arg_parser.add_argument('--velocity-hist-resolution', default=0.05, type=float,
-    help="Width of the velocity histogram bin.")
 arg_parser.add_argument('--no-show', action='store_true',
     help="Don't show the plots, only save them.")
 arg_parser.add_argument('--plot-thinning', action='store', type=int, default=1,
@@ -94,10 +90,9 @@ matplotlib_settings.common_plot_settings(error_plot, set_limits=False)
 
 fig2 = plt.figure()
 error_histogram = fig2.add_subplot(1, 1, 1)
-mu, sigma = matplotlib_settings.plot_hist(error_histogram,
-                                          errors,
-                                          arguments.hist_resolution,
-                                          arguments.outlier_threshold)
+mu, sigma, offsets = matplotlib_settings.plot_hist(error_histogram,
+                                                   errors,
+                                                   arguments.outlier_threshold)
 print("Mean: {}".format(mu))
 print("Sigma: {}".format(sigma))
 error_histogram.set_title('Measurement errors for SV {}'.format(sv_id))
@@ -125,10 +120,9 @@ matplotlib_settings.common_plot_settings(velocity_plot, set_limits=False)
 
 fig5 = plt.figure()
 velocity_error_histogram = fig5.add_subplot(1, 1, 1)
-mu, sigma = matplotlib_settings.plot_hist(velocity_error_histogram,
-                                          velocity_errors,
-                                          arguments.velocity_hist_resolution,
-                                          arguments.velocity_outlier_threshold)
+mu, sigma, offset = matplotlib_settings.plot_hist(velocity_error_histogram,
+                                                  velocity_errors,
+                                                  arguments.velocity_outlier_threshold)
 print("Velocity mean: {}".format(mu))
 print("Velocity sigma: {}".format(sigma))
 velocity_error_histogram.set_title('Velocity errors for SV {}'.format(sv_id))
@@ -137,10 +131,9 @@ velocity_error_histogram.set_ylabel(r'Count')
 
 fig6 = plt.figure()
 clock_drifts_deriv_histogram = fig6.add_subplot(1, 1, 1)
-mu, sigma = matplotlib_settings.plot_hist(clock_drifts_deriv_histogram,
-                                          clock_drifts_deriv,
-                                          0, # TODO!
-                                          1)
+mu, sigma, offset = matplotlib_settings.plot_hist(clock_drifts_deriv_histogram,
+                                                  clock_drifts_deriv,
+                                                  1)
 print("Clock drift derivation mean: {}".format(mu))
 print("Clock drift derivation sigma: {}".format(sigma))
 clock_drifts_deriv_histogram.set_title('Clock drift derivations for SV {}'.format(sv_id))

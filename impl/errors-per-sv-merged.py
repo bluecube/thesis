@@ -32,10 +32,6 @@ arg_parser = argparse.ArgumentParser(
     description="Equivalent of errors_global, but only for a single SV. The clock"
     "offset fitting here should cancel most residual errors for the channel.")
 arg_parser.add_argument('fixes', help="Data obtained from clock_offsets_to_numpy.py")
-arg_parser.add_argument('--hist-resolution', default=0.5, type=float,
-    help="Width of the histogram bin.")
-arg_parser.add_argument('--velocity-hist-resolution', default=0.05, type=float,
-    help="Width of the velocity histogram bin.")
 arg_parser.add_argument('--no-show', action='store_true',
     help="Don't show the plots, only save them.")
 arg_parser.add_argument('--outlier-threshold', action='store', type=float, default=60,
@@ -95,7 +91,6 @@ fig1 = plt.figure()
 error_histogram = fig1.add_subplot(1, 1, 1)
 mu, sigma, outliers = matplotlib_settings.plot_hist(error_histogram,
                                                     all_errors,
-                                                    arguments.hist_resolution,
                                                     arguments.outlier_threshold)
 print("Mean: {}".format(mu))
 print("Sigma: {}".format(sigma))
@@ -108,7 +103,6 @@ fig2 = plt.figure()
 velocity_error_histogram = fig2.add_subplot(1, 1, 1)
 mu, sigma, outliers = matplotlib_settings.plot_hist(velocity_error_histogram,
                                           all_velocity_errors,
-                                          arguments.velocity_hist_resolution,
                                           arguments.velocity_outlier_threshold)
 print("Velocity mean: {}".format(mu))
 print("Velocity sigma: {}".format(sigma))
@@ -121,7 +115,6 @@ fig3 = plt.figure()
 residual_drifts_deriv_histogram = fig3.add_subplot(1, 1, 1)
 mu, sigma, outliers = matplotlib_settings.plot_hist(residual_drifts_deriv_histogram,
                                                     all_residual_drifts_deriv,
-                                                    0,
                                                     1)
 print("Residual clock drift derivation mean: {}".format(mu))
 print("Residual clock drift derivation sigma: {}".format(sigma))
@@ -134,7 +127,6 @@ fig4 = plt.figure()
 clock_drifts_deriv_histogram = fig4.add_subplot(1, 1, 1)
 mu, sigma, outliers = matplotlib_settings.plot_hist(clock_drifts_deriv_histogram,
                                                     clock_drifts_deriv,
-                                                    0,
                                                     1)
 print("Clock drift derivation mean: {}".format(mu))
 print("Clock drift derivation sigma: {}".format(sigma))

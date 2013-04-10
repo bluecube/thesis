@@ -59,11 +59,11 @@ def common_plot_settings(plot, min_x = None, max_x = None, min_y = None, max_y =
 
 def plot_hist(subplot, data, threshold):
     masked_data = numpy.ma.array(data, mask=(numpy.abs(data) > threshold))
-    mu = numpy.ma.mean(masked_data)
+    mu = numpy.ma.mean(masked_data, dtype=numpy.float64)
 
     masked_data = numpy.ma.array(data, mask=(numpy.abs(data - mu) > threshold))
-    mu = numpy.ma.mean(masked_data)
-    sigma = numpy.ma.std(masked_data - mu)
+    mu = numpy.ma.mean(masked_data, dtype=numpy.float64)
+    sigma = numpy.ma.std(masked_data - mu, dtype=numpy.float64)
     outliers = 1 - masked_data.count() / len(masked_data)
 
     threshold = 4 * sigma
@@ -75,10 +75,6 @@ def plot_hist(subplot, data, threshold):
 
     compressed = numpy.ma.array(data).compressed()
     n, bins, patches = subplot.hist(compressed, bins=bins, alpha=0.7)
-
-    bincenters = 0.5 * (bins[1:] + bins[:-1])
-    y = matplotlib.mlab.normpdf(bincenters, mu, sigma) * len(compressed) * res
-    subplot.plot(bincenters, y, 'r--')
 
     common_plot_settings(subplot,
         min_x = mu - threshold,

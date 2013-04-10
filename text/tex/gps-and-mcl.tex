@@ -108,7 +108,7 @@ blue dots representing the measured data, yellow dots the DRMS values.
 The green line shows the theoretical linear model and the red curve is the non linear model.
 Limited resolution of the HDOP values in input data is visible in the plot.
 This figure also shows the precision available when using simple NMEA data --
-position error of roughly \SI{10}{\meter} with most of the measurements.
+DRMS error of roughly \SI{8}{\meter}.
 Another interesting fact is to note, that only relatively low HDOP values were encountered.
 \Cref{fig:hdop-hist} shows this in a more pronounced way.
 
@@ -331,11 +331,11 @@ To obtain probability of a measurement that is within the threshold, we evaluate
 PDF of normal distribution.
 For pseudoranges it is
 \begin{equation}
-\normalDistribution(\mu = \SI{\pseudorangeErrorMu}{\meter}, \sigma = \SI{\pseudorangeErrorSigma}{\meter})
+\normalDistribution(\mu = \SI{\pseudorangeErrorMu}{\meter\per\second\squared}, \sigma = \SI{\pseudorangeErrorSigma}{\meter\per\second\squared})
 \end{equation}
 and for the velocities
 \begin{equation}
-\normalDistribution(\mu = \SI{\velocityErrorMu}{\meter}, \sigma = \SI{\velocityErrorSigma}{\meter})
+\normalDistribution(\mu = \SI{\velocityErrorMu}{\meter\per\second\squared}, \sigma = \SI{\velocityErrorSigma}{\meter\per\second\squared})
 \end{equation}
 
 \Cref{fig:pseudorange-hist,fig:velocity-hist} show the histograms of pseudorange

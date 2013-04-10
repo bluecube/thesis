@@ -115,8 +115,7 @@ class MeasurementError:
             self._measurement.pseudorange -
             C * (self._receiver_state.clock_offset - self._sv_state.clock_offset))
 
-        corrected_pseudorange += self._correction
-        corrected_pseudorange -= self._tropo_delay()
+        corrected_pseudorange += self._tropo_delay()
 
         error = corrected_pseudorange - self._geom_range
 

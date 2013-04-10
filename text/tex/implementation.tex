@@ -308,13 +308,22 @@ removed also during localization in a similar way.
 The web site \cite{sam-www} was very useful when implementing corrections for
 pseudorange measurements.
 
-\subsubsection{Ionospheric Corrections}
-Ionospheric corrections provided in the GPS navigation data were used, because
-it is very conveniently located in the SV state messages of SiRF~III.
+We attempted to implement corrections for ionospheric and tropospheric
+effects.
 
-\subsubsection{Tropospheric Corrections}
-We implemented tropospheric corrections based on the Hopfield's tropospheric model
-with the mapping function implemenation based on \cite{sam-www}.
+Tropospheric corrections,
+implemented based on the Hopfield's tropospheric model
+with the mapping function implementation based on \cite{sam-www},
+improved the one sigma error by approximately \SI{0.2}{\meter}.
+
+Ionospheric corrections taken from the values transmitted in the navigation messages
+(and accessed in the SiRF SV state messages) on the other hand,
+increased the one sigma error by \SI{0.05}{\meter}.
+Because of this we chose not to use the ionospheric correction.
+This effect may be caused by our implementation estimating the residual
+clock offsets -- the ionospheric effects are already corrected
+and the inaccurate estimation transmitted by the space segment only adds noise
+to our data.
 
 %\section{Data from Karlík}
 %\begin{itemize}

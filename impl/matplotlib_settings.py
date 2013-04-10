@@ -101,7 +101,7 @@ def plot_hist(subplot, data, threshold):
     outliers = 1 - masked_data.count() / len(masked_data)
 
     threshold = 4 * sigma
-    res = threshold / 100
+    res = threshold / 50
 
     bin_half_count = int(math.floor(threshold * 1.05 / res))
         # extra 5% makes the histogram look a little nicer and not that cut off

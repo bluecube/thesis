@@ -60,7 +60,7 @@ try:
             geod_count += 1
             lat.add(msg.latitude)
             lon.add(msg.longitude)
-            
+
 except KeyboardInterrupt:
     logger.info("Ok, that should be enough.")
 

@@ -51,11 +51,7 @@ def test(msg):
         pos_diff = corrected_pos - msg.pos
         distance = math.sqrt(pos_diff * pos_diff.T)
 
-        #if msg.satellite_id == 32:
-        #    print(time_diff, pos_diff, distance)
-
         if distance < 10:
-        #    print(distance)
             errors.add(distance)
             interp_distance.add(time_diff)
 

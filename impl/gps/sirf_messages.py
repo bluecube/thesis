@@ -182,8 +182,6 @@ class NavigationLibraryMeasurementData(_SirfReceivedMessageBase):
         carrier_freq = cls.sirf_single(carrier_freq)
         carrier_phase = cls.sirf_double(carrier_phase)
 
-        # TODO: expand sync flags bit field
-
         fields = locals().copy()
         del fields['cls']
         del fields['data']

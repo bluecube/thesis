@@ -63,9 +63,6 @@ class _Worker:
             error_diff = avg_error - self.last_avg_error
             derivation = error_diff / time_diff # unit: meter / receiver_second
 
-            #sys_time_diff = time_diff - (clock_offset(self.times[-1]) - clock_offset(self.last_time))
-            #new_sys_derivation = error_diff / sys_time_diff # unit: meter / second
-
             if abs(derivation) > CLOCK_CORRECTION_THRESHOLD:
                 # This is clock correction
 

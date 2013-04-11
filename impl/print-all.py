@@ -33,9 +33,6 @@ arguments = arg_parser.parse_args()
 
 x = gps.open_gps(arguments.gps)
 
-#if arguments.filter is not None:
-#    x.set_message_rate(arguments.filter, 1)
-
 last_time = float("nan")
 
 count = 0

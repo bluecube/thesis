@@ -42,7 +42,6 @@ try:
                 while True:
                     msg = saver.save_message();
 
-                    # TODO: Refactor this somewhere more up the stream
                     if gps.sirf.bytes_to_message_id(msg) == geodetic_nav_data_id:
                         counter += 1
                         if counter == 10:

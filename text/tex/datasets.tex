@@ -2,33 +2,44 @@
 \label{chap:datasets}
 
 Three sets of measured GPS data were recorded for this work.
-All of them were recorded using a portable USB/serial receiver with \sirf chip
+All of them were recorded using GlobalSat BR-355 serial GPS receiver with \sirf chip
 in the SiRF binary protocol.
 
 \begin{itemize}
 
 \item
-First dataset contains approximately one month of recorded SiRF data.
+First dataset,  contains approximately one month of recorded SiRF data.
 During this period the receiver was stationary inside a room and had a good signal 
-reception. 
+reception.
 It was used for modelling of the GPS measurements errors in \Cref{chap:gps-and-mcl}.
 
 The dataset contains \num{\monthDatasetCycles} measurement cycles and
 \num{\monthDatasetMeasurements} pseudorange measurements.
 
-For testing, we also keep a recording of the first night of the dataset and of first week.
+For quick testing, we also keep a subset of this recording containing the
+first night of the dataset and of first week.
+
+On the DVD the main recording of dataset is located in \verb=/data/month.recording2=,
+the shortened versions can be found in \verb=/data/one_night.recording2= and in
+\verb=/data/one_week.recording2=.
 
 \item
-The second dataset is considerably shorter, consisting of two recordings made during
+The second dataset consists of two recordings made during
 the Robotour competition \cite{robotour} on a Roboauto Karlík \cite{karlik} robot\todo{Better citations?}.
 %These data were used as an input for Monte Carlo Localization for performance comparison.
 
 In total the dataset contains \num{\karlikDatasetCycles} GPS measurement cycles with
 \num{\karlikDatasetMeasurements} pseudorange measurements, accompanied by sensor recordings from Karlík.
 
+Recordings for this dataset can be found in files \verb=/data/roboauto1.recording2=
+and \verb=/data/roboauto2.recording2=.
+Karlík's log files are located in the directory \verb=/data/roboauto/=.
+
 \item
-The last dataset is for debugging purposes only and contains approximately
+The last dataset contains approximately
 30 minutes recorded with stationary receiver with poor signal quality.
+
+The recording is in the file \verb=/data/30_minutes_weak_signal.recording2=.
 
 \end{itemize}
 

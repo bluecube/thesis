@@ -76,11 +76,11 @@ for i, (hdop, label) in enumerate(zip(hdops, arguments.labels)):
                 print("{} - {}: {}".format(low, high, count))
 
 w, h = fig.get_size_inches()
-height_multiple = 0.8 * len(hdops)
+height_multiple = 0.6 * len(hdops)
 fig.set_size_inches(w, h * height_multiple)
 fig.subplots_adjust(
-    bottom=matplotlib_settings.m.rcParams['figure.subplot.bottom'] / height_multiple,
-    hspace=matplotlib_settings.m.rcParams['figure.subplot.hspace'] / height_multiple)
+    bottom=matplotlib_settings.m.rcParams['figure.subplot.bottom'] / 2,
+    hspace=matplotlib_settings.m.rcParams['figure.subplot.hspace'])
 
 if arguments.save_hist_plot is not None:
     fig.savefig(arguments.save_hist_plot)

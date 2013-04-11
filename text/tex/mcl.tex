@@ -24,8 +24,8 @@ position and the task is only to update the estimate and handle relatively small
 errors, or global localization, where the robot has to find its position from scratch
 and recover from serious localization errors.
 
-In this work we will focus only on passive localization in static environment and
-since Monte Carlo localization is a topic of this text we will be favoring
+In this work we will focus only on passive localization in static environment.
+Since Monte Carlo localization is a topic of this text we will be favoring
 global localization, although typically GPS is used with Kalman filters
 which are only capable of tracking the estimate locally.
 
@@ -231,7 +231,7 @@ Here \(\bar{x}_i\) and \(P_i\) are mean and covariance describing \(\Bel(X_i)\).
 	\label{fig:mcl}
 \end{figure}
 
-Monte Carlo localization \cite{dellaert99} is a Monte Carlo method for
+Monte Carlo localization (MCL) \cite{dellaert99} is a Monte Carlo method for
 robot localization.
 It is a version of Markov localization, that approximates the belief
 using a set of samples drawn from it.
@@ -253,18 +253,17 @@ of missing all samples during the correction phase and effectively ignoring the 
 
 Informally the basic MCL can be described as follows:
 Keep \(n\) samples of hypothetical robot states.
-In the prediction phase move each sample according to the action performed + noise corresponding
-to uncertainty on the action's result (e.g. wheel slip).
+In the prediction phase move each sample according to the action performed with the noise corresponding
+to uncertainty on the action's result (e.g. wheel slip) added.
 Correction calculates how probable the incoming measurement is
 for every sampled state and set this probability as the sample's weight.
 Finally in the resampling phase throw away samples with low weights, and add
 copies of the highly weighted samples instead.
 
-\Cref{fig:mcl} contains -- somewhat artificial -- example of two
-identical simulated robots on a chessboard.
+\Cref{fig:mcl} shows example of two identical simulated robots on a chessboard.
 Red lines show paths travelled by the robots and blue dots represent MCL samples.
-Both of the robots use odometry data to estimate position, the robot on the left
-also senses color of the tile.
+Both of the robots use odometry data to estimate position and the robot on the right
+senses color of the tile underneath it as well.
 This example shows how the belief is represented as a set of points and how
 different shapes of the cloud represent different conditions in the localization
 process.
@@ -360,6 +359,9 @@ The \initialize{} function is an example of how MCL can be used to localize
 a robot without knowledge of its previous location by starting with samples distributed
 uniformly through the environment.
 
+In a practical implementation it is often useful to \enquote{invert} the algorithm and
+have external code pass events with performed action and sensor readings.
+
 \subsubsection{Prediction}
 \begin{itemize}
 \item
@@ -388,7 +390,7 @@ Ideally in the correction phase the algorithm would draw samples directly from
 \(\Prob(o_i \mid X_i = x) \Prob(X_i = x \mid X_{i - 1}, a_{i - 1})\),
 however there is no easy way to achieve this.
 Instead, Monte Carlo localization 
-uses SIR (sampling / importance resampling, \cite{smith92})
+uses sampling / importance resampling (SIR) \cite{smith92}
 to approximate sampling from
 \(\Prob(o_i \mid X_i = x) \hat{\Prob}(X_i = x \mid X_{i - 1}, a_{i - 1})\) using the set \(S'_i\).
 This is achieved by weighting the samples as described earlier and resampling
@@ -419,15 +421,15 @@ resampling algorithm described in \cite{arulampalam01}.
 
 \subsubsection{Adaptive Sample Size}
 During global localization or tracking failure MCL needs a relatively large number
-of samples to localize correctly, however when the robot is successfully localized
-much less samples are necessary.
+of samples to localize correctly.
+The required number of samples, however, decreases when during position keeping.
 
 An improvement of the MCL algorithm is to vary the sample size dynamically.
 This can be done by using likehood sampling \cite{fox99}, that works by
 resampling not until a fixed number of samples is
 generated, but until the sum of unnormalized weights exceeds a given threshold.
-Another, more involved approach, using KLD-sampling algorithm
-(KLD stands for Kullback-Leibler distance) is described in \cite{fox03}.
+Another, more involved approach, using Kullback-Leibler distance in KLD-sampling algorithm
+is described in \cite{fox03}.
 
 \subsubsection{Delayed Resampling}
 It is possible to keep sample weights during the whole operation of the algorithm.

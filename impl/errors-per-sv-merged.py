@@ -35,9 +35,9 @@ arg_parser.add_argument('fixes', help="Data obtained from clock_offsets_to_numpy
 arg_parser.add_argument('--no-show', action='store_true',
     help="Don't show the plots, only save them.")
 arg_parser.add_argument('--outlier-threshold', action='store', type=float, default=60,
-    help="X axis scaling for histogram")
+    help="Error threshold for calculating the pseudorange histogram")
 arg_parser.add_argument('--velocity-outlier-threshold', action='store', type=float, default=4,
-    help="X axis scaling for velocity error histogram")
+    help="Error threshold for calculating the velocity histogram")
 arg_parser.add_argument('--fit-window', type=float, default=2 * 60,
     help="Controls how large the window for smoothing clock offsets will be, in seconds.")
 arg_parser.add_argument('--time-threshold', action='store', type=float, default=2,

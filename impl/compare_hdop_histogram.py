@@ -22,7 +22,7 @@ logging.basicConfig(
 )
 
 arg_parser = argparse.ArgumentParser(
-    description="Plot one or more histograms of encountered HDOP.")
+    description="Plot one or more histograms of encountered HDOP values.")
 arg_parser.add_argument('sources', nargs='+',
     help="One or more recordings of SiRF messages or saved numpy arrays (*.npy).")
 arg_parser.add_argument('--hist-resolution', default=0.2, type=float,

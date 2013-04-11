@@ -27,9 +27,9 @@ arg_parser.add_argument('--no-show', action='store_true',
 arg_parser.add_argument('--plot-thinning', action='store', type=int, default=1,
     help="Only plot each N-th item.")
 arg_parser.add_argument('--outlier-threshold', action='store', type=float, default=250,
-    help="X axis scaling for histogram")
+    help="Error threshold for calculating the pseudorange histogram")
 arg_parser.add_argument('--velocity-outlier-threshold', action='store', type=float, default=4,
-    help="X axis scaling for velocity error histogram")
+    help="Error threshold for calculating the velocity histogram")
 arg_parser.add_argument('--save-pseudorange-errors', default=None,
     help="Filename, optionally followed by comma separated (x0, y0, x1, y1) coordinates.")
 arg_parser.add_argument('--save-pseudorange-histogram', default=None,

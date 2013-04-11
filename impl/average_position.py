@@ -29,12 +29,10 @@ setup_logging()
 logger = logging.getLogger('main')
 
 arg_parser = argparse.ArgumentParser(
-    description="Calculate the ECEF position as an "
-    "average of positions from msg id 2")
+    description="Calculate the average ECEF and WGS84 positions as reported"
+    "by the receiver's software.")
 arg_parser.add_argument('gps',
     help="GPS port or recording file.")
-arg_parser.add_argument('--precision', default=1000, type=int,
-    help="Multiplier for fixed point arithmetic.")
 
 arguments = arg_parser.parse_args()
 
@@ -43,13 +41,13 @@ gps_dev = gps.open_gps(arguments.gps)
 logger.info("Starting.")
 
 count = 0
-x = stats.Stats(arguments.precision)
-y = stats.Stats(arguments.precision)
-z = stats.Stats(arguments.precision)
+x = stats.Stats(1000)
+y = stats.Stats(1000)
+z = stats.Stats(1000)
 
 geod_count = 0
-lat = stats.Stats(arguments.precision)
-lon = stats.Stats(arguments.precision)
+lat = stats.Stats(1000)
+lon = stats.Stats(1000)
 
 try:
     for msg in gps_dev:

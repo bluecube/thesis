@@ -22,16 +22,14 @@ logging.basicConfig(
 )
 
 arg_parser = argparse.ArgumentParser(
-    description="Plot ")
+    description="Plot pseudorange derivations.")
 arg_parser.add_argument('fixes', help="Data obtained from clock_offsets_to_numpy.py")
-arg_parser.add_argument('--hist-resolution', default=0.2, type=float,
-    help="Width of the histogram bin.")
 arg_parser.add_argument('--no-show', action='store_true',
     help="Don't show the plots, only save them.")
 arg_parser.add_argument('--plot-thinning', action='store', type=int, default=1,
     help="Only plot each N-th item.")
 arg_parser.add_argument('--outlier-threshold', action='store', type=float, default=20,
-    help="X axis scaling for histogram")
+    help="Threshold for calculation of the histogram.")
 arg_parser.add_argument('--time-threshold', action='store', type=float, default=2,
     help="Time difference in seconds that is still counted as successive measurement.")
 arguments = arg_parser.parse_args()
@@ -66,8 +64,7 @@ errors = data["errors"][::arguments.plot_thinning]
 
 logging.info("Plotting")
 
-fig1 = plt.figure()
-error_plot = fig1.add_subplot(1, 1, 1)
+error_plot = plt.figure().add_subplot(1, 1, 1)
 error_plot.scatter(times, errors, c=sv_ids, marker='.', s=40, alpha=0.7,
     edgecolors='none', rasterized=True)
 error_plot.set_title('Measurement error derivation')
@@ -75,12 +72,10 @@ error_plot.set_xlabel(r'Time/\si{\second}')
 error_plot.set_ylabel(r'Error derivation/\si{\meter\per\second}')
 matplotlib_settings.common_plot_settings(error_plot, set_limits=False)
 
-fig2 = plt.figure()
-error_histogram = fig2.add_subplot(1, 1, 1)
-mu, sigma = matplotlib_settings.plot_hist(error_histogram,
-                                          errors,
-                                          arguments.hist_resolution,
-                                          arguments.outlier_threshold)
+error_histogram = plt.figure().add_subplot(1, 1, 1)
+mu, sigma, outliers = matplotlib_settings.plot_hist(error_histogram,
+                                                    data['errors'],
+                                                    arguments.outlier_threshold)
 print("Mean: {}".format(mu))
 print("Sigma: {}".format(sigma))
 error_histogram.set_title('Measurement errors')

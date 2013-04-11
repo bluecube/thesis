@@ -42,15 +42,15 @@ A relatively straightforward way of integrating the GPS data to any localization
 to use WGS84 geodetic coordinates from the standard NMEA protocol.
 With this approach, however, Kalman filters, position smoothing and other filters typically
 employed in  consumer grade receivers assume that the receiver is mounted in a car or carried on foot.
-These assumptions are then used to modify the data, examples
+These assumptions are subsequently used to modify the data, examples
 include minimum speed threshold or vertical speed limits.
 Additionally, based on NMEA data, measurement errors can only be characterized very roughly.
 
 A different approach, which is explored in this work, uses raw
 pseudorange measurements from the GPS receiver.
 When using pseudorange measurements, localization algorithm can work with motion model
-which closely matches
-the real hardware, each pseudorange measurement can have an
+which closely matches the real hardware.
+Each pseudorange measurement can have an
 independent error model and further modifications to improve precision can be used.
 
 
@@ -65,7 +65,7 @@ independent error model and further modifications to improve precision can be us
 
 The rest of the text is organized as follows:
 \Cref{chap:gps} describes the GPS system and its operating principles.
-\Cref{chap:mcl} describes Monte Carlo Localization.
+\Cref{chap:mcl} describes Monte Carlo localization.
 \Cref{chap:gps-and-mcl} proposes fusing of GPS data into MCL, and
 \Cref{chap:implementation} describes implementation of experiments with GPS and
 Monte Carlo localization.

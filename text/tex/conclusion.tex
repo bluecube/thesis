@@ -7,7 +7,7 @@ Two approaches to perform this task were selected.
 
 Firstly, the \enquote{obvious} method of interfacing to the GPS receiver with the
 standard NMEA protocol was evaluated.
-According to this approach the complete fixes in WGS84 coordinates are used,
+According to this approach the complete fixes in WGS84 coordinates were used,
 with latitude, longitude and HDOP being the only values used in the localization.
 Error model was constructed from a set of experimentally measured data,
 giving one sigma precision of approximately \SI{7}{\meter}.
@@ -32,13 +32,13 @@ During development of these tools we successfully overcame a number of problems 
 by the lack of documentation of the \sirf chip operation details.
 
 In the current state, this work could be of benefit to the designers of
-outdoor robots, allowing them to simply use the first method for modelling the
+outdoor robots, allowing them to simply employ the first method for modelling the
 error of GPS in NMEA mode.
 Our second method provides the robot designers with comparable precision,
 velocity processing, more detailed characteristics of the position error
-and a framework allowing insight into the localization process and further
+and a framework facilitating insight into the localization process and further
 precision improvements.
 On top of that we provide a framework for experiments with SiRF receivers
 for anyone interested.
 We also hope this text might serve as another piece of the fragmented
-information about the \sirf chipset on the internet.
+information about the \sirf chipset on the Internet.

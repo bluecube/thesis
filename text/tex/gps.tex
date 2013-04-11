@@ -22,10 +22,10 @@ and also briefly with worldwide positioning systems other than GPS.
 Unless other sources are cited, this chapter is based on chapters
 2 and 7 of \cite{kaplan06}.
 
-The document \cite{fyfe92} contains a specification of the GPS user
-segment interface, describing in depth many parts of GPS system.
+Specification of GPS user segment interface can be found in \cite{fyfe92},
+describing many parts of GPS system in depth.
 However since in this work we only interface with the GPS system through a
-consumer-grade receiver, we are shielded from much of the low level details of
+consumer-grade receiver, we don't encounter many low level details of
 the GPS.
 
 \section{Basic Description}
@@ -245,7 +245,7 @@ signal to travel from SV to the receiver, including the clock offsets:
 	\label{eq:pseudorange}
 	\rho = \speedoflight (\recrxtime - \svtxtime)
 \end{equation}
-Here \(\speedoflight\) is the speed of light, with value \SI{299792458}{\meter\per\second} used in GPS,
+Here \(\speedoflight\) is the speed of light (with value \(\speedoflight = \SI{299792458}{\meter\per\second}\) used in GPS),
 \(\recrxtime\) and \(\svtxtime\) are the receive time referenced to the receiver internal clock
 and transmit time according to the satellite clock.
 Similarly \(\systxtime\) and \(\sysrxtime\) are the transmit and receive times referenced
@@ -309,7 +309,6 @@ calculating receiver position from the pseudorange measurements means solving a 
 for receiver position \(\recpos = \coord{x_\REC}{y_\REC}{z_\REC}\) and receiver clock offset \(\recclockoffset\).
 
 This corresponds to an intersection of conical surfaces in four dimensions.
-\questiontodo{Draw a picture here?}
 
 Equations from \eqref{eq:pseudorange3} can be solved using various methods, including closed form solutions
 (for example \cite{leva96}), iterative solutions, linearization of the equations around
@@ -529,6 +528,15 @@ Apart from errors mentioned in this section, there are many more sources, but th
 that are negligible for single receiver applications discussed in this text.
 An overview can be found in \cite{kouba09}.
 
+\subsubsection{Geometric Distribution of Satellites}
+Geometric distribution of the satellites significantly influences final
+precision of the position.
+If satellites are approximately uniformly distributed around the receiver,
+the localization error is smaller than when satellites are concentrated
+in a single direction.
+This factor of GPS localization precision is characterized by the parameter HDOP
+mentioned earlier (see \Cref{sec:gps-dop}).
+
 \subsubsection{Match Accuracy and Receiver Delays}
 
 When the receiver matches the received signal to expected PRN codes, an
@@ -558,13 +566,16 @@ reflective surfaces surrounding the antenna (e.g. wings in an aircraft mounted G
 when including satellites with low elevation angle in the solution.
 
 An illustration of this effect and of shadowing is shown in \Cref{fig:multipath}.
-The signal drawn in green follows a direct path from the satellite to the receiver and is shadowed,
-and the red multipath signal is reflected from a building, making its travelled path longer.
+The signal drawn in green follows a direct path from the satellite and is shadowed.
+The red multipath signal is reflected from a building, making its travelled path longer.
 
 If the signal following the direct path is received, GPS receivers can easily detect and remove large delays caused by multipath.
 A more problematic case arises when the multipath delay is relatively small, because this distorts
 receiver's attempts to correlate the received signal with the internal reference signal.
 
+Section 6.3 of \cite{kaplan06} contains a detailed discussion of multipath effects.
+
+\subsubsection{Shadowing}
 Shadowing is another phenomenon related to multipath, caused by the signal passing through obstacles, like buildings or foliage.
 Shadowing combined with multipath affects the relative received power of direct and multipath signals, in extreme cases
 even causing the multipath to be the only received signal from a given satellite.
@@ -579,8 +590,6 @@ is too low to avoid this kind of errors.
 A more complex method of dealing with multipath errors is described in \cite{viandier08},
 where the error model of a satellite measurement is modified if it is suspected to be corrupted
 by multipath error.
-
-Section 6.3 of \cite{kaplan06} contains a detailed discussion of multipath effects.
 
 \subsubsection{Tropospheric Delays}
 Tropospheric delays describe signal delays in the non-ionized layers of Earth's atmosphere.
@@ -637,21 +646,25 @@ The most famous effect of relativity is the frequency shift of the satellite clo
 when received on the ground.
 This frequency shift happens because of the satellites velocity relative to the user
 and also because satellite orbits are further from Earth's mass and therefore less
-affected by the spacetime curvature caused by it.
+affected by the space time curvature caused by it.
 
 To compensate, satellite clock frequency is set to
 \SI{10.22999999543}{\mega\hertz} before launch, so the observed frequency
 is \SI{10.23}{\mega\hertz} \cite{fyfe92}.
 \todo{Check if it is necessary, maybe expand}
 
-\section{Kalman Filters}
+\section{Methods for Improving GPS Precision}
+
+\subsection{Kalman Filters}
 Kalman filters are often used in the GPS receivers to merge past
 data with incoming measurements or to combine the GPS position and velocity
 estimation with another source of measurements, for example inertial data.
 
+It works by representing a current estimate of the receiver position together
+with its covariance matrix and updating it based on the incoming measurements.
 For more detailed description of how Kalman filters operate see \Cref{sec:kalman}.
 
-\section{Differential GPS}
+\subsection{Differential GPS}
 \label{sec:dgps}
 
 Differential GPS is a method to improve GPS accuracy using at least one reference station.
@@ -671,7 +684,7 @@ This need of infrastructure and reliable wireless connection makes DGPS impracti
 Differential GPS is often used in surveying (off-line, high precision) and this
 use is discussed in \cite{rizos99}.
 
-\section{Assisted GPS}
+\subsection{Assisted GPS}
 Assisted GPS refers to the techniques used typically on PDAs and cell phones, that improve operation of GPS by offloading
 work from the receiver chip to a remote assistance server.
 
@@ -694,6 +707,7 @@ lower level data from the location estimation process may be used, but only as p
 by software in the GPS receiver.
 Many communication protocols are in use, which providing position, velocity, clock data
 and other information.
+Several of the protocols are mentioned in the following paragraphs.
 
 \subsection{NMEA 0183}
 NMEA 0183 is a de-facto standard protocol for consumer grade GPS receivers.
@@ -708,14 +722,6 @@ for position, velocity and time solutions of GPS navigation.
 The problem with the NMEA protocol is, that a different subset is implemented in almost every
 receiver and there is no access to lower levels of the GPS signal processing.
 
-\subsection{Proprietary Protocols}
-Many GPS receivers extend the NMEA protocol using proprietary sentences or
-implement custom protocols.
-An example of this is the SiRF binary protocol \cite{sirf-protocol}.
-
-The use of proprietary protocol is often the only way to get the complete functionality from
-the receiver.
-
 \subsection{RINEX}
 
 The Receiver Independent Exchange Format \cite{rinex-format} is an exchange format
@@ -723,6 +729,15 @@ for GPS and other satellite navigation systems.
 
 RINEX is typically used for post processing as it can contain various data that are not
 known during navigation, for example detailed ionospheric models or high precision ephemeris.
+
+\subsection{Proprietary Protocols}
+Many GPS receivers extend the NMEA protocol using proprietary sentences or
+implement custom protocols.
+An example of this is the SiRF binary protocol \cite{sirf-protocol}, which is also
+used in the implementation part of this work.
+
+The use of proprietary protocol is often the only way to get the complete functionality from
+the receiver.
 
 \section{Similar Systems}
 \label{sec:gps-alternatives}
@@ -757,6 +772,7 @@ and as mentioned above, by using a signal compatible with the GPS L1C.
 This means, that a GPS receiver supporting this signal will be able to seamlessly
 use both systems combined.
 
+Galileo, however, practically cannot be used yet, which is why we concentrate on GPS.
 Moreover, measurements from Galileo satellites will suffer from the same errors as
 their GPS counterparts, which makes this system interchangeable with the GPS for the purposes
 of this work.

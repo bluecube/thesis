@@ -1,16 +1,12 @@
-\chapter{Contents of the DVD}
+\chapter{DVD Contents}
 
-\begin{itemize}[label={},leftmargin=0pt]
-    \item \verb=/=\dotfill{}Root of the DVD.
-    \begin{itemize}[label={},leftmargin=1.5em]
-        \item \verb=impl/=\dotfill{}Implementation.
-        \item \verb=data/=\dotfill{}Recorded data.
-        \begin{itemize}[label={},leftmargin=1.5em]
-            \item \verb=preprocessed/=\dotfill{}Preprocessed recorded data (see \Cref{sec:impl-recordings}).
-        \end{itemize}
-        \item \verb=repository/=\dotfill{}Snapshot of the git repository.
-        \item \verb=thesis.pdf=\dotfill{}This text.
-        \item \verb=usage.txt=\dotfill{}Brief usage information for scripts in \verb=/impl/=.
-    \end{itemize}
-\end{itemize}
+\dirtree{%
+.1 /\DTcomment{Root of the DVD}.
+.2 impl/\DTcomment{Implementation}.
+.2 data/\DTcomment{Recorded data}.
+.3 preprocessed/\DTcomment{Preprocessed recorded data (see \Cref{sec:impl-recordings})}.
+.2 repository/\DTcomment{Snapshot of the git repository}.
+.2 thesis.pdf\DTcomment{This text}.
+.2 usage.txt\DTcomment{Brief usage information for scripts in \texttt{/impl/}}.
+}
 

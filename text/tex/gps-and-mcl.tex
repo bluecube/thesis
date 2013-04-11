@@ -274,6 +274,29 @@ clock drifts derivation.
 	\label{fig:residual-clock-drift-derivation}
 \end{figure}
 
+For comparison, \cref{fig:errors-global,fig:errors-global-histogram} show
+position errors and a histogram of position errors of all the satellite signals
+together, without corrections of residual errors.
+In \cref{fig:errors-global} each color of the dots corresponds to a single
+satellite.
+
+\begin{figure}[p]
+	\centering
+	\noindent\makebox[\textwidth]{
+	\includegraphics{generated/errors-global.pdf}
+	}
+	\caption{Errors for all satellites, without correcting residual errors.}
+	\label{fig:errors-global}
+\end{figure}
+
+\begin{figure}[p]
+	\centering
+	\noindent\makebox[\textwidth]{
+	\includegraphics{generated/errors-global-histogram.pdf}
+	}
+	\caption{Histogram of errors for all satellites, without correcting residual errors.}
+	\label{fig:errors-global-histogram}
+\end{figure}
 
 \subsection{Sensor Model}
 Sensor model of the individual measurements calculates the probability of this

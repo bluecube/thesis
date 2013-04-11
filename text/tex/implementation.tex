@@ -1,14 +1,12 @@
 \chapter{Implementation}
 \label{chap:implementation}
 
-%A proof of concept implementation of both approaches from \Cref{chap:gps-and-mcl}
-%was created with this work.
+This chapter describes the implementation, its design and
+specifics of the GPS receiver used.
 Tools required to analyze the error models for the GPS in Monte Carlo Localization
 were implemented with this work, these are
 available (together with sources of this text) in the git repository at
 \url{https://github.com/bluecube/thesis}.
-The following chapter describes this implementation, its design and
-specifics of the GPS receiver used.
 
 \section{\sirf}
 \label{sec:impl-sirf}
@@ -24,13 +22,13 @@ Apart from the standard NMEA, it can be switched to a proprietary binary protoco
 which provides access to much more of the chip's features.
 This mode was used exclusively for all our experiments.
 
-There is a single publicly available piece of documentation concerning this
+There is only a single publicly available piece of documentation concerning this
 interface \cite{sirf-protocol}, but details about workings of the chip are hard
 to find and must be pieced together from forum posts (especially the thread
 \cite{gpspassion-sirf} at GpsPasSion forums) and trial and error.
 
-\subsection{Messages}
-The SiRF protocol consists of input and output binary messages.
+\subsection{Protocol}
+The SiRF protocol consists of input and output binary messages \cite{sirf-protocol,oszczak12}.
 During regular operation, a group of messages is transmitted approximately every second,
 containing equivalents of data available in NMEA, ECEF positions of a current
 fix and many other details.
@@ -42,7 +40,7 @@ parsed and viewed using the tool \verb=print-all.py=.
 
 \subsection{Measurements}
 \label{sec:impl-sirf-measurements}
-The \sirf chip reports each measurement in a separate messages containing
+The \sirf chip reports each measurement in a separate message, containing
 time of receipt, ID of the satellite that transmitted the message, pseudorange,
 carrier frequency and other values.
 Time of receipt is given as a time of GPS week, relative to the receiver clock.
@@ -51,7 +49,7 @@ but they are smoothed by carrier phase, according to \cite{sirf-protocol}.
 Raw carrier phase measurements, on the other hand, aren't reported at all.
 
 Measurements reported by the chipset are grouped and appear
-to have to have been made simultaneously.
+to have been made simultaneously.
 Reportedly this is to simplify single point solving of the GPS position.
 
 In later text we will refer to these measurements as groups and use average
@@ -66,7 +64,7 @@ The times in which the satellite positions are sampled are usually different
 from the times of measurements, so they have to be interpolated with linear functions
 before use.
 
-The experiment \verb=old-sv-state.py= calculates the difference between positions
+The experiment \verb=previous-sv-state.py= calculates the difference between positions
 obtained from interpolating satellite positions from two successive linearization points, but in
 practice these are negligible.
 
@@ -89,19 +87,20 @@ settled for describing the distribution with a less than optimally fitting norma
 
 \subsection{Clock Jumps in SiRF Output}
 \label{sec:impl-sirf-jumps}
-According to \cite{sirf-protocol}, notes for message ID 28, SiRF chipset has a
+According to notes for message ID 28 in \cite{sirf-protocol}, SiRF chipset has a
 notion of nominal clock drift with corresponding velocity correction of \SI{18315.766}{\meter\per\second}.
 This causes the clock offset to consistently increase in time.
 When it becomes too large, the chip produces a skip in its reported time and
 partially corrects the offset.
-In the recorded data this happens approximately every \SI{20}{\minute} and causes
-problems when processing the raw data, because reported clock values
-can't be relied on being monotonic.
+In the recorded data, this happens approximately every \SI{20}{\minute} and proves
+troublesome when processing the raw data, because of the receiver clock not being monotonic.
 Example of this is shown in \Cref{fig:impl-clock-jumps}.
 
-We work around this problem by measuring the difference between consecutive average
+This problem is difficult to solve properly without knowing the exact moment and magnitude
+of clock correction.
+We work around it by measuring the difference between consecutive average
 measurement errors and when it becomes very large (larger than \SI{1e6}{\meter} proves as an
-appropriate value) we mark this measurement as a skip and estimate the skip
+appropriate value), we mark this measurement as a skip and estimate the skip
 length to match the difference between previous pair of average errors.
 
 \begin{figure}[tp]
@@ -115,22 +114,23 @@ length to match the difference between previous pair of average errors.
 
 \section{Design}
 Software created for this thesis is designed as a python package handling communication
-with GPS and several executable scripts
-Each of the scripts processes the recorded data in some way of values and
+with GPS and several executable scripts.
+Each of the scripts processes the recorded data in some way and
 outputs calculated values and graphs seen through this text.
-Apart from that, the basic idea present through the implementation is, to record
-all data in advance and later processed these recordings.
+Apart from that, the basic idea present through the implementation is to record
+all data in advance and process these recordings offline.
 
 Python programming language was chosen for the implementation,
 because of the speed of development and large number of available libraries.
 This code is intended only as a proof of
 concept and for further experimenting and it does have performance problems
-when running on batch data; a \enquote{real world} implementation
-would probably be written in C or C++, for increased performance and better portability
+when running on large batch data.
+A \enquote{real world} implementation would probably be written in C, C++, or another compiled language
+for increased performance and better portability
 to embedded systems, using libraries like GPSTk \cite{tolman04} for the low level GPS access.
 
 For running the python code, python 2.7 is required.
-The following packages are used outside the standard library:
+The following packages are used in addition to the standard library:
 \begin{compactitem}
 \item matplotlib
 \item numpy and scipy
@@ -141,8 +141,7 @@ The following packages are used outside the standard library:
 \end{compactitem}
 
 \subsection{Communication With SiRF Chip}
-The most basic function of the \verb=GPS= package is serial with the
-SiRF chip.
+The most basic function of the \verb=GPS= package is serial communication with the SiRF chip.
 
 \subsubsection{Serial Communication and Protocol Detection}
 Operations with serial port are performed by the pySerial library.
@@ -165,25 +164,28 @@ available for parsing.
 
 \subsection{Recordings}
 \label{sec:impl-recordings}
-Recordings of GPS messages are stored in a custom format containing sequence
-of timestamped binary SiRF messages, the whole stream compressed with gzip.
+Recordings of GPS messages are stored in a custom format designed to drop store
+as much information about the original stream as possible.
+It consists of a sequence of timestamped binary SiRF messages, the whole stream compressed with gzip.
+
 A custom file format was chosen instead of one directly available in python,
 because it allows us to store data incrementally, without keeping all of the
 messages in memory.
-Even though parsing of the protocol is faster than when this was attempted
+Even though parsing of the recordings is faster than when this was attempted
 using standard pickle file format, it is still optimized for simplicity
 and admittedly creates a performance bottleneck.
 
 Recording files are intended to be seamlessly interchangeable with a real GPS device,
-which proved to be very useful in the early phases of experimentation.
+which proved to be very useful mainly in the early phases of experimentation.
 
-The script \verb=record.py= stores data from a real serial GPS (or from other recording).
+The script \verb=record.py= stores data from a real serial GPS (or from other recording),
+the script \verb=checksum.py= calculates CRC32 checksums of the stored data.
 
 To save time on higher level experiments, some of them (for example the error tests
 in files \verb=errors-*.py=)
 use pre-calculated data saved in numpy data dump format.
 Data in this format don't have to be parsed on every load and also some basic
-preprocessing steps are avoided.
+preprocessing steps are not needlessly repeated.
 The preprocessed data files are created using the script \verb=wgs84_fixes_to_numpy.py=
 for WGS84 positions of fixes and the script \verb=clock_offsets_to_numpy.py= for pseudorange
 and velocity data.
@@ -195,10 +197,11 @@ on observers that are notified every time a desired type of message is encounter
 
 \subsection{Ephemeris}
 Since \sirf sends complete calculated positions of satellites in its binary
-protocol, we are using these, although it is possible relatively easily to switch
-to a different ephemeris source.
-Apart from that a currently unused (and largely untested) scraper for precise
-ephemeris data from the IGS service \cite{orbit-data} is implemented.
+protocol, we are using these, although it is possible to switch
+to a different ephemeris source relatively easily.
+An alternative ephemeris source, which provides precise
+ephemeris data from the IGS service \cite{orbit-data} is implemented, although it
+is currently unused.
 
 Both of these are based on the previously mentioned observer framework for processing
 received GPS messages.
@@ -237,7 +240,7 @@ it's principle is simple to imagine.
 \section{Measurement Domain Error Model}
 The basic idea for determining error model for pseudorange measurements is
 similar to how error model for position domain is determined, but it is complicated
-by several aspects of the pseudoranges.
+by several aspects of the pseudorange measurements.
 
 In contrast with the previous approach, the whole localization process is kept in
 the ECEF coordinate frame, because of the amount of GPS data being processed.
@@ -310,15 +313,14 @@ removed also during localization in a similar way.
 The web site \cite{sam-www} was very useful when implementing corrections for
 pseudorange measurements.
 
-We attempted to implement corrections for ionospheric and tropospheric
-effects.
-
-Tropospheric corrections,
+We to implemented corrections for ionospheric and tropospheric effects:
+\begin{itemize}
+\item Tropospheric corrections,
 implemented based on the Hopfield's tropospheric model
 with the mapping function implementation based on \cite{sam-www},
 improved the one sigma error by approximately \SI{0.2}{\meter}.
 
-Ionospheric corrections taken from the values transmitted in the navigation messages
+\item Ionospheric corrections taken from the values transmitted in the navigation messages
 (and accessed in the SiRF SV state messages) on the other hand,
 increased the one sigma error by \SI{0.05}{\meter}.
 Because of this we chose not to use the ionospheric correction.
@@ -326,6 +328,7 @@ This effect may be caused by our implementation estimating the residual
 clock offsets -- the ionospheric effects are already corrected
 and the inaccurate estimation transmitted by the space segment only adds noise
 to our data.
+\end{itemize}
 
 %\section{Data from Karlík}
 %\begin{itemize}

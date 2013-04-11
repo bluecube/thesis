@@ -19,7 +19,7 @@ the individual pseudorange measurements each as an independent correction input.
 
 This chapter concentrates on tasks common to all GPS receivers,
 problems and implementation decisions encountered with the SiRF receiver
-during the implementation part are addressed in \cref{chap:implementation}.
+during the implementation part are addressed in \Cref{chap:implementation}.
 
 GPS augmentation systems (like EGNOS or WAAS) were not used for tests in this
 to keep the sensor models simple.
@@ -35,7 +35,7 @@ in 2D plane.
 
 This approach has the advantage of being very simple, because most of the work
 is done in the dedicated hardware of the GPS receiver.
-On the other hand information are discarded when the fix is converted to the simple
+On the other hand information is discarded when the fix is converted to the simple
 latitude / longitude / HDOP format, which may decrease the accuracy of the
 localization.
 Also consumer-grade GPS receivers often employ filters tuned to specific properties
@@ -52,12 +52,12 @@ For position domain integration we work in a two dimensional coordinate
 system on a surface of Earth, with X axis going East and Y axis going North.
 WGS84 inputs are transformed to this reference frame using orthogonal projection
 this reported position and HDOP are used to modify weights of the samples.
-Details of this can be found in \cref{sec:impl-coordinates}.
+Details of this can be found in \Cref{sec:impl-coordinates}.
 
 No other variables are required in the robot's state for this method.
 This makes it possible to seamlessly integrate it into existing localization framework.
 Adding  more state, however might improve the accuracy, one such option
-is discussed in \cref{sec:position-domain-correlation}.
+is discussed in \Cref{sec:position-domain-correlation}.
 
 \subsection{Sensor Model}
 \label{sec:wgs84-hdop-error}
@@ -106,7 +106,7 @@ and
 \Cref{fig:wgs84-hdop-error} is a visualisation of fitting of these two models,
 blue dots representing the measured data, yellow dots the DRMS values.
 The green line shows the theoretical linear model and the red curve is the non linear model.
-Limited resolution of the HDOP values in input data is visible in the plot.
+Limited resolution of the HDOP values in input data are visible in the plot.
 This figure also shows the precision available when using simple NMEA data --
 DRMS error of roughly \SI{8}{\meter}.
 Another interesting fact is to note, that only relatively low HDOP values were encountered.
@@ -118,7 +118,7 @@ To obtain the final sensor model, we must express the PDF of Rayleigh distributi
 \end{equation}
 
 \Cref{algo:gps-position-domain} shows a pseudo code implementation of a function
-that provides a sensor model to MCL algorithm from \cref{chap:mcl} based on the
+that provides a sensor model to MCL algorithm from \Cref{chap:mcl} based on the
 fitted non-linear model.
 
 \begin{figure}[tp]
@@ -162,7 +162,7 @@ This is in part because errors of the individual satellite measurements are corr
 but another major reason
 is the \enquote{inertia} added by the Kalman filter.
 This kind of correlation obviously breaks the independence assumptions of Markov
-localization defined in \cref{sec:markov-assumptions}.
+localization defined in \Cref{sec:markov-assumptions}.
 
 An attempt at mitigating this could be done by estimating the error as part of
 the robot's state, possibly removing atmospheric effects and some of the low pass
@@ -203,13 +203,13 @@ In the experimental data estimation of residual errors decreased one sigma pseud
 from \SI{\pseudorangeErrorNaiveSigma}{\meter} to \SI{\pseudorangeErrorSigma}{\meter}.
 
 As with the Position domain approach, the model was derived from
-measurements in a month long data set (see \cref{chap:datasets}).
+measurements in a month long data set (see \Cref{chap:datasets}).
 During the test period the receiver was stationary and
 the \enquote{true} position for checking the errors was established as an average of ECEF
 positions reported by the receiver's internal software.
 Clock offsets and drifts, which do not stay constant during the experiment,
 were approximated by fitting a linear function to a sliding window of pseudorange
-measurements (details are discussed in \cref{sec:impl-clock-offsets}).
+measurements (details are discussed in \Cref{sec:impl-clock-offsets}).
 
 \subsection{Robot State}
 Unlike position domain integration, this method requires specific
@@ -232,7 +232,7 @@ of the GPS data.
 In short, this consists of merging ephemeris to the measurements, removing
 any inconsistencies in data caused by the
 receiver and converting the data to sequences of pseudoranges and Doppler measurements.
-These steps are discussed in \cref{sec:impl-sirf-measurements,sec:impl-sirf-jumps,sec:impl-sirf-ephemeris}.
+These steps are discussed in \Cref{sec:impl-sirf-measurements,sec:impl-sirf-jumps,sec:impl-sirf-ephemeris}.
 
 \subsection{Motion Model}
 Since GPS utilizes additional state variables, we needs to specify the motion
@@ -274,10 +274,10 @@ clock drifts derivation.
 	\label{fig:residual-clock-drift-derivation}
 \end{figure}
 
-For comparison, \cref{fig:errors-global,fig:errors-global-histogram} show
+For comparison, \Cref{fig:errors-global,fig:errors-global-histogram} show
 position errors and a histogram of position errors of all the satellite signals
 together, without corrections of residual errors.
-In \cref{fig:errors-global} each color of the dots corresponds to a single
+In \Cref{fig:errors-global} each color of the dots corresponds to a single
 satellite.
 
 \begin{figure}[p]
@@ -305,7 +305,7 @@ measurement being observed, conditioned by the robot state.
 \subsubsection{Ephemeris}
 We treat position and velocity of the satellite transmitting
 the current ranging message as part of the measurement.
-In reality these information are separate in the transmission, but
+In reality this information is separate in the transmission, but
 this approach works without problems when processing the GPS data from the receiver online,
 because the GPS contains current best estimate of the ephemeris periodically repeated
 in the broadcast navigation data.
@@ -313,16 +313,16 @@ in the broadcast navigation data.
 If only the pseudorange measurements were available, we would need to access the
 ephemeris data from the time of transmission.
 This might in fact improve quality of the localization if precise ephemeris
-was used instead (see \cref{sec:gps-ephemeris}).
+was used instead (see \Cref{sec:gps-ephemeris}).
 
 \subsubsection{Corrections}
 Pseudoranges and velocities reported by the receiver must be compensated before
 use for receiver and satellite clock offset and drift and possibly also for other
 sources of errors.
 
-For pseudoranges, the clock offsets are compensated according to \cref{eq:pseudorange4}.
-Other errors should be compensated as described in \cref{sec:gps-error-sources}
-(our implementation uses only tropospheric corrections, see \cref{sec:impl-corrections}.
+For pseudoranges, the clock offsets are compensated according to \Cref{eq:pseudorange4}.
+Other errors should be compensated as described in \Cref{sec:gps-error-sources}
+(our implementation uses only tropospheric corrections, see \Cref{sec:impl-corrections}.
 
 In a similar way, velocities must be compensated for clock drifts 
 as in \eqref{eq:doppler2}.
@@ -370,7 +370,7 @@ and velocity measurements.
 It is possible, that the odd shape of velocity measurements probability distribution
 is caused by an error in the SiRF binary protocol manual, however we didn't manage
 to confirm this.
-This effect is discussed in slightly more detail in \cref{sec:impl-carrier-freq},
+This effect is discussed in slightly more detail in \Cref{sec:impl-carrier-freq},
 but meanwhile we are using the mentioned normal distribution as a very simple
 (and slightly incorrect) workaround.
 
@@ -423,7 +423,7 @@ The intended use of this algorithm is to improve position estimate when using
 a consumer grade GPS receiver, so we are not limited by the need to bootstrap the estimates.
 For localizing the robot globally, we can initialize the position
 estimate from the solution provided by the receiver's software.
-The initial position estimate can be modelled as discussed in \cref{sec:position-domain}.
+The initial position estimate can be modelled as discussed in \Cref{sec:position-domain}.
 
 Clock offsets and drifts can be initialized from the data provided by the
 receiver, although there is no standardized way of doing this.
@@ -441,7 +441,7 @@ they can be initialized to zero.
 algorithm for Monte Carlo localization.
 
 The motion model is implemented in function \predictGPS{}.
-It is expected to be called from the function \sampleFromActionModel{} in \cref{algo:mcl},
+It is expected to be called from the function \sampleFromActionModel{} in \Cref{algo:mcl},
 as a part of the prediction step.
 This function advances the clock drift by a random amount
 and integrates the current drift to form a new clock offset,

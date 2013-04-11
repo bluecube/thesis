@@ -6,12 +6,12 @@ developed and operated by the US government.
 GPS provides three-dimensional position and velocity measurements as well as
 precise time source for every place on Earth with direct satellite visibility.
 The GPS is not the only GNSS, in use, but arguably the only one in wide use.
-Very brief overview of other navigation systems can be found in \cref{sec:gps-alternatives}.
+Very brief overview of other navigation systems can be found in \Cref{sec:gps-alternatives}.
 
 This chapter contains an overview of the Global Positioning System and
 the basics of its operation.
 This will be used to develop methods for using GPS
-measurements in Monte Carlo localization in \cref{chap:gps-and-mcl}.
+measurements in Monte Carlo localization in \Cref{chap:gps-and-mcl}.
 
 First, principles of GPS are discussed, followed by a description of methods for
 obtaining receiver position and velocity,
@@ -105,7 +105,7 @@ Time and GPS System Time may reach up to \SI{1}{\milli\second} (equivalent to
 
 Values of this offset are calculated by the control segment
 and broadcast by the satellites, or downloaded with precise ephemeris
-(see section \ref{sec:gps-ephemeris}).
+(see \Cref{sec:gps-ephemeris}).
 Because of this we can assume that this value is known, although not
 with absolute precision.
 
@@ -135,8 +135,8 @@ Semi-codeless techniques further exploit other properties of P(Y) code and its k
 
 Modernized GPS satellites provide three additional civilian signals:
 L2C, L5 and a military signal M. A fourth civilian signal L1C is planned, that will be compatible with
-European navigation system Galileo (see \ref{sec:galileo}).
-At the time of writing this thesis, the signals L2C and L5 are partially supported and L1C is still only
+European navigation system Galileo (see \Cref{sec:galileo}).
+At the time of writing this text, the signals L2C and L5 are partially supported and L1C is still only
 planned \cite{gps-modernization-www}.
 
 \subsection{Navigation Messages}
@@ -171,7 +171,7 @@ with the equatorial plane.
 \(X\) axis in the direction of \ang{0} longitude, \(Y\) axis in the direction of latitude
 \ang{90} East and \(Z\) axis pointing in
 the direction of geographical North pole.
-Illustration of this can be seen in \cref{fig:ecef}.
+Illustration of this can be seen in \Cref{fig:ecef}.
 
 \begin{figure}[h]
 	\centering
@@ -181,7 +181,7 @@ Illustration of this can be seen in \cref{fig:ecef}.
 \end{figure}
 
 Results of ephemeris calculations are in ECEF coordinates
-(see section \ref{sec:gps-ephemeris}) and receiver positions are calculated
+(see \Cref{sec:gps-ephemeris}) and receiver positions are calculated
 in ECEF as well.
 All later GPS calculations in this work will be in ECEF reference frame.
 
@@ -313,8 +313,8 @@ This corresponds to an intersection of conical surfaces in four dimensions.
 
 Equations from \eqref{eq:pseudorange3} can be solved using various methods, including closed form solutions
 (for example \cite{leva96}), iterative solutions, linearization of the equations around
-previous position estimates, using Kalman filters (see \ref{sec:kalman}) or,
-as we will discuss in section \ref{sec:measurement-domain}, Monte Carlo localization.
+previous position estimates, using Kalman filters (see \Cref{sec:kalman}) or,
+as we will discuss in \Cref{sec:measurement-domain}, Monte Carlo localization.
 The last two approaches also have the advantage of being able to fuse other sensor data
 into the solution.
 
@@ -325,7 +325,7 @@ Carrier phase tracking is a technique that depends on measuring the phase of car
 L1 frequency has a wavelength of approximately \SI{19}{\centi\meter}.
 Assuming the receiver can match the L1 with \SI{1}{\percent} accuracy, then the available precision
 is around \SI{2}{\milli\meter} compared to about \SI{3}{\meter} for code phase (pseudorange)
-tracking. More detailed description of the code phase tracking errors is in \cref{sec:gps-error-sources}.
+tracking. More detailed description of the code phase tracking errors is in \Cref{sec:gps-error-sources}.
 
 One of the main problems with the carrier phase tracking is integer ambiguity of the carrier wave.
 This problem arises because, unlike the PRN signals, the carrier wave doesn't contain any code designed to
@@ -373,7 +373,7 @@ using the receiver clock drift \(\recclockdrift\):
 	\label{eq:doppler-clock-drift}
 \end{equation}
 
-By putting \cref{eq:doppler,eq:doppler-clock-drift}
+By putting \Cref{eq:doppler,eq:doppler-clock-drift}
 together, we obtain
 \begin{equation}
     \label{eq:doppler2}
@@ -439,12 +439,12 @@ In theory, standard deviation of the completed fix should have a linear dependen
 UERE and DOP (see equation \eqref{eq:dop-def}), but the actual position error is typically slightly lower,
 since the ionospheric errors are correlated.
 
-In \cref{sec:position-domain} we are discussing dependence of the position error on HDOP value
-and \cref{fig:wgs84-hdop-error} shows the experimental data.
+In \Cref{sec:position-domain} we are discussing dependence of the position error on HDOP value
+and \Cref{fig:wgs84-hdop-error} shows the experimental data.
 
 \subsubsection{Definition}
 The formal definition of DOP values is based on linearization of pseudorange equations
-in \cref{sec:gps-position}:
+in \Cref{sec:gps-position}:
 \begin{equation}
 	\label{eq:dop1}
 	\vect{H}\vect{\Delta{}x} = \vect{\Delta{}\rho}
@@ -526,7 +526,7 @@ In \cref{sec:wgs84-hdop-error} we show how this expression fits our experimental
 The following text describes the major sources of measurement errors and also a way
 of removing or at least limiting them.
 Apart from errors mentioned in this section, there are many more sources, but they cause inaccuracies
-that are negligible for single receiver applications discussed in this thesis.
+that are negligible for single receiver applications discussed in this text.
 An overview can be found in \cite{kouba09}.
 
 \subsubsection{Match Accuracy and Receiver Delays}
@@ -557,7 +557,7 @@ They are typically caused by buildings surrounding the receiver position,
 reflective surfaces surrounding the antenna (e.g. wings in an aircraft mounted GPS) or Earth's surface
 when including satellites with low elevation angle in the solution.
 
-An illustration of this effect and of shadowing is shown in \cref{fig:multipath}.
+An illustration of this effect and of shadowing is shown in \Cref{fig:multipath}.
 The signal drawn in green follows a direct path from the satellite to the receiver and is shadowed,
 and the red multipath signal is reflected from a building, making its travelled path longer.
 
@@ -573,7 +573,7 @@ Multipath errors can be mitigated with hardware modifications, like antenna desi
 better antenna placement or coating nearby reflective surfaces with RF absorptive materials.
 Another option is to employ better signal processing in receivers.
 
-When only complete measurements are available (as is the case in the implementation part of this thesis),
+When only complete measurements are available (as is the case in the implementation part of this text),
 satellites may be dropped from the solution if the elevation angle
 is too low to avoid this kind of errors.
 A more complex method of dealing with multipath errors is described in \cite{viandier08},
@@ -609,7 +609,7 @@ harder to predict.
 An interesting property of ionospheric delays is, that they are correlated,
 both in measurements from different satellite to a single receiver and in measurements
 from a single satellite to multiple receivers.
-The later property is utilized in differential GPS (\cref{sec:dgps}).
+The later property is utilized in differential GPS (\Cref{sec:dgps}).
 
 Since the ionospheric delay is a function of signal frequency and total electron
 count in atmosphere \cite{kaplan06}, it can be almost completely
@@ -627,7 +627,7 @@ segment, however the residual errors increase with the age of upload.
 According to \cite{kaplan06}, \(1 \sigma\) pseudorange error is typically about \SI{0.8}{\meter}
 and up to \SI{4}{\meter} for clock errors.
 
-As discussed in \cref{sec:gps-ephemeris}, this class of errors can be avoided or at least decreased by using precise ephemeris
+As discussed in \Cref{sec:gps-ephemeris}, this class of errors can be avoided or at least decreased by using precise ephemeris
 at the expense of requiring internet connection during operation.
 
 \subsubsection{Relativistic Effects}
@@ -649,8 +649,7 @@ Kalman filters are often used in the GPS receivers to merge past
 data with incoming measurements or to combine the GPS position and velocity
 estimation with another source of measurements, for example inertial data.
 
-For more detailed description of how Kalman filters operate see section
-\ref{sec:kalman}.
+For more detailed description of how Kalman filters operate see \Cref{sec:kalman}.
 
 \section{Differential GPS}
 \label{sec:dgps}
@@ -690,7 +689,7 @@ ionospheric parameters, forming simple DGPS system and increasing the fix precis
 Most of the time a consumer GPS receiver is used as a black box that provides position
 estimates when power and possibly external antenna is connected.
 In more complicated use cases, such as measurement domain integration of GPS signals with
-other sensors discussed in section \ref{sec:measurement-domain} of this work,
+other sensors discussed in \Cref{sec:measurement-domain} of this work,
 lower level data from the location estimation process may be used, but only as provided
 by software in the GPS receiver.
 Many communication protocols are in use, which providing position, velocity, clock data

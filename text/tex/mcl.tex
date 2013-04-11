@@ -25,7 +25,7 @@ errors, or global localization, where the robot has to find its position from sc
 and recover from serious localization errors.
 
 In this work we will focus only on passive localization in static environment and
-since Monte Carlo localization is a topic of this thesis we will be favoring
+since Monte Carlo localization is a topic of this text we will be favoring
 global localization, although typically GPS is used with Kalman filters
 which are only capable of tracking the estimate locally.
 
@@ -65,7 +65,7 @@ Here \(X_i\) is the random variable representing the robot's state,
 is the action the robot performs in the time step \(i\), after it
 measures \(o_i\).
 
-Using Bayes rule, \cref{eq:markov-belief-def} can be transformed to
+Using Bayes rule, \Cref{eq:markov-belief-def} can be transformed to
 \begin{equation}
 	\label{eq:markov-derivation1}
 	\Bel(X_i = x) =
@@ -91,7 +91,7 @@ of this section and simplify \eqref{eq:markov-derivation1} to
 %The equation \eqref{eq:markov-derivation1} has already been simplified using
 %the independence assumptions.
 By integrating over all possible states in time \(i - 1\), the rightmost term in
-\cref{eq:markov-derivation1} can be expanded in a following way:
+\Cref{eq:markov-derivation1} can be expanded in a following way:
 \begin{multline}
 	\label{eq:markov-derivation3}
 	\Prob(X_i = x \mid o_{1, \dotsc, i}, a_{1, \dotsc, i - 1}) = \\
@@ -100,7 +100,7 @@ By integrating over all possible states in time \(i - 1\), the rightmost term in
 	\Prob(X_{i-1} = x' \mid o_{1, \dotsc, i-1}, a_{1, \dotsc, i-1})
 	\,\mathrm{d}x'
 \end{multline}
-After substituting the definition of belief from \cref{eq:markov-belief-def}
+After substituting the definition of belief from \Cref{eq:markov-belief-def}
 and another use of the independence assumptions we get
 \begin{equation}
 	\label{eq:markov-derivation4}
@@ -164,9 +164,8 @@ densities encountered.
 Several specialisations of Markov localization exist, differing mainly in how the
 current state estimation is represented.
 Examples include Gaussian distribution in Kalman filters,
-%(together with other assumptions, see \ref{sec:kalman}),
 grid based algorithms \cite{fox98}, or representing the distribution
-using samples in Monte Carlo localization (see section \ref{sec:mcl-algorithm}).
+using samples in Monte Carlo localization (see \Cref{sec:mcl-algorithm}).
 
 \subsection{Kalman Filter}
 \label{sec:kalman}
@@ -182,7 +181,7 @@ action model and the measurement model are linear and Gaussian \cite{diard03}.
 	\label{eq:kalman-measurement-model}
 	\Prob(o_{i} \mid X_i = x) \sim \normalDistribution(H_{i}x, R_i)
 \end{gather}
-In \cref{eq:kalman-action-model,eq:kalman-measurement-model}
+In \Cref{eq:kalman-action-model,eq:kalman-measurement-model}
 the matrix \(A_i\) describes the change of state if there was no control input and no noise,
 matrix \(B_i\) contains the influence of action \(a_i\) and \(H_i\) relates state to measured
 values.
@@ -346,7 +345,7 @@ MCL keeps a set of samples \(S_i = \{s^k_{i} \mid k = 1,\dotsc,n\} \) drawn from
 \(\Prob(X_i = x \mid X_{i-1}, o_i, a_{i - 1})\) to represent the belief and performs
 prediction, correction and resampling phases for every time frame.
 
-Pseudocode in \cref{algo:mcl} contains the basic structure of Monte Carlo localization.
+Pseudocode in \Cref{algo:mcl} contains the basic structure of Monte Carlo localization.
 The algorithm reads inputs from the environment by calling functions
 \getAction{} and \getObservation{}, that return the last performed action and the
 last measured observation.

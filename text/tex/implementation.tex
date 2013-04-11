@@ -1,7 +1,7 @@
 \chapter{Implementation}
 \label{chap:implementation}
 
-%A proof of concept implementation of both approaches from \cref{chap:gps-and-mcl}
+%A proof of concept implementation of both approaches from \Cref{chap:gps-and-mcl}
 %was created with this work.
 Tools required to analyze the error models for the GPS in Monte Carlo Localization
 were implemented with this work, these are
@@ -37,7 +37,7 @@ fix and many other details.
 Messages describing positions of satellites and individual measurements can be
 enabled on demand.
 
-Messages from a GPS (or from a recording, see \cref{sec:impl-recordings}) can be
+Messages from a GPS (or from a recording, see \Cref{sec:impl-recordings}) can be
 parsed and viewed using the tool \verb=print-all.py=.
 
 \subsection{Measurements}
@@ -79,12 +79,12 @@ Since the reported carrier frequency depends on both receiver clock offset and
 the satellite clock offset, this means, that the reported carrier frequency must already
 be corrected for satellite clock drift.
 Still, this doesn't explain how the carrier frequency should fit to the Doppler
-effect formula shown in \cref{eq:doppler2}.
+effect formula shown in \Cref{eq:doppler2}.
 
 This discrepancy suggests an error in the SiRF manual (an opinion which has already been
 suggested on the GpsPasSion forum).
 This would be an explanation for the unexpected probability distribution in
-\cref{fig:velocity-hist}, but we didn't investigate this and meanwhile
+\Cref{fig:velocity-hist}, but we didn't investigate this and meanwhile
 settled for describing the distribution with a less than optimally fitting normal distribution.
 
 \subsection{Clock Jumps in SiRF Output}
@@ -97,7 +97,7 @@ partially corrects the offset.
 In the recorded data this happens approximately every \SI{20}{\minute} and causes
 problems when processing the raw data, because reported clock values
 can't be relied on being monotonic.
-Example of this is shown in \cref{fig:impl-clock-jumps}.
+Example of this is shown in \Cref{fig:impl-clock-jumps}.
 
 We work around this problem by measuring the difference between consecutive average
 measurement errors and when it becomes very large (larger than \SI{1e6}{\meter} proves as an
@@ -262,10 +262,10 @@ measurement, with time and the idealized receiver clock offset.
 It is now necessary to merge all the clock offsets to obtain clock offset for
 each measurement time.
 
-First approach explored in this thesis was to fit a polynomial through these
+First approach explored was to fit a polynomial through these
 points, but it didn't fit the points well enough on large data sets.
 Currently we fit a linear function to points from a sliding window centered
-around each of points as seen on \cref{fig:sliding-window-linear-regression}.
+around each of points as seen on \Cref{fig:sliding-window-linear-regression}.
 
 An input of this procedure is a set of points \(\{x_i, y_i\}\).
 The value \(x_i\) meaning time of the measurement and 
@@ -293,7 +293,7 @@ is performed only on measurements with error lower than a certain threshold.
 Empirically obtained values are \SI{10}{\minute} for the window width and
 \SI{150}{\meter} for outlier threshold.
 In this case we don't have to deal with problems of extremely large errors in estimation
-like in \cref{sec:gps-thresholds}.
+like in \Cref{sec:gps-thresholds}.
 
 A possible objection to this reasoning is, that this way the estimated
 receiver clock offset will

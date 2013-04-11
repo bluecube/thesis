@@ -83,13 +83,13 @@ Pseudoranges as MCL input
                 receiver clock offset + residual clock offset,
                 satellite clock offset,
                 tropospheric errors.
-            \item Ionospheric errors not corrected explicitly (see \cref{sec:impl-corrections}).
+            \item Ionospheric errors not corrected explicitly (see \Cref{sec:impl-corrections}).
         \end{compactitem}
         \item Velocity error:
         \begin{compactitem}
             \item \(\mathrm{velocityError} = \mathrm{correctedVelocity} - \mathrm{velocityDifference}\)
             \item Correcting velocity for receiver clock drift + residual clock drift.
-            \item Encountered a bug in \sirf (see \cref{sec:impl-carrier-freq}).
+            \item Encountered a bug in \sirf (see \Cref{sec:impl-carrier-freq}).
         \end{compactitem}
         \item Thresholding
         \begin{compactitem}

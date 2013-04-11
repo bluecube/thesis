@@ -3,24 +3,25 @@
 % Autonomous outdoor robots are fun, although kinda hard.
 
 The ability to determine its position is important for autonomous or semi-autonomous robot
-not only for completing the its task, but also for a basic
+not only for completing its task, but also for a basic
 safe navigation through the environment.
 
-Outdoor robot may navigate large areas without detailed maps available.
-This limits
-the usefulness of some sensors used for indoor localization, like laser range finders,
-leaving a robot designer looking for alternative sensors.
+%Outdoor robot may navigate large areas without detailed maps available.
+%This limits
+%the usefulness of some sensors used for indoor localization, like laser range finders,
+%leaving a robot designer looking for alternative sensors.
 
 The Global Positioning System (GPS) is a satellite navigation system that
 provides position, velocity and time information for receivers at any place on Earth with direct
 satellite visibility.
-
 Seeing its use in automotive industry, GPS seems to be a good candidate for
 localization of robots operating in outdoor areas.
 The best position measurement precisions available from the Global Positioning System
 are in the orders of millimeters with survey grade hardware.
 Consumer grade receivers, however, only offer precision of several meters, which
 by itself isn't good enough for the robot to navigate safely.
+A price difference of several orders of magnitude makes the use of consumer GPS
+receivers the only option for many robot designers, though.
 
 
 Monte Carlo localization (MCL) is an algorithm that estimates position of a robot
@@ -45,9 +46,8 @@ These assumptions are then used to modify the data, examples
 include minimum speed threshold or vertical speed limits.
 Additionally, based on NMEA data, measurement errors can only be characterized very roughly.
 
-A different approach, which will be explored in this work, uses raw
+A different approach, which is explored in this work, uses raw
 pseudorange measurements from the GPS receiver.
-In principle this is similar to how IR/ultrasound ranging beacons are used for localization.
 When using pseudorange measurements, localization algorithm can work with motion model
 which closely matches
 the real hardware, each pseudorange measurement can have an
@@ -57,16 +57,16 @@ independent error model and further modifications to improve precision can be us
 \vspace{1.5em}
 
 
-This work shows the two mentioned  methods of integrating GPS measurements
-into Monte Carlo Localization and compares their performance on a real robot.
-Also an overview of GPS system and Monte Carlo localization is included in
-this thesis to provide context for the main topic.
+%This work shows the two mentioned  methods of integrating GPS measurements
+%into Monte Carlo Localization and compares their performance on a real robot.
+%Also an overview of GPS system and Monte Carlo localization is included in
+%this thesis to provide context for the main topic.
 
 
 The rest of the text is organized as follows:
 \Cref{chap:gps} describes the GPS system and its operating principles.
 \Cref{chap:mcl} describes Monte Carlo Localization.
 \Cref{chap:gps-and-mcl} proposes fusing of GPS data into MCL, and
-\cref{chap:implementation} describes implementation of experiments with GPS and
+\Cref{chap:implementation} describes implementation of experiments with GPS and
 Monte Carlo localization.
 \Cref{chap:conclusion} concludes and evaluates the work.

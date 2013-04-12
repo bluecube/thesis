@@ -13,7 +13,7 @@ import logging
 import resource
 
 import gps
-import matplotlib_settings
+from util import matplotlib_settings
 import matplotlib.pyplot as plt
 import matplotlib
 

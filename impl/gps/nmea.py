@@ -1,3 +1,10 @@
+"""
+nmea,py
+
+Contains logic for reading and writing NMEA messages from a serial port
+and for parsing them.
+"""
+
 import operator
 import functools
 import time
@@ -65,9 +72,5 @@ def _build_sentence(fields):
     return "$".encode('ascii') + line + \
         "*{0:02X}\r\n".format(checksum).encode()
 
-if bytes == str:
-    def _checksum(string):
-        return functools.reduce(operator.__xor__, (ord(x) for x in string))
-else:
-    def _checksum(string):
-        return functools.reduce(operator.__xor__, string)
+def _checksum(string):
+    return functools.reduce(operator.__xor__, (ord(x) for x in string))

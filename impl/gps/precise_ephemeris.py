@@ -201,7 +201,7 @@ def _ymdhm2gps(y, month, d, h, m):
     week, day = divmod(days, 7)
 
     return week, (60 * (m + 60 * (h + 24 * day)))
-    
+
 def _decompress_Z_file(fileobj):
     """
     Helper function that decompresses the compress'd files (*.Z)
@@ -210,4 +210,4 @@ def _decompress_Z_file(fileobj):
     """
     gunzip = subprocess.Popen('gunzip', stdin=fileobj, stdout=subprocess.PIPE, shell=True)
     return gunzip.stdout
-    
+

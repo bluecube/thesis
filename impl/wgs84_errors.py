@@ -8,7 +8,7 @@ Assumes that the receiver was stationary during whole recording.
 
 from __future__ import division
 
-import matplotlib_settings
+from util import matplotlib_settings
 import wgs84_fixes_to_numpy
 
 import math

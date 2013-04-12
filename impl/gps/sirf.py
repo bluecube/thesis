@@ -1,3 +1,12 @@
+"""
+sirf,py
+
+Contains logic for reading and writing SiRF binary messages from a serial port
+and for parsing them.
+
+The actual classes for parsed messages are in sirf_messages.py
+The available classes are enumerated using module introspection.
+"""
 import time
 import struct
 import logging

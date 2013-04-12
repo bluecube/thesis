@@ -1,3 +1,15 @@
+"""
+sirf_messages.py
+
+Classes representing individual parsed SiRF messages.
+
+Classes deriving from _SirfReceivedMessageBase and _SirfSentMessageBase are
+automatically enumerated in sirf.py.
+
+Each of this classes intended for reading messages contain the class method
+from_bytes, each intended for writing contains a regular method to_bytes.
+"""
+
 from __future__ import division
 
 import struct

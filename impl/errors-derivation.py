@@ -16,7 +16,7 @@ import resource
 import itertools
 
 import gps
-import matplotlib_settings
+from util import matplotlib_settings
 import matplotlib.pyplot as plt
 import matplotlib
 import progressbar

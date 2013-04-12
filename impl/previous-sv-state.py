@@ -13,7 +13,7 @@ import logging
 import sys
 import argparse
 import math
-import stats
+from util import stats
 
 from gps.sirf_messages import *
 

@@ -12,7 +12,7 @@ import argparse
 
 import gps
 
-import stats
+from util import stats
 
 from gps.sirf_messages import *
 

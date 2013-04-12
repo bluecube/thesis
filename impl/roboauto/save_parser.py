@@ -1,3 +1,10 @@
+"""
+save_parser.py
+
+Parser for roboauto saves.
+Enumerates packet classes in packets.py
+"""
+
 import packets
 import struct
 

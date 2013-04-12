@@ -7,6 +7,7 @@ StationState = collections.namedtuple('StationState', [
     'clock_drift'])
 
 class Ephemeris(object):
+    """ An abstraction of a ephemeris source for GPS calculations. """
     def __init__(self):
         self._current_week = None
 

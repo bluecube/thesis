@@ -1,3 +1,10 @@
+"""
+packets.py
+
+Individual packets for roboauto saves.
+Classes deriving from _PacketBase are enumerated by save_parser.py.
+"""
+
 from __future__ import division
 import time
 import calendar

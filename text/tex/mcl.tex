@@ -196,7 +196,7 @@ Kalman filter very efficient, requiring only several matrix operations in each s
 
 Non linear motion and measurement models can be approximated
 using a first order Taylor expansion to form an extended Kalman
-filter (EKF) \cite{welch95}.
+filter (EKF, \cite{welch95}).
 
 As an illustration of operations of a Kalman filter, the update rules are included.
 For more detailed description see \cite{welch95}.
@@ -233,7 +233,7 @@ Here \(\bar{x}_i\) and \(P_i\) are mean and covariance describing \(\Bel(X_i)\).
 	\label{fig:mcl}
 \end{figure}
 
-Monte Carlo localization (MCL) \cite{dellaert99} is a Monte Carlo method for
+Monte Carlo localization (MCL, \cite{dellaert99}) is a Monte Carlo method for
 robot localization.
 It is a version of Markov localization, that approximates the belief
 using a set of samples drawn from it.
@@ -266,9 +266,6 @@ copies of the highly weighted samples instead.
 Red lines show paths traveled by the robots and blue dots represent MCL samples.
 Both of the robots use odometry data to estimate position and the robot on the right
 senses color of the tile underneath it as well.
-This example shows how the belief is represented as a set of points and how
-different shapes of the cloud represent different conditions in the localization
-process.
 
 \subsection{Algorithm}
 
@@ -392,7 +389,7 @@ Ideally in the correction phase the algorithm would draw samples directly from
 \(\Prob(o_i \mid X_i = x) \Prob(X_i = x \mid X_{i - 1}, a_{i - 1})\),
 however there is no easy way to achieve this.
 Instead, Monte Carlo localization 
-uses sampling / importance resampling (SIR) \cite{smith92}
+uses sampling / importance resampling (SIR, \cite{smith92})
 to approximate sampling from
 \(\Prob(o_i \mid X_i = x) \hat{\Prob}(X_i = x \mid X_{i - 1}, a_{i - 1})\) using the set \(S'_i\).
 This is achieved by weighting the samples as described earlier and resampling
@@ -424,7 +421,7 @@ resampling algorithm described in \cite{arulampalam01}.
 \subsubsection{Adaptive Sample Size}
 During global localization or tracking failure MCL needs a relatively large number
 of samples to localize correctly.
-The required number of samples, however, decreases when during position keeping.
+The required number of samples, however, decreases during position keeping.
 
 An improvement of the MCL algorithm is to vary the sample size dynamically.
 This can be done by using likehood sampling \cite{fox99}, that works by

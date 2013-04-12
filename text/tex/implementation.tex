@@ -70,8 +70,8 @@ practice these are negligible.
 
 \subsection{Carrier Frequency}
 \label{sec:impl-carrier-freq}
-In the field named \enquote{carrier frequency} \sirf reports the equivalent relative velocity
-between the receiver and satellite.
+\sirf reports the equivalent relative velocity
+between the receiver and satellite in the field named \enquote{carrier frequency}.
 According to the manual, it must be compensated for receiver clock drift.
 Since the reported carrier frequency depends on both receiver clock offset and 
 the satellite clock offset, this means, that the reported carrier frequency must already
@@ -146,7 +146,8 @@ The most basic function of the \verb=GPS= package is serial communication with t
 \subsubsection{Serial Communication and Protocol Detection}
 Operations with serial port are performed by the pySerial library.
 Because the chip can work in several modes of communication, it is necessary to
-switch it to a known one before use, this is done by attempting to read messages
+switch it to a known mode before use.
+This is done by attempting to read messages
 from the GPS in two expected modes (4800 8N1 NMEA protocol and 115200 8N1 SiRF
 binary protocol). If neither of these fits, all other possible
 combinations of baud rate and protocol are tried.

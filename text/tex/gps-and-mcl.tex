@@ -163,8 +163,7 @@ fitted non-linear model.
 A problem that is hard to avoid with this approach is that position errors of the
 receiver output are correlated.
 This is in part because errors of the individual satellite measurements are correlated,
-but another major reason
-is the \enquote{inertia} added by the Kalman filter in receiver firmware.
+another major reason is the \enquote{inertia} added by the Kalman filter in receiver firmware.
 This kind of correlation obviously breaks the independence assumptions of Markov
 localization defined in \Cref{sec:markov-assumptions}.
 
@@ -183,8 +182,8 @@ In Monte Carlo localization, the GPS data are used in a similar way as
 for example ultrasound ranging beacons would be used.
 As a first step measured pseudorange is corrected for measurement errors.
 Sample weights are then modified based on the corrected distance compared to expected distance.
-GPS, of course, has the additional complexity of the receiver clock offset, which
-has to be known in order to transform pseudoranges to measured geometric ranges.
+The use of pseudoranges forces the additional complexity of estimating the receiver clock offset,
+which is needed in order to transform pseudoranges to measured geometric ranges.
 
 The main reason for attempting to use the GPS in this way is to add more information
 into the localization process and to have more control over assumptions made during
@@ -386,7 +385,7 @@ Meanwhile, we are using the mentioned normal distribution as a very simple
 (and slightly incorrect) workaround.
 
 \Cref{fig:pseudorange-errors} contains a plot of pseudorange errors in time.
-In this plot blocks with larger errors are apparent.
+In this plot blocks with larger errors are clearly visible.
 Detecting these blocks and switching to different error distribution inside them
 is one of the major improvements to be made in the follow up work.
 

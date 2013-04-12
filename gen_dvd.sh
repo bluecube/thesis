@@ -15,7 +15,7 @@ fi
 rm -rf $dir
 mkdir $dir
 
-git clone https://github.com/bluecube/thesis.git $dir/repository
+git clone . $dir/repository
 cp -r $dir/repository/impl $dir
 ln -s $(realpath data) $dir
 

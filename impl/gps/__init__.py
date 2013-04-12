@@ -15,7 +15,6 @@ if have_serial:
     from .gps import Gps
 
 from .gps_replay import GpsReplay
-from .rewindable_gps import RewindableGps
 from .ephemeris import StationState
 from .precise_ephemeris import IGSEphemeris
 from .broadcast_ephemeris import BroadcastEphemeris

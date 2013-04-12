@@ -155,7 +155,7 @@ C/A codes have a chipping rate -- the frequency of PRN code modulated on top
 of the carrier wave -- of \SI{1.023}{\mega\hertz} and P(Y) code has a chipping rate
 of \SI{10.23}{\mega\hertz}.
 
-Receivers typically employ a number of specialised hardware correlators
+Receivers typically employ a number of specialized hardware correlators
 that attempt to duplicate the PRN codes and match them to the received signal.
 The result of a successful matching is an identification of the transmitting satellite,
 the transmission time \(\svtxtime\) (appearing in pseudorange definition \eqref{eq:pseudorange})
@@ -567,7 +567,7 @@ when including satellites with low elevation angle in the solution.
 
 An illustration of this effect and of shadowing is shown in \Cref{fig:multipath}.
 The signal drawn in green follows a direct path from the satellite and is shadowed.
-The red multipath signal is reflected from a building, making its travelled path longer.
+The red multipath signal is reflected from a building, making its traveled path longer.
 
 If the signal following the direct path is received, GPS receivers can easily detect and remove large delays caused by multipath.
 A more problematic case arises when the multipath delay is relatively small, because this distorts
@@ -599,14 +599,14 @@ Troposphere is the non-ionized layer of atmosphere closest to the surface of the
 The stratosphere -- another non-ionized layer of atmosphere -- causes the same
 type of delays and is usually included in the therm tropospheric delay.
 
-Tropospheric delays are modelled as consisting of a wet and a dry component,
+Tropospheric delays are modeled as consisting of a wet and a dry component,
 and when left uncompensated, they amount to between \SI{2.4}{\meter} and \SI{25}{\meter}
 depending on satellite elevation angle, the dry component
 responsible for about \SI{90}{\percent} of the delay \cite{kaplan06}.
 
 There are several models for estimating tropospheric delays depending on satellite
 elevation angle, altitude of the receiver, atmospheric pressure, temperature and
-water vapour pressure.
+water vapor pressure.
 
 In the implementation part of this work we use the model outlined in \cite{navipedia-tropospheric}
 with hard-coded meteorologic parameters.

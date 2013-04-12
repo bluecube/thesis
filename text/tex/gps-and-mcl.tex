@@ -78,7 +78,7 @@ robot state, it does not need any operations during the prediction step of MCL.
 
 Our sensor model for the correction phase closely follows \cite{www-wilson}.
 We are operating only in two dimensions and
-the horizontal component of the position error  \(\vect{\delta R}\) is modelled using Rayleigh distribution
+the horizontal component of the position error  \(\vect{\delta R}\) is modeled using Rayleigh distribution
 parameterized with HDOP of the measurement:
 \begin{equation}
 	\Prob(\norm{\vect{\delta R}} < x \mid \HDOP) =
@@ -106,7 +106,7 @@ and
 \mathrm{DRMS}(\HDOP) / \si{\meter} = \sqrt{(\num{\WilsonParamA}\HDOP)^2 + \num{\WilsonParamB}^2}
 \end{equation}
 
-\Cref{fig:wgs84-hdop-error} is a visualisation of fitting of these two models,
+\Cref{fig:wgs84-hdop-error} is a visualization of fitting of these two models,
 blue dots representing the measured data, yellow dots the DRMS values.
 The green line shows the theoretical linear model and the red curve is the non linear model.
 Limited resolution of the HDOP values in input data are visible in the plot.
@@ -221,7 +221,7 @@ with position, so this is another variable which must exist in the state.
 To work with velocities, the state variables will also have to contain robot velocities in
 ECEF reference frame and the receiver clock drift.
 
-The residual errors are modelled as residual clock offset and residual clock drift
+The residual errors are modeled as residual clock offset and residual clock drift
 one pair of variables for each satellite.
 
 \subsection{Preprocessing}
@@ -236,7 +236,7 @@ These steps are discussed in \Cref{sec:impl-sirf-measurements,sec:impl-sirf-jump
 Since GPS utilizes additional state variables, we need to specify the motion
 model that governs these variables during the prediction phase of MCL.
 
-Both the receiver clock drift and the residual clock drifts are modelled as a Gaussian random walk.
+Both the receiver clock drift and the residual clock drifts are modeled as a Gaussian random walk.
 Gaussian distribution was chosen because it provides a good enough approximation.
 
 From the experimental data the following values were calculated:
@@ -306,7 +306,7 @@ measurement being observed, conditioned by the robot state.
 We treat position and velocity of the satellite transmitting
 the current ranging message as part of the measurement.
 In reality this information is separate in the transmission, but
-this approach works without problems when processing the GPS data from the receiver online,
+this approach works without problems when processing the GPS data from the receiver on-line,
 because the GPS contains current best estimate of the ephemeris periodically repeated
 in the broadcast navigation data.
 
@@ -434,7 +434,7 @@ The intended use of this algorithm is to improve position estimate when using
 a consumer grade GPS receiver, so we are not limited by the need to bootstrap the estimates.
 For localizing the robot globally, we can initialize the position
 estimate from a fix provided by the receiver's firmware.
-The initial position estimate can be modelled as discussed in \Cref{sec:position-domain}.
+The initial position estimate can be modeled as discussed in \Cref{sec:position-domain}.
 
 Clock offsets and drifts can be initialized from the data provided by the
 receiver, although there is no standardized way of doing this.

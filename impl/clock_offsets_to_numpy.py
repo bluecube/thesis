@@ -1,4 +1,12 @@
 #!/usr/bin/python
+"""
+clock_offsets_to_numpy.py
+
+Extract pseudoranges and baseline clock offsets from the recording.
+Assumes that the receiver was stationary during whole recording.
+"""
+
+
 from __future__ import division, print_function
 
 import argparse
@@ -18,7 +26,12 @@ logging.basicConfig(
 CLOCK_CORRECTION_THRESHOLD = 1e6 # Distance jump in meters that is considered as clock correction.
 
 class _Worker:
+    """ Helper class. Only intended to store state. """
+
     def cycle_end_callback(self):
+        """ Called at the end of every 1 second measurement cycle.
+        Processes all measurements done in the cycle, attempts to piece
+        together data separated by clock jumps. """
         count = 0
         error_sum = 0
 
@@ -79,6 +92,10 @@ class _Worker:
         self.last_time = self.times[-1]
 
     def fit_clock_offsets(self, x, y, width):
+        """ Generate clock offsets to fit the idealized pseudoranges.
+        x, y -- data points
+        width -- width of the sliding window.
+        """
         drifts, offsets = util.windowed_least_squares(x, y, width)
 
         del drifts
@@ -88,6 +105,7 @@ class _Worker:
         return util.windowed_least_squares(x, y, width, mask)
 
     def do(self, source_filename, receiver_pos, fit_window, outlier_threshold):
+        """ Initialize the state, parse all samples and convert to numpy arrays """
         self._outlier_threshold = outlier_threshold
         source = gps.open_gps(source_filename)
         self.receiver_state = gps.StationState(
@@ -157,6 +175,8 @@ class _Worker:
                 ('clock_corrections', numpy.float)])
 
 def open_source(source_filename, receiver_pos, fit_window, outlier_threshold):
+    """ Wrapper for opening recordings or preprocessed arrays transparently.
+    Note that all the arguments for conversion have to be added every time. """
     try:
         return numpy.load(source_filename)
     except IOError:

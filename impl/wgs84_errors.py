@@ -1,4 +1,10 @@
 #!/usr/bin/python
+"""
+wgs84_errors.py
+
+Calculate WGS84 errors and make a plot.
+Assumes that the receiver was stationary during whole recording.
+"""
 
 from __future__ import division
 
@@ -21,7 +27,7 @@ logging.basicConfig(
 )
 
 arg_parser = argparse.ArgumentParser(
-    description="Calculate WGS84 errors.\n"
+    description="Calculate WGS84 errors and make a plot.\n"
     "Assumes that the receiver was stationary during whole recording.")
 arg_parser.add_argument('source',
     help="A recording of SiRF messages or saved numpy array (*.npy).")

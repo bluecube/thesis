@@ -1,4 +1,10 @@
 #!/usr/bin/python
+"""
+errors-per-sv-merged.py
+
+Plot histograms for errors of all satellites with corrected residual errors.
+"""
+
 from __future__ import division, print_function
 
 import argparse
@@ -29,8 +35,7 @@ logging.basicConfig(
 )
 
 arg_parser = argparse.ArgumentParser(
-    description="Equivalent of errors_global, but only for a single SV. The clock"
-    "offset fitting here should cancel most residual errors for the channel.")
+    description="Plot histograms for errors of all satellites with corrected residual errors.")
 arg_parser.add_argument('fixes', help="Data obtained from clock_offsets_to_numpy.py")
 arg_parser.add_argument('--no-show', action='store_true',
     help="Don't show the plots, only save them.")

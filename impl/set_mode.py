@@ -1,4 +1,9 @@
 #!/usr/bin/python
+"""
+set_mode.py
+
+Set the GPS to SiRF or NMEA mode.
+"""
 
 from __future__ import division, print_function, unicode_literals
 
@@ -20,8 +25,7 @@ setup_logging()
 logger = logging.getLogger('main')
 logger.setLevel(logging.DEBUG)
 
-arg_parser = argparse.ArgumentParser(
-    description="Setup mode of the GPS and finish")
+arg_parser = argparse.ArgumentParser(description="Set the GPS to SiRF or NMEA mode.")
 
 arg_parser.add_argument('gps',
     help="Port with a GPS receiver.")

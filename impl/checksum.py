@@ -1,4 +1,10 @@
 #!/usr/bin/python
+"""
+checksum.py
+
+Calculate crc32 checksum from recorded messages' payloads.
+Used for verifying integrity of modified recordings.
+"""
 
 import gps
 import logging

@@ -1,3 +1,12 @@
+"""
+matplotlib_settings.py
+
+Common functionality for plotting and plottig style for the thesis.
+To switch to the style, this file must be only imported.
+
+Automatically detects whether to use LaTeX, or matplotlib's mathtext.
+"""
+
 from __future__ import division
 
 import matplotlib as m
@@ -47,6 +56,9 @@ del fig
 margins = 0.02
 
 def ticker_format_func(x, pos):
+    """Helper function providing formating of plot tickers using siunitx
+    LaTeX package"""
+
     if x == int(x):
         x = int(x)
     return r'\num{' + str(x) + '}'
@@ -107,6 +119,12 @@ def maybe_save_plot(plot, command = None):
     logging.info("Saved " + filename)
 
 def plot_hist(subplot, data, threshold):
+    """ Shared functionality of histogram plotting.
+    Adds the histogram of data to subplot, returning mean, standard deviation and number of outliers.
+    Threshold sets distance from the mean that separates outliers from correct data.
+
+    Both resolution and scale are chosen automatically (based on standard deviation)."""
+
     masked_data = numpy.ma.array(data, mask=(numpy.abs(data) > threshold))
     mu = numpy.ma.mean(masked_data, dtype=numpy.float64)
 

@@ -1,4 +1,9 @@
 #!/usr/bin/python
+"""
+previous-sv-state.py
+
+Calculate the differences between two successive linearizations of SV position.
+"""
 
 from __future__ import division, print_function, unicode_literals
 
@@ -28,8 +33,6 @@ arg_parser = argparse.ArgumentParser(
     "of SV position.")
 arg_parser.add_argument('gps',
     help="Gps port or recording.")
-arg_parser.add_argument('--precision', default=1000, type=int,
-    help="Multiplier for fixed point arithmetic.")
 arguments = arg_parser.parse_args()
 
 x = gps.open_gps(arguments.gps)
@@ -37,11 +40,12 @@ x = gps.open_gps(arguments.gps)
 logger.info("Starting.")
 
 last_state = {}
-errors = stats.Stats(arguments.precision)
-interp_distance = stats.Stats(arguments.precision)
+errors = stats.Stats(1000)
+interp_distance = stats.Stats(1000)
 
 @gps.message_observer_decorator(NavigationLibrarySVStateData)
 def test(msg):
+    """ Observer for SV state messages.  Does the actual comparison. """
     if msg.satellite_id in last_state:
         last = last_state[msg.satellite_id]
 

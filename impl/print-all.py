@@ -1,4 +1,8 @@
 #!/usr/bin/python
+"""
+print-all.py
+
+Print all messages from the gps."""
 
 from __future__ import division, print_function, unicode_literals
 
@@ -20,8 +24,7 @@ setup_logging()
 logger = logging.getLogger('main')
 logger.setLevel(logging.DEBUG)
 
-arg_parser = argparse.ArgumentParser(
-    description="Print all messages from the gps.")
+arg_parser = argparse.ArgumentParser(description="Print all messages from the gps.")
 
 arg_parser.add_argument('gps',
     help="Gps port or recording.")

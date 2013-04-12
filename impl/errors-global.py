@@ -1,4 +1,11 @@
 #!/usr/bin/python
+"""
+errors-global.py
+
+
+Plot pseudorange and velocity errors and their histograms of all satellites without
+residual corrections
+"""
 from __future__ import division, print_function
 
 import argparse
@@ -20,7 +27,8 @@ logging.basicConfig(
 )
 
 arg_parser = argparse.ArgumentParser(
-    description="Plot ")
+    description=" Plot pseudorange and velocity errors and their histograms of"
+    "all satellites without residual corrections")
 arg_parser.add_argument('fixes', help="Data obtained from clock_offsets_to_numpy.py")
 arg_parser.add_argument('--no-show', action='store_true',
     help="Don't show the plots, only save them.")

@@ -1,4 +1,9 @@
 #!/usr/bin/python
+"""
+average_position.py
+
+Calculate the average ECEF and WGS84 positions as reported by the receiver's software.
+"""
 
 import logging
 import numpy

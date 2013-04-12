@@ -1,4 +1,9 @@
 #!/usr/bin/python
+"""
+compare_hdop_histogram.py
+
+Plot one or more histograms of encountered HDOP values.
+"""
 
 from __future__ import division
 
@@ -75,6 +80,8 @@ for i, (hdop, label) in enumerate(zip(hdops, arguments.labels)):
             if high > max_hdop and count > 0:
                 print("{} - {}: {}".format(low, high, count))
 
+# Magic fiddling with sizes to make three histograms fit on a single page.
+# Do not look for logic here
 w, h = fig.get_size_inches()
 height_multiple = 0.6 * len(hdops)
 fig.set_size_inches(w, h * height_multiple)

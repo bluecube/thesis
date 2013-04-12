@@ -1,4 +1,10 @@
 #!/usr/bin/python
+"""
+errors-per-sv.py
+
+Equivalent of errors_global, but only for a single SV. The clock
+offset fitting here should cancel most residual errors for the channel
+"""
 from __future__ import division, print_function
 
 import argparse

@@ -1,15 +1,16 @@
+"""
+stats.py
+
+Calculate mean and variance in fixed point arithmetic
+"""
+
 from __future__ import division, print_function
 
 import collections
 
-try:
-    long
-except:
-    long = int
-
 class Stats:
     """
-    Calculate mean, variance and histogram. Fixed point arithmetic is used for all sums.
+    Calculate mean and variance. Fixed point arithmetic is used for all sums.
     """
 
     def __init__(self, multiplier, hist_resolution = 1):

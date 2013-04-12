@@ -1,4 +1,11 @@
 #!/usr/bin/python
+"""
+errors-derivation.py
+
+Plot errors of pseudorange derivations.
+This should be comparable to velocities obtained using carrier frequency.
+"""
+
 from __future__ import division, print_function
 
 import argparse
@@ -22,7 +29,7 @@ logging.basicConfig(
 )
 
 arg_parser = argparse.ArgumentParser(
-    description="Plot pseudorange derivations.")
+    description="Plot errors of pseudorange derivations.")
 arg_parser.add_argument('fixes', help="Data obtained from clock_offsets_to_numpy.py")
 arg_parser.add_argument('--no-show', action='store_true',
     help="Don't show the plots, only save them.")

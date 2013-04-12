@@ -1,4 +1,9 @@
 #!/usr/bin/python
+"""
+wgs84_fixes_to_numpy.py
+
+Extract latitude, longitude and hdop from the recording.
+"""
 
 from __future__ import division
 import logging
@@ -6,6 +11,7 @@ import gps
 import numpy
 
 def fixes_to_numpy(gps_filename):
+    """ The main fixes generator. """
     logging.info("Retrieving fixes")
     source = gps.open_gps(gps_filename)
     return numpy.fromiter(
@@ -16,6 +22,7 @@ def fixes_to_numpy(gps_filename):
         dtype=[('lat', numpy.float), ('lon', numpy.float), ('hdop', numpy.float)])
 
 def open_source(source_filename):
+    """ Wrapper for opening recordings or preprocessed arrays transparently."""
     try:
         return numpy.load(source_filename)
     except IOError:

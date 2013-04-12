@@ -1,4 +1,10 @@
 #!/usr/bin/python
+"""
+record.py
+
+(Re)Records a GPS data stream to a file."
+"""
+
 
 import gps.gps_saver
 import logging
@@ -19,7 +25,7 @@ logger = logging.getLogger('main')
 logger.setLevel(logging.DEBUG)
 
 arg_parser = argparse.ArgumentParser(
-    description="(Re)Record a GPS data stream to a new format.")
+    description="(Re)Records a GPS data stream to a file.")
 
 arg_parser.add_argument('sources', nargs='+',
     help="Source GPS or one or more recordings.")

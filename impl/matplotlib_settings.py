@@ -6,8 +6,9 @@ import os
 import numpy
 import math
 import logging
+import matplotlib.pyplot as plt
+import tempfile
 
-#m.rcParams['axes.unicode_minus'] = False
 m.rcParams['text.usetex'] = True
 m.rcParams['text.latex.preamble'] = '\input{' + os.getcwd() + '/../text/common-style.tex}'
 
@@ -30,6 +31,19 @@ m.rcParams['figure.subplot.hspace'] = 0.3
 
 m.rcParams['axes.grid'] = True
 
+# Make plotting not fail in case there isn't LaTeX environment
+# capable of typesetting the thesis text. In this case we should revert
+# to simply using some matplotlib defaults.
+fig = plt.figure()
+fig.add_subplot(111).plot([1, 2, 3])
+with tempfile.TemporaryFile() as f:
+    try:
+        fig.savefig(f)
+    except RuntimeError:
+        m.rcParams['text.usetex'] = False
+plt.close(fig)
+del fig
+
 margins = 0.02
 
 def ticker_format_func(x, pos):
@@ -46,8 +60,9 @@ def _settings(plot):
     if legend is not None:
         legend.get_frame().set_alpha(0.75)
 
-    plot.xaxis.set_major_formatter(ticker_format)
-    plot.yaxis.set_major_formatter(ticker_format)
+    if m.rcParams['text.usetex']:
+        plot.xaxis.set_major_formatter(ticker_format)
+        plot.yaxis.set_major_formatter(ticker_format)
 
 
 def common_plot_settings(plot, min_x = None, max_x = None, min_y = None, max_y = None, set_limits=True):

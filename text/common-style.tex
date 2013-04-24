@@ -11,47 +11,10 @@
 \usepackage{csquotes}
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Macros for maths stuff
-
-% hack to make subscripted macros subscriptable
-% http://tex.stackexchange.com/questions/33261/defining-a-newcommand-with-sub-or-superscript-and-avoiding-double-subscript-e
-\makeatletter
-\newcommand\newsubcommand[3]{\newcommand#1{#2\sc@sub{#3}}}
-\def\sc@sub#1{\def\sc@thesub{#1}\@ifnextchar_{\sc@mergesubs}{_{\sc@thesub}}}
-\def\sc@mergesubs_#1{_{\sc@thesub#1}}
-\makeatother
-
-\DeclareMathOperator{\Bel}{\mathrm{Bel}}
-\DeclareMathOperator{\Prob}{\mathrm{Pr}}
-\DeclareMathOperator{\cov}{\mathrm{cov}}
-\newcommand{\speedoflight}{\mathrm{c}}
-\newcommand{\SV}{\mathrm{SV}}
-\newcommand{\SYS}{\mathrm{SYS}}
-\newcommand{\REC}{\mathrm{R}}
-\newsubcommand{\sysrxtime}{\tau'}{\SYS}
-\newsubcommand{\systxtime}{\tau}{\SYS}
-\newsubcommand{\svtxtime}{\tau}{\SV}
-\newsubcommand{\svrxtime}{\tau'}{\SV}
-\newsubcommand{\svclockoffset}{t}{\SV}
-\newsubcommand{\svpos}{\vect{p}}{\SV}
-\newsubcommand{\svvel}{\vect{v}}{\SV}
-\newsubcommand{\rectxtime}{\tau}{\REC}
-\newsubcommand{\recrxtime}{\tau'}{\REC}
-\newsubcommand{\recclockoffset}{t}{\REC}
-\newsubcommand{\recclockdrift}{t'}{\REC}
-\newsubcommand{\recpos}{\vect{p}}{\REC}
-\newsubcommand{\recvel}{\vect{v}}{\REC}
-\newsubcommand{\recsvvel}{v}{\REC, \SV}
-\newcommand{\geomrange}{r}
-\newcommand{\geomrangedelays}{\delta{t}}
-\newcommand{\coord}[3]{\left(#1,#2,#3\right)}
-\newcommand{\HDOP}{\mathrm{HDOP}}
-\newcommand{\UERE}{\mathrm{UERE}}
-\newcommand{\vect}{\bm}
-\providecommand{\norm}[1]{\lVert#1\rVert}
-\DeclareMathOperator{\normalDistribution}{\mathcal{N}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Font
+
+\input{math-defs.tex}
 
 \usepackage{tgpagella} % Gyre pagella -- based on palatino
 

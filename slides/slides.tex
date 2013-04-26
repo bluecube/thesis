@@ -3,6 +3,7 @@
 \usetheme{default}
 \usecolortheme{seagull}
 \usefonttheme{serif}
+\setbeamertemplate{navigation symbols}{}
 
 \usepackage{graphicx}
 \usepackage{amsmath}
@@ -19,12 +20,13 @@
 
 \newcommand{\imageframe}[1]{
 {
-\hspace{-1.36cm}
+\setbeamertemplate{background}{
+    \vbox to \paperheight{\vfil\hbox to \paperwidth{\hfil
+    \includegraphics[width=\paperwidth,height=\paperheight,keepaspectratio]{#1}
+    \hfil}\vfil}
+}
 \setbeamercolor{background canvas}{bg=black}
 \begin{frame}[plain]
-    \begin{centering}
-        \includegraphics[width=\paperwidth,height=\paperheight,keepaspectratio]{img/01.jpg}
-    \end{centering}
 \end{frame}
 }
 }
@@ -61,6 +63,20 @@
 
 \imageframe{img/01.jpg}
 
+\section{Monte Carlo Localization}
+\begin{frame}{Monte Carlo Localization}
+    \begin{itemize}
+        \item Probabilistic localization algorithm
+        \item Simple to understand and implement
+        \begin{itemize}
+            \item Simulating a swarm of possible robots
+            \item Comparing the actual and simulated sensor readings
+        \end{itemize}
+        \item Only requires probability of a measurement
+        \item More computationaly intensive than e.g. Kalman Filter
+    \end{itemize}
+\end{frame}
+
 \section{GPS}
 \begin{frame}{GPS}
     \begin{itemize}
@@ -86,25 +102,12 @@
     \end{itemize}
 \end{frame}
 
-\section{Monte Carlo Localization}
-\begin{frame}{Monte Carlo Localization}
-    \begin{itemize}
-        \item Probabilistic localization algorithm
-        \item Simple to understand and implement
-        \begin{itemize}
-            \item Simulating a swarm of possible robots
-            \item Comparing the actual and simulated sensor readings
-        \end{itemize}
-        \item Only requires probability of a measurement
-        \item More computationaly intensive than e.g. Kalman Filter
-    \end{itemize}
-\end{frame}
-
 \section{GPS with MCL}
 \subsection{Simple Approach}
-\begin{frame}
-    \frametitle{GPS with MCL -- simple approach}
-    some text
+\begin{frame}{GPS with MCL -- simple approach}
+    \begin{itemize}
+        \item
+    \end{itemize}
 \end{frame}
 
 \begin{frame}

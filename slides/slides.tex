@@ -18,18 +18,16 @@
 \author{Jakub Marek}
 
 
-\newcommand{\imageframe}[1]{
-{
+\newcommand{\imageframe}[2]{{
 \setbeamertemplate{background}{
     \vbox to \paperheight{\vfil\hbox to \paperwidth{\hfil
     \includegraphics[width=\paperwidth,height=\paperheight,keepaspectratio]{#1}
     \hfil}\vfil}
-}
-\setbeamercolor{background canvas}{bg=black}
+    }
+\setbeamercolor{background canvas}{bg=#2}
 \begin{frame}[plain]
 \end{frame}
-}
-}
+}}
 
 
 \begin{document}
@@ -61,7 +59,7 @@
     \end{itemize}
 \end{frame}
 
-\imageframe{img/01.jpg}
+\imageframe{img/01.jpg}{black}
 
 \section{Monte Carlo Localization}
 \begin{frame}{Monte Carlo Localization}

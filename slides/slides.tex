@@ -65,8 +65,8 @@
         \item Probabilistic localization algorithm
         \item Simple to understand and implement
         \begin{itemize}
-            \item Simulating a swarm of possible robots
-            \item Comparing the actual and simulated sensor readings
+            \item Simulate a swarm of possible robots
+            \item Compare the actual and simulated sensor readings
         \end{itemize}
         \item Only requires probability of a measurement
         \item More computationaly intensive than e.g. Kalman Filter
@@ -99,28 +99,43 @@
 
 \begin{frame}{GPS with MCL -- simple approach}
     \begin{itemize}
-        \item
+        \item Most GPS receivers provide NMEA output
+        \begin{itemize}
+            \item Contains lat/lon/alt coordinates and HDOP
+        \end{itemize}
+        \item Can be used as a position input almost immediately
+        \begin{itemize}
+            \item Rayleigh distribution, \( \sigma = \frac{\sqrt{(a \HDOP)^2 + b^2}}{\sqrt{2}} \)
+            \item Horizontal position errors only
+        \end{itemize}
+        \item No characterization of velocity error
+        \item Position domain integration
     \end{itemize}
 \end{frame}
 
-\begin{frame}
-    \frametitle{GPS with MCL -- simple approach}
+\imageframe{generated/wgs84-hdop-error.pdf}{white}
+
+\begin{frame}{GPS with MCL -- low level approach}
+    \begin{itemize}
+        \item Each pseudorange measurement as localization input
+        \item Need to consider atmospheric delays
+        \begin{itemize}
+            \item Estimating low frequency errors as a part of the robot's state
+        \end{itemize}
+        \item Allows us to use doppler measurements
+    \end{itemize}
 \end{frame}
 
-\begin{frame}
-    \frametitle{GPS with MCL -- low-level approach}
+\imageframe{generated/pseudorange-errors.pdf}{white}
+
+\begin{frame}{GPS with MCL -- low level approach}
+    \begin{itemize}
+        \item 
+    \end{itemize}
 \end{frame}
 
-\begin{frame}
-    \frametitle{GPS with MCL -- low-level approach}
-\end{frame}
+\begin{frame}{Comparison}
 
-\begin{frame}
-    \frametitle{GPS with MCL -- low-level approach}
-\end{frame}
-
-\begin{frame}
-    \frametitle{GPS with MCL -- low-level approach}
 \end{frame}
 
 \end{document}

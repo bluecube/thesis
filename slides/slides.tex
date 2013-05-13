@@ -37,30 +37,38 @@
     \titlepage
 \end{frame}
 
-
-\begin{frame}{Motivation}
+\begin{frame}{Main Idea}
     \begin{itemize}
         \item Outdoor robots need position information
-        \item GPS looks promissing
+        \item Using low-level GPS measurements as an input to MCL
         \begin{itemize}
-            \item Worldwide absolute position
-            \item No preparation required
-         \end{itemize}
-        \item \ldots but it has its drawbacks
-        \begin{itemize}
-            \item Low precision from consumer GPS receivers
-            \item Low measurement frequency
-         \end{itemize}
-        \item Attempt to improve precision from GPS
-        \begin{itemize}
-            \item Combination with other sensors
-         \end{itemize}
+            \item Improve precision
+            \begin{itemize}
+                \item Individual measurements
+                \item Cobination with other sensors
+            \end{itemize}
+            \item Improve error characterization
+            \item Explore inner workings of GPS
+        \end{itemize}
     \end{itemize}
 \end{frame}
 
-\imageframe{img/01.jpg}{black}
+%\imageframe{img/01.jpg}{black}
 
-\begin{frame}{Monte Carlo Localization}
+\begin{frame}{Why GPS}
+    \begin{itemize}
+        \item Worldwide absolute position
+        \item No preparation required
+        \item Cheap (?!)
+    \end{itemize}
+
+    \begin{itemize}
+        \item Low precision from consumer GPS receivers
+        \item Low measurement frequency
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Why Monte Carlo Localization}
     \begin{itemize}
         \item Probabilistic localization algorithm
         \item Simple to understand and implement
@@ -69,13 +77,16 @@
             \item Compare the actual and simulated sensor readings
         \end{itemize}
         \item Only requires probability of a measurement
+        \item Arbitrary shapes of probability densities
+    \end{itemize}
+
+    \begin{itemize}
         \item More computationaly intensive than e.g. Kalman Filter
     \end{itemize}
 \end{frame}
 
-\begin{frame}{GPS}
+\begin{frame}{GPS -- Basic Principles}
     \begin{itemize}
-        \item Global satellite navigation system
         \item Measuring time of flight of radio signals
         \begin{itemize}
             \item Ideally: position = intersection of spherical surfaces
@@ -83,7 +94,7 @@
         \end{itemize}
         \item Pseudorange
         \begin{itemize}
-            \item \(\rho = \speedoflight (\recrxtime - \svtxtime)\)
+            %\item \(\rho = \speedoflight (\recrxtime - \svtxtime)\)
             \item Distance corresponding to time of flight
             \begin{itemize}
                 \item Transmission time according to satellite clock
@@ -97,7 +108,7 @@
     \end{itemize}
 \end{frame}
 
-\begin{frame}{GPS with MCL -- simple approach}
+\begin{frame}{GPS with MCL -- Simple Approach}
     \begin{itemize}
         \item Most GPS receivers provide NMEA output
         \begin{itemize}
@@ -105,34 +116,37 @@
         \end{itemize}
         \item Can be used as a position input almost immediately
         \begin{itemize}
-            \item Rayleigh distribution, \( \sigma = \frac{\sqrt{(a \HDOP)^2 + b^2}}{\sqrt{2}} \)
+            %\item Rayleigh distribution, \( \sigma = \frac{\sqrt{(a \HDOP)^2 + b^2}}{\sqrt{2}} \)
             \item Horizontal position errors only
+            \item No characterization of velocity error
         \end{itemize}
-        \item No characterization of velocity error
-        \item Position domain integration
     \end{itemize}
 \end{frame}
 
 \imageframe{generated/wgs84-hdop-error.pdf}{white}
 
-\begin{frame}{GPS with MCL -- low level approach}
+\begin{frame}{GPS with MCL -- Low Level Approach}
     \begin{itemize}
         \item Each pseudorange measurement as localization input
         \item Need to consider atmospheric delays
         \begin{itemize}
             \item Estimating low frequency errors as a part of the robot's state
         \end{itemize}
-        \item Allows us to use doppler measurements
+        \item Allows to use doppler measurements
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{GPS with MCL -- Low Level Approach}
+    \begin{itemize}
+        \item Simillar precision to the simple NMEA data
+        \begin{itemize}
+            \item Approximately \SI{7}{\meter} \(1\sigma\) errror for single measurement
+            \item Room for improvement
+        \end{itemize}
     \end{itemize}
 \end{frame}
 
 \imageframe{generated/pseudorange-errors.pdf}{white}
-
-\begin{frame}{GPS with MCL -- low level approach}
-    \begin{itemize}
-        \item 
-    \end{itemize}
-\end{frame}
 
 \begin{frame}{Comparison}
 

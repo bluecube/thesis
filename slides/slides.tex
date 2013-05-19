@@ -21,7 +21,7 @@
 \newcommand{\imageframe}[2]{{
 \setbeamertemplate{background}{
     \vbox to \paperheight{\vfil\hbox to \paperwidth{\hfil
-    \includegraphics[width=\paperwidth,height=\paperheight,keepaspectratio]{#1}
+    \includegraphics[width=\paperwidth,height=\paperheight,keepaspectratio]{#1} %%% nodep
     \hfil}\vfil}
     }
 \setbeamercolor{background canvas}{bg=#2}
@@ -53,6 +53,7 @@
     \end{itemize}
 \end{frame}
 
+%%%% dependency img/01.jpg
 %\imageframe{img/01.jpg}{black}
 
 \begin{frame}{Why GPS}
@@ -123,6 +124,7 @@
     \end{itemize}
 \end{frame}
 
+%%% dependency generated/wgs84-hdop-error.pdf
 \imageframe{generated/wgs84-hdop-error.pdf}{white}
 
 \begin{frame}{GPS with MCL -- Low Level Approach}
@@ -146,6 +148,7 @@
     \end{itemize}
 \end{frame}
 
+%%% dependency generated/pseudorange-errors.pdf
 \imageframe{generated/pseudorange-errors.pdf}{white}
 
 \begin{frame}{Comparison}

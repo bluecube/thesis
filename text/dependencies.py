@@ -74,6 +74,14 @@ files_to_check = args.files
 dependencies = {f: ["argument"] for f in args.files}
 
 for line in lines():
+    if re.search(r'%%% nodep', line):
+        continue # skip lines with nodep
+
+    match = re.findall(r'^%%% dependency (.*)$', line)
+    if len(match) >= 1:
+        assert len(match) == 1
+        add_to_deps(prefix_build_path(match[0]))
+
     line = re.sub(r'(^|[^\\])%.*$', '$1', line)
 
     graphics = match_file('includegraphics', line)

@@ -138,11 +138,12 @@
             \item Contains WGS84 lat/lon/alt coordinates and HDOP
         \end{itemize}
         \item Can be used as a position input almost immediately
-        \begin{itemize}
-            %\item Rayleigh distribution, \( \sigma = \frac{\sqrt{(a \HDOP)^2 + b^2}}{\sqrt{2}} \)
-            \item Horizontal position errors only
-            \item No characterization of velocity error
-        \end{itemize}
+    \end{itemize}
+    \vspace{0.5cm}
+    \begin{itemize}
+        \item Horizontal position errors only
+        \item No characterization of velocity error
+        \item Unknown assumptions about the platform
     \end{itemize}
 \end{frame}
 }
@@ -192,6 +193,10 @@
     \begin{itemize}
         \item Error characterization
         \item Velocity measurements
+        \item Virtually no assumptions about the robot
+        \begin{itemize}
+            \item Added in prediction step of MCL
+        \end{itemize}
         \item Possibility to further process measurements
         \begin{itemize}
             \item Multipath

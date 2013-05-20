@@ -16,6 +16,7 @@
 \logo{\includegraphics[height=1.5cm]{img/robot.pdf}}
 
 \input{math-defs.tex}
+\graphicspath{{img/}}
 
 \title{Exploiting GPS in Monte Carlo Localization}
 \author{Jakub Marek}
@@ -43,6 +44,8 @@
 \begin{frame}{Main Idea}
     \begin{itemize}
         \item Outdoor robots need position information
+    \end{itemize}
+    \begin{itemize}
         \item Improve precision available from GPS
         \begin{itemize}
             \item Individual measurements
@@ -65,7 +68,7 @@
         \item No preparation required
         \item Cheap (?!)
     \end{itemize}
-
+    \vspace{0.5cm}
     \begin{itemize}
         \item Low precision from consumer GPS receivers
         \item Low measurement frequency
@@ -83,12 +86,14 @@
         \item Only requires probability of a measurement
         \item Arbitrary shapes of probability densities
     \end{itemize}
-
+    \vspace{0.5cm}
     \begin{itemize}
         \item More computationally intensive than Kalman Filter
     \end{itemize}
 \end{frame}
 
+{
+\logo{\includegraphics[height=1.5cm]{img/robot-dog.pdf}}
 \begin{frame}{GPS -- Basic Principles}
     \begin{itemize}
         \item Measuring time of flight of radio signals
@@ -100,7 +105,10 @@
     \centerline{\includegraphics[height=5cm]{img/pseudoranges.pdf}}
     \end{itemize}
 \end{frame}
+}
 
+{
+\logo{\includegraphics[height=1.5cm]{img/robot-dog2.pdf}}
 \begin{frame}{GPS -- Basic Principles}
     \begin{itemize}
         \item Pseudorange
@@ -118,7 +126,10 @@
         \end{itemize}
     \end{itemize}
 \end{frame}
+}
 
+{
+\logo{\includegraphics[height=1.5cm]{img/robot-looking-right.pdf}}
 \begin{frame}[fragile]{GPS with MCL -- Simple Approach}
     \begin{itemize}
         \item Most GPS receivers provide NMEA output
@@ -134,6 +145,7 @@
         \end{itemize}
     \end{itemize}
 \end{frame}
+}
 
 \begin{frame}[plain]{Error vs. HDOP}
 \begin{center}
@@ -141,6 +153,8 @@
 \end{center}
 \end{frame}
 
+{
+\logo{\includegraphics[height=1.5cm]{img/robot-bottle.pdf}}
 \begin{frame}{GPS with MCL -- Low Level Approach}
     \begin{itemize}
         \item Each pseudorange measurement as localization input
@@ -152,12 +166,13 @@
         \end{itemize}
     \end{itemize}
 \end{frame}
+}
 
 \begin{frame}{Low Level Approach}
     \begin{itemize}
         \item Need to consider atmospheric delays
         \begin{itemize}
-            \item Estimating low frequency errors as a part of the robot's state
+            \item Low frequency errors as a part of localization state
         \end{itemize}
         \item Approximately \SI{7}{\meter} \(1\sigma\) error for single measurement
         \begin{itemize}
@@ -180,10 +195,9 @@
         \item Possibility to further process measurements
         \begin{itemize}
             \item Multipath
-
         \end{itemize}
     \end{itemize}
-
+    \vspace{0.5cm}
     \begin{itemize}
         \item Computing power
         \item More intrusive in localization algorithm
@@ -229,8 +243,9 @@
 \end{frame}
 
 {
+\logo{\includegraphics[width=1.5cm]{img/robot-sleep.pdf}}
 \setbeamercolor{background canvas}{bg=black}
-\begin{frame}[plain]
+\begin{frame}
 \end{frame}
 }
 

@@ -41,11 +41,9 @@
     \titlepage
 \end{frame}
 
-\begin{frame}{Main Idea}
+\begin{frame}{Motivation}
     \begin{itemize}
         \item Outdoor robots need position information
-    \end{itemize}
-    \begin{itemize}
         \item Improve precision available from GPS
         \begin{itemize}
             \item Individual measurements
@@ -67,17 +65,19 @@
         \item Worldwide absolute position
         \item No preparation required
         \item Cheap (?!)
-    \end{itemize}
-    \vspace{0.5cm}
-    \begin{itemize}
-        \item Low precision from consumer GPS receivers
-        \item Low measurement frequency
+        \item Drawbacks
+        \begin{itemize}
+            \item Low precision from consumer GPS receivers
+            \item Low measurement frequency
+        \end{itemize}
     \end{itemize}
 \end{frame}
 
+{
+\logo{\includegraphics[height=1.5cm]{img/robot-pirate.pdf}}
 \begin{frame}{Why Monte Carlo Localization}
     \begin{itemize}
-        \item Probabilistic localization algorithm
+        \item Efficient probabilistic localization algorithm
         \item Simple to understand and implement
         \begin{itemize}
             \item Simulate a swarm of possible robots
@@ -85,10 +85,15 @@
         \end{itemize}
         \item Only requires probability of a measurement
         \item Arbitrary shapes of probability densities
-    \end{itemize}
-    \vspace{0.5cm}
-    \begin{itemize}
         \item More computationally intensive than Kalman Filter
+    \end{itemize}
+\end{frame}
+}
+
+\begin{frame}{Main Idea}
+    \begin{itemize}
+        \item Utilize the GPS in MCL
+        \item Improve the result using lower-level measurements
     \end{itemize}
 \end{frame}
 
@@ -138,12 +143,12 @@
             \item Contains WGS84 lat/lon/alt coordinates and HDOP
         \end{itemize}
         \item Can be used as a position input almost immediately
-    \end{itemize}
-    \vspace{0.5cm}
-    \begin{itemize}
-        \item Horizontal position errors only
-        \item No characterization of velocity error
-        \item Unknown assumptions about the platform
+    \item However\ldots
+        \begin{itemize}
+            \item Horizontal position errors only
+            \item No characterization of velocity error
+            \item Unknown assumptions about the platform
+        \end{itemize}
     \end{itemize}
 \end{frame}
 }
@@ -154,8 +159,6 @@
 \end{center}
 \end{frame}
 
-{
-\logo{\includegraphics[height=1.5cm]{img/robot-bottle.pdf}}
 \begin{frame}{GPS with MCL -- Low Level Approach}
     \begin{itemize}
         \item Each pseudorange measurement as localization input
@@ -167,9 +170,8 @@
         \end{itemize}
     \end{itemize}
 \end{frame}
-}
 
-\begin{frame}{Low Level Approach}
+\begin{frame}{GPS with MCL -- Low Level Approach}
     \begin{itemize}
         \item Need to consider atmospheric delays
         \begin{itemize}
@@ -191,24 +193,29 @@
 
 \begin{frame}{Pseudoranges vs. WGS84 Data}
     \begin{itemize}
-        \item Error characterization
-        \item Velocity measurements
-        \item Virtually no assumptions about the robot
+        \item Pros
         \begin{itemize}
-            \item Added in prediction step of MCL
+            \item Error characterization
+            \item Velocity measurements
+            \item Virtually no assumptions about the robot
+            \begin{itemize}
+                \item Added in prediction step of MCL
+            \end{itemize}
+            \item Possibility to further process measurements
+            \begin{itemize}
+                \item Multipath
+            \end{itemize}
         \end{itemize}
-        \item Possibility to further process measurements
+        \item Cons
         \begin{itemize}
-            \item Multipath
+            \item Computing power
+            \item More intrusive in localization algorithm
         \end{itemize}
-    \end{itemize}
-    \vspace{0.5cm}
-    \begin{itemize}
-        \item Computing power
-        \item More intrusive in localization algorithm
     \end{itemize}
 \end{frame}
 
+{
+\logo{\includegraphics[height=1.5cm]{img/robot-bottle.pdf}}
 \begin{frame}{Implementation}
     \begin{itemize}
         \item Tools for analyzing GPS errors
@@ -225,6 +232,7 @@
         \end{itemize}
     \end{itemize}
 \end{frame}
+}
 
 \begin{frame}[plain]{Velocity Error Histogram}
 \begin{center}
@@ -253,6 +261,10 @@
 \begin{frame}
 \end{frame}
 }
+
+\setbeamercolor{background canvas}{bg=black}
+\begin{frame}[plain]
+\end{frame}
 
 %\begin{frame}[plain]
 %    \centerline{\Large Thank you}

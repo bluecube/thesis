@@ -14,6 +14,12 @@
 \usefonttheme{serif}
 \setbeamertemplate{navigation symbols}{}
 \logo{\includegraphics[height=1.5cm]{img/robot.pdf}}
+\setbeamertemplate{footline}
+{%
+\vskip-1mm
+\hfill\insertsectionnavigationhorizontal{\paperwidth}{\hfill}{\hfill}
+\vskip1pt
+}
 
 \input{math-defs.tex}
 \graphicspath{{img/}}
@@ -21,121 +27,90 @@
 \title{Exploiting GPS in Monte Carlo Localization}
 \author{Jakub Marek}
 
-
-\newcommand{\imageframe}[3]{{
-\setbeamertemplate{background}{
-    \vbox to \paperheight{\vfil\hbox to \paperwidth{\hfil
-    \includegraphics[width=\paperwidth,height=\paperheight,keepaspectratio]{#1} %%% nodep
-    \hfil}\vfil}
-    }
-\setbeamercolor{background canvas}{bg=#2}
-\begin{frame}[plain]
-\end{frame}
-}}
-
-
 \begin{document}
 
-
 \begin{frame}[plain]
-    \titlepage
+\titlepage
 \end{frame}
 
+\section{Motivation}
 \begin{frame}{Motivation}
+\begin{itemize}
+    \item Outdoor robots need position information
+    \item Improve precision available from GPS
     \begin{itemize}
-        \item Outdoor robots need position information
-        \item Improve precision available from GPS
-        \begin{itemize}
-            \item Individual measurements
-            \item Combination with other sensors
-        \end{itemize}
-        \item Improve error characterization
-        \item Explore inner workings of GPS
+        \item Individual measurements
+        \item Combination with other sensors
     \end{itemize}
+    \item Improve error characterization
+    \item Explore inner workings of GPS
+\end{itemize}
 \end{frame}
 
 %%%% dependency img/01.jpg
 %\imageframe{img/01.jpg}{black}
 
 \begin{frame}{Why GPS}
-    \begin{textblock*}{3cm}[1,1](115mm,45mm)
-        \includegraphics[height=3cm]{img/receiver.jpg}
-    \end{textblock*}
+\begin{textblock*}{3cm}[1,1](115mm,45mm)
+    \includegraphics[height=3cm]{img/receiver.jpg}
+\end{textblock*}
+\begin{itemize}
+    \item Worldwide absolute position
+    \item No preparation required
+    \item Cheap (?!)
+    \item Drawbacks
     \begin{itemize}
-        \item Worldwide absolute position
-        \item No preparation required
-        \item Cheap (?!)
-        \item Drawbacks
-        \begin{itemize}
-            \item Low precision from consumer GPS receivers
-            \item Low measurement frequency
-        \end{itemize}
+        \item Low precision from consumer GPS receivers
+        \item Low measurement frequency
     \end{itemize}
+\end{itemize}
 \end{frame}
 
 {
 \logo{\includegraphics[height=1.5cm]{img/robot-pirate.pdf}}
 \begin{frame}{Why Monte Carlo Localization}
+\begin{itemize}
+    \item Efficient probabilistic localization algorithm
+    \item Simple to understand and implement
     \begin{itemize}
-        \item Efficient probabilistic localization algorithm
-        \item Simple to understand and implement
-        \begin{itemize}
-            \item Simulate a swarm of possible robots
-            \item Compare the actual and simulated sensor readings
-        \end{itemize}
-        \item Only requires probability of a measurement
-        \item Arbitrary shapes of probability densities
-        \item More computationally intensive than Kalman Filter
+        \item Simulate a swarm of possible robots
+        \item Compare the actual and simulated sensor readings
     \end{itemize}
+    \item Only requires probability of a measurement
+    \item Arbitrary shapes of probability densities
+    \item More computationally intensive than Kalman Filter
+\end{itemize}
 \end{frame}
 }
 
 \begin{frame}{Main Idea}
-    \begin{itemize}
-        \item Utilize the GPS in MCL
-        \item Improve the result using lower-level measurements
-    \end{itemize}
+\begin{itemize}
+    \item Utilize the GPS in MCL
+    \item Improve the result using lower-level measurements
+\end{itemize}
 \end{frame}
 
-{
-\logo{\includegraphics[height=1.5cm]{img/robot-dog.pdf}}
-\begin{frame}{GPS -- Basic Principles}
+\section{GPS Principles}
+\begin{frame}{GPS Principles}
     \begin{itemize}
         \item Measuring time of flight of radio signals
         \begin{itemize}
             \item Ideally: position = intersection of spherical surfaces
             \item Reality: 4D conical surfaces (3D positions + time)
-        \end{itemize}
-    \vspace{0.5cm}
-    \centerline{\includegraphics[height=5cm]{img/pseudoranges.pdf}}
-    \end{itemize}
-\end{frame}
-}
-
-{
-\logo{\includegraphics[height=1.5cm]{img/robot-dog2.pdf}}
-\begin{frame}{GPS -- Basic Principles}
-    \begin{itemize}
-        \item Pseudorange
-        \begin{itemize}
-            %\item \(\rho = \speedoflight (\recrxtime - \svtxtime)\)
-            \item Distance corresponding to time of flight
-            \begin{itemize}
-                \item Transmission time according to satellite clock
-                \item Receipt time according to receiver clock
-            \end{itemize}
+            \item Pseudorange
         \end{itemize}
         \item Doppler measurements
-        \begin{itemize}
-            \item Relative velocities of satellite and receiver
-        \end{itemize}
+    \vspace{0.5cm}
+    \begin{center}
+    \centerline{\includegraphics[height=3.5cm]{img/pseudoranges.pdf}}
+    \end{center}
     \end{itemize}
 \end{frame}
-}
 
+\section{GPS and MCL -- Simple Approach}
 {
 \logo{\includegraphics[height=1.5cm]{img/robot-looking-right.pdf}}
-\begin{frame}[fragile]{GPS with MCL -- Simple Approach}
+\begin{frame}[fragile]{GPS and MCL -- Simple Approach}
     \begin{itemize}
         \item Most GPS receivers provide NMEA output
         \begin{itemize}
@@ -159,7 +134,8 @@
 \end{center}
 \end{frame}
 
-\begin{frame}{GPS with MCL -- Low Level Approach}
+\section{GPS and MCL -- Pseudoranges}
+\begin{frame}{GPS and MCL -- Pseudoranges}
     \begin{itemize}
         \item Each pseudorange measurement as localization input
         \item Allows to use Doppler measurements
@@ -171,7 +147,7 @@
     \end{itemize}
 \end{frame}
 
-\begin{frame}{GPS with MCL -- Low Level Approach}
+\begin{frame}{GPS and MCL -- Pseudoranges}
     \begin{itemize}
         \item Need to consider atmospheric delays
         \begin{itemize}
@@ -214,6 +190,7 @@
     \end{itemize}
 \end{frame}
 
+\section{Implementation}
 {
 \logo{\includegraphics[height=1.5cm]{img/robot-bottle.pdf}}
 \begin{frame}{Implementation}
@@ -240,6 +217,7 @@
 \end{center}
 \end{frame}
 
+\section{Conclusion}
 \begin{frame}{Conclusion}
     \begin{itemize}
         \item WGS84 data
@@ -257,6 +235,7 @@
 
 {
 \logo{\includegraphics[width=1.5cm]{img/robot-sleep.pdf}}
+\setbeamertemplate{footline}{ \hspace{1mm} }
 \setbeamercolor{background canvas}{bg=black}
 \begin{frame}
 \end{frame}

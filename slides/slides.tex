@@ -76,7 +76,6 @@
         \item Simulate a swarm of possible robots
         \item Compare the actual and simulated sensor readings
     \end{itemize}
-    \item Only requires probability of a measurement
     \item Arbitrary shapes of probability densities
     \item More computationally intensive than Kalman Filter
 \end{itemize}
@@ -97,14 +96,14 @@
         \begin{itemize}
             \item Ideally: position = intersection of spherical surfaces
             \item Reality: 4D conical surfaces (3D positions + time)
-            \item Pseudorange
         \end{itemize}
-        \item Doppler measurements
-    \vspace{0.5cm}
-    \begin{center}
-    \centerline{\includegraphics[height=3.5cm]{img/pseudoranges.pdf}}
-    \end{center}
+        \item Pseudorange
     \end{itemize}
+
+    \vspace{0.2cm}
+    \begin{center}
+    \centerline{\includegraphics[height=3.8cm]{img/pseudoranges.pdf}}
+    \end{center}
 \end{frame}
 
 \section{GPS and MCL -- Simple Approach}
@@ -114,8 +113,7 @@
     \begin{itemize}
         \item Most GPS receivers provide NMEA output
         \begin{itemize}
-            \item{\footnotesize\verb=$GPGSA,A,3,04,05,,09,12,,,24,,,,,2.5,1.3,2.1*39=}
-            \item Contains WGS84 lat/lon/alt coordinates and HDOP
+            \item Contains WGS84 lat/lon coordinates and HDOP
         \end{itemize}
         \item Can be used as a position input almost immediately
     \item However\ldots
@@ -125,6 +123,11 @@
             \item Unknown assumptions about the platform
         \end{itemize}
     \end{itemize}
+
+    \vspace{0.5cm}
+    \begin{center}
+    \small \verb=$GPGSA,A,3,04,05,,09,12,,,24,,,,,2.5,1.3,2.1*39=
+    \end{center}
 \end{frame}
 }
 

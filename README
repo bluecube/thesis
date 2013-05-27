@@ -1,8 +1,9 @@
-This is my master's thesis, titled Exploiting GPS in Monte Carlo Localization, finished and submitted :-)
+This is my master's thesis, titled Exploiting GPS in Monte Carlo Localization, finished, submitted and defended.
+Don't expect any further development in here.
 
 Abstract: This work presents two approaches for integrating data from a low cost GPS receiver in a Monte Carlo localization algorithm. Firstly, an easily applicable method based on data in the standard NMEA protocol is shown. Secondly, an original algorithm utilizing lower level pseudorange measurements accessed in binary receiver-specific format is presented. In addition, a set of tools for analysis of GPS measurement errors on receivers with SiRF III chipset was implemented.
 
-There are some some experiments with GPS in the /impl/ directory.
+There are some some experiments with GPS in the /impl/ directory, LaTeX sources of the thesis in /tex/, and LaTeX sources for my defense slides in /slides/.
 If you want my experimental data and don't mind waiting, contact me at blue dot cube at seznam dot cz.
 
 
